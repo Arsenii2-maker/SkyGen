@@ -135,15 +135,25 @@
         setParams({ ...params, dateFrom: newDateFrom, dateTo: newDateTo });
       };
 
+            // === ИСПРАВЛЕННАЯ ФУНКЦИЯ ОТПРАВКИ ФОРМЫ ===
       const handleSearch = (e) => {
         e.preventDefault();
+        
         if (params.from === params.to) {
           alert("Выберите разные города!");
           return;
         }
+
+        // Проверка дат на русском языке
+        if (new Date(params.dateTo) < new Date(params.dateFrom)) {
+          alert("Дата обратно не может быть раньше даты вылета!");
+          return;
+        }
+
         setFlights(generateFlights(params.from, params.to, params.dateFrom, params.dateTo, 6));
         setStep('results');
       };
+
 
       const handleDownloadTicket = async () => {
         if (!ticketRef.current) return;
