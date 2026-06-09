@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SKYGEN — Генератор билетов</title>
-  
+  
   <!-- Подключаем Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Подключаем React, ReactDOM и Babel (чтобы код работал прямо в браузере) -->
+  
+  <!-- Подключаем React, ReactDOM и Babel -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  
+  
   <!-- Подключаем библиотеку для скачивания билета в галерею -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -20,10 +20,9 @@
 
   <div id="root"></div>
 
-  <!-- Весь наш рабочий код пишется прямо здесь -->
   <script type="text/babel">
-    
-    // === БАЗА ГОРОДОВ ===
+    
+    // === РАСШИРЕННАЯ БАЗА ГОРОДОВ (20 МЕГАПОЛИСОВ) ===
     const CITIES = [
       { city: "Москва", code: "SVO" },
       { city: "Дубай", code: "DXB" },
@@ -32,23 +31,35 @@
       { city: "Токио", code: "HND" },
       { city: "Париж", code: "CDG" },
       { city: "Стамбул", code: "IST" },
-      { city: "Бангкок", code: "BKK" }
+      { city: "Бангкок", code: "BKK" },
+      { city: "Сеул", code: "ICN" },
+      { city: "Сингапур", code: "SIN" },
+      { city: "Лос-Анджелес", code: "LAX" },
+      { city: "Рим", code: "FCO" },
+      { city: "Барселона", code: "BCN" },
+      { city: "Берлин", code: "BER" },
+      { city: "Сидней", code: "SYD" },
+      { city: "Шанхай", code: "PVG" },
+      { city: "Каир", code: "CAI" },
+      { city: "Рио-де-Жанейро", code: "GIG" },
+      { city: "Дели", code: "DEL" },
+      { city: "Мальдивы", code: "MLE" }
     ];
 
     const AIRLINES = ["SkyGen Airlines", "Oceanic Air", "Global Jet", "AeroNomad"];
 
-    // === СЛУЖЕБНЫЕ ИКОНКИ (SVG вместо библиотек) ===
+    // === СЛУЖЕБНЫЕ ИКОНКИ ===
     const IconPlane = () => <svg className="w-6 h-6 inline" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16V14L13 9V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21L15 22V20.5L13 19V13.5L21 16Z"/></svg>;
     const IconArrow = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>;
 
     // === ЛОГИКА ГЕНЕРАЦИИ ===
-    const generateFlights = (fromCode, toCode, date) => {
-      return Array.from({ length: 4 }).map(() => {
+    const generateFlights = (fromCode, toCode, dateFrom, dateTo) => {
+      return Array.from({ length: 6 }).map(() => {
         const durationHours = Math.floor(Math.random() * 8) + 2;
         const durationMins = Math.floor(Math.random() * 60);
         const depHour = Math.floor(Math.random() * 16) + 4;
         const arrHour = (depHour + durationHours) % 24;
-        
+        
         return {
           id: Math.random().toString(36).substr(2, 8).toUpperCase(),
           airline: AIRLINES[Math.floor(Math.random() * AIRLINES.length)],
@@ -56,10 +67,11 @@
           departure: `${depHour.toString().padStart(2, '0')}:${durationMins.toString().padStart(2, '0')}`,
           arrival: `${arrHour.toString().padStart(2, '0')}:45`,
           duration: `${durationHours}ч ${durationMins}м`,
-          price: Math.floor(Math.random() * 50000) + 15000,
+          price: Math.floor(Math.random() * 65000) + 12000, // Разброс цен стал больше для наглядности фильтра
           from: fromCode,
           to: toCode,
-          date: date,
+          dateFrom: dateFrom,
+          dateTo: dateTo,
           gate: `G${Math.floor(Math.random() * 50) + 1}`,
           seat: `${Math.floor(Math.random() * 30) + 1}${['A','B','C','D','E','F'][Math.floor(Math.random() * 6)]}`
         };
@@ -68,11 +80,13 @@
 
     // === КОМПОНЕНТ ПРИЛОЖЕНИЯ ===
     function App() {
-      const [step, setStep] = React.useState('search'); 
+      const [step, setStep] = React.useState('search'); 
+      const [sortBy, setSortBy] = React.useState('cheap'); // Сортировка: 'cheap' или 'expensive'
       const [params, setParams] = React.useState({
         from: 'SVO',
         to: 'DXB',
-        date: new Date().toISOString().split('T')[0],
+        dateFrom: new Date().toISOString().split('T')[0],
+        dateTo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // По умолчанию +7 дней
         passengers: 1,
         flightClass: 'Эконом',
         baggage: true,
@@ -81,7 +95,7 @@
       const [flights, setFlights] = React.useState([]);
       const [selectedFlight, setSelectedFlight] = React.useState(null);
       const [passengerName, setPassengerName] = React.useState('NYASHIK');
-      
+      
       const ticketRef = React.useRef(null);
 
       const handleSearch = (e) => {
@@ -90,7 +104,11 @@
           alert("Выберите разные города!");
           return;
         }
-        setFlights(generateFlights(params.from, params.to, params.date));
+        if (new Date(params.dateFrom) > new Date(params.dateTo)) {
+          alert("Дата обратно не может быть раньше даты вылета!");
+          return;
+        }
+        setFlights(generateFlights(params.from, params.to, params.dateFrom, params.dateTo));
         setStep('results');
       };
 
@@ -103,6 +121,11 @@
         link.click();
       };
 
+      // Логика сортировки билетов
+      const sortedFlights = [...flights].sort((a, b) => {
+        return sortBy === 'cheap' ? a.price - b.price : b.price - a.price;
+      });
+
       return (
         <div className="min-h-screen flex flex-col">
           {/* ШАПКА */}
@@ -114,7 +137,7 @@
           </header>
 
           <main className="max-w-4xl mx-auto w-full py-6 px-4 flex-1">
-            
+            
             {/* ЭКРАН 1: ФОРМА ПОИСКА */}
             {step === 'search' && (
               <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
@@ -134,8 +157,12 @@
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-gray-400 block mb-1">Дата</label>
-                      <input type="date" value={params.date} onChange={e => setParams({...params, date: e.target.value})} className="w-full p-3 border rounded-xl outline-none" />
+                      <label className="text-xs font-bold text-gray-400 block mb-1">Туда</label>
+                      <input type="date" value={params.dateFrom} onChange={e => setParams({...params, dateFrom: e.target.value})} className="w-full p-3 border rounded-xl outline-none" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-400 block mb-1">Обратно</label>
+                      <input type="date" value={params.dateTo} onChange={e => setParams({...params, dateTo: e.target.value})} className="w-full p-3 border rounded-xl outline-none" />
                     </div>
                     <div>
                       <label className="text-xs font-bold text-gray-400 block mb-1">Класс обслуживания</label>
@@ -143,6 +170,10 @@
                         <option>Эконом</option>
                         <option>Бизнес</option>
                       </select>
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-400 block mb-1">Пассажиры</label>
+                      <input type="number" min="1" max="9" value={params.passengers} onChange={e => setParams({...params, passengers: e.target.value})} className="w-full p-3 border rounded-xl outline-none" />
                     </div>
                   </div>
 
@@ -164,15 +195,31 @@
               </div>
             )}
 
-            {/* ЭКРАН 2: РЕЗУЛЬТАТЫ ПОИСКА */}
+            {/* ЭКРАН 2: РЕЗУЛЬТАТЫ ПОИСКА С ФИЛЬТРОМ */}
             {step === 'results' && (
               <div className="space-y-4">
-                <button onClick={() => setStep('search')} className="text-[#0057b8] text-sm font-semibold mb-2 inline-block">
-                  ← Назад к поиску
-                </button>
-                <h2 className="text-xl font-bold mb-2">Доступные рейсы: {params.from} <IconArrow /> {params.to}</h2>
-                
-                {flights.map(flight => (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                  <button onClick={() => setStep('search')} className="text-[#0057b8] text-sm font-semibold self-start">
+                    ← Назад к поиску
+                  </button>
+                  
+                  {/* Выпадающий список сортировки по цене */}
+                  <div className="flex items-center gap-2 self-end sm:self-auto">
+                    <label className="text-xs font-bold text-gray-400">Сортировка:</label>
+                    <select 
+                      value={sortBy} 
+                      onChange={e => setSortBy(e.target.value)} 
+                      className="p-2 border rounded-xl bg-white text-xs font-semibold outline-none text-[#0057b8] cursor-pointer"
+                    >
+                      <option value="cheap">Сначала дешёвые</option>
+                      <option value="expensive">Сначала дорогие</option>
+                    </select>
+                  </div>
+                </div>
+
+                <h2 className="text-xl font-bold">Доступные рейсы: {params.from} <IconArrow /> {params.to}</h2>
+                
+                {sortedFlights.map(flight => (
                   <div key={flight.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between gap-4">
                     <div className="flex justify-between items-center text-xs font-bold text-gray-400">
                       <span>{flight.airline}</span>
@@ -186,7 +233,7 @@
                       <div className="text-center flex-1 px-4 text-xs text-gray-400">
                         <div>{flight.duration}</div>
                         <div className="h-px bg-gray-200 my-1 relative"></div>
-                        <div>Прямой</div>
+                        <div className="text-[10px] text-slate-500">{flight.dateFrom} — {flight.dateTo}</div>
                       </div>
                       <div className="text-right">
                         <div className="text-2xl font-bold text-slate-800">{flight.arrival}</div>
@@ -222,7 +269,7 @@
                     <span className="font-bold tracking-wider">{selectedFlight.airline}</span>
                     <span className="text-xs border px-2 py-0.5 rounded font-mono">BOARDING PASS</span>
                   </div>
-                  
+                  
                   <div className="p-5 space-y-4">
                     <div className="flex justify-between border-b pb-3">
                       <div>
@@ -249,8 +296,9 @@
 
                     <div className="grid grid-cols-3 gap-2 bg-gray-50 p-3 rounded-xl text-center text-sm border">
                       <div>
-                        <div className="text-[9px] text-gray-400 font-bold uppercase">Дата</div>
-                        <div className="font-bold">{selectedFlight.date}</div>
+                        <div className="text-[9px] text-gray-400 font-bold uppercase">Даты рейса</div>
+                        <div className="font-bold text-[10px] leading-tight">{selectedFlight.dateFrom}</div>
+                        <div className="font-bold text-[10px] leading-tight">{selectedFlight.dateTo}</div>
                       </div>
                       <div>
                         <div className="text-[9px] text-gray-400 font-bold uppercase">Выход</div>
@@ -264,7 +312,7 @@
 
                     <div className="flex justify-between items-center pt-2 text-[10px] font-bold text-gray-400">
                       <div>КЛАСС: {params.flightClass.toUpperCase()}</div>
-                      <div>{params.baggage ? '✓ БАГАЖ ВКЛЮЧЕН' : ''} {params.pet ? '• С ЖИВОТНЫМ' : ''}</div>
+                      <div>{params.baggage ? '✓ БАГАЖ' : ''} {params.pet ? '• С ПИТОМЦЕМ' : ''}</div>
                     </div>
 
                     {/* Имитация штрих-кода */}
@@ -293,4 +341,3 @@
   </script>
 </body>
 </html>
-
