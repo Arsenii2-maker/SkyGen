@@ -73,7 +73,7 @@
       { name: "Sunset Beach View Villa", stars: "⭐⭐⭐⭐⭐", price: 17500 }
     ];
 
-    // === БОЛЬШОЙ ПУЛ ГАРАНТИРОВАННО РАБОЧИХ ИЗОБРАЖЕНИЙ (15 ШТ) ===
+    // === БОЛЬШОЙ ПУЛ ГАРАНТИРОВАННО РАБОЧИХ ИЗОБРАЖЕНИЙ ОТЕЛЕЙ ===
     const HOTEL_IMAGES_POOL = [
       "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
       "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80",
@@ -99,6 +99,28 @@
       "Район у главного парка", "Премиальный загородный комплекс"
     ];
 
+    // === БАЗА БЛЮД ДЛЯ КОНСТРУКТОРА ПИТАНИЯ ===
+    const FOOD_MENU_OPTIONS = {
+      mains: [
+        { id: "m1", name: "Куриное филе-гриль под соусом", type: "Мясо/Птица", img: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=300&q=80" },
+        { id: "m2", name: "Стейк из запечённого лосося", type: "Рыба", img: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=300&q=80" },
+        { id: "m3", name: "Нежные митболы из говядины", type: "Мясо", img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=300&q=80" },
+        { id: "m4", name: "Средиземноморские овощи-гриль", type: "Вегетарианское", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80" }
+      ],
+      sides: [
+        { id: "s1", name: "Пряный рассыпчатый рис", img: "https://images.unsplash.com/photo-1516685018646-549198525c1b?auto=format&fit=crop&w=300&q=80" },
+        { id: "s2", name: "Золотистые картофельные дольки", img: "https://images.unsplash.com/photo-1518310383802-640c2de311b2?auto=format&fit=crop&w=300&q=80" }
+      ],
+      drinks: [
+        { id: "d1", name: "Свежесваренный Капучино", img: "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=300&q=80" },
+        { id: "d2", name: "Освежающий апельсиновый сок", img: "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=300&q=80" }
+      ],
+      desserts: [
+        { id: "de1", name: "Французский круассан", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=300&q=80" },
+        { id: "de2", name: "Шоколадный мини-чизкейк", img: "https://images.unsplash.com/photo-1524351199679-46cddf530c04?auto=format&fit=crop&w=300&q=80" }
+      ]
+    };
+
     const AIRLINES = ["SkyGen Airlines", "Oceanic Air", "Global Jet", "AeroNomad"];
 
     // === ИКОНКИ ===
@@ -108,6 +130,7 @@
     const IconBriefcase = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>;
     const IconTrash = () => <svg className="w-5 h-5 inline text-red-400 hover:text-red-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>;
     const IconHotel = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>;
+    const IconFood = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>; // Временная замена для иконки еды
 
     // === ГЕНЕРАТОР РЕЙСОВ ===
     const generateFlights = (fromCode, toCode, dateFrom, dateTo, count = 6) => {
@@ -129,7 +152,8 @@
           to: toCode,
           dateFrom: dateFrom,
           dateTo: dateTo,
-          gate: `G${Math.floor(Math.random() * 50) + 1}`
+          gate: `G${Math.floor(Math.random() * 50) + 1}`,
+          hasFood: Math.random() > 0.35 // У ~65% рейсов есть питание на борту
         };
       });
     };
@@ -153,7 +177,7 @@
 
     // === ГЛАВНЫЙ КОМПОНЕНТ ПРИЛОЖЕНИЯ ===
     function App() {
-      const [step, setStep] = React.useState('search'); // search, results, seats, hotels, ticket, trips
+      const [step, setStep] = React.useState('search'); // search, results, seats, hotels, food, ticket, trips
       const [isSearchOpen, setIsSearchOpen] = React.useState(false);
       const [sortBy, setSortBy] = React.useState('cheap'); 
       const [suggestions, setSuggestions] = React.useState([]);
@@ -168,9 +192,18 @@
       const [flights, setFlights] = React.useState([]);
       const [selectedFlight, setSelectedFlight] = React.useState(null);
       
-      // Динамический список отелей для конкретного выбранного города
+      // Списки отелей
       const [currentHotelsList, setCurrentHotelsList] = React.useState([]);
       const [selectedHotel, setSelectedHotel] = React.useState(null);
+
+      // Выбранное меню питания
+      const [selectedFoodMenu, setSelectedFoodMenu] = React.useState({
+        main: FOOD_MENU_OPTIONS.mains[0],
+        side: FOOD_MENU_OPTIONS.sides[0],
+        drink: FOOD_MENU_OPTIONS.drinks[0],
+        dessert: FOOD_MENU_OPTIONS.desserts[0]
+      });
+      const [isFoodSkipped, setIsFoodSkipped] = React.useState(false);
       
       // Карта кресел
       const [occupiedSeats, setOccupiedSeats] = React.useState([]);
@@ -203,6 +236,7 @@
       // Синхронизация количества полей имён с числом пассажиров
       React.useEffect(() => {
         const count = Number(params.passengers);
+        if (count < 1) return; // Чтобы не ломалось во время очистки поля ввода
         setPassengerNames(prev => {
           const next = [...prev];
           if (next.length < count) {
@@ -221,15 +255,24 @@
         setParams({ ...params, dateFrom: newDateFrom, dateTo: newDateTo });
       };
 
+      // ИСПРАВЛЕНИЕ БАГА: Позволяем вводить пустую строку/удалять ноль
       const handlePassengersChange = (e) => {
-        let val = Math.floor(Number(e.target.value));
+        const valStr = e.target.value;
+        if (valStr === '') {
+          setParams({ ...params, passengers: 0 });
+          return;
+        }
+        let val = Math.floor(Number(valStr));
         if (val > 5) val = 5; 
-        if (val < 1) val = 1; 
         setParams({ ...params, passengers: val });
       };
 
       const handleSearch = (e) => {
         e.preventDefault();
+        if (params.passengers < 1) {
+          alert("Укажите хотя бы 1 пассажира!");
+          return;
+        }
         if (params.from === params.to) {
           alert("Выберите разные города!");
           return;
@@ -246,6 +289,7 @@
         setSelectedFlight(flight);
         setSelectedHotel(null); 
         setChosenSeats([]); 
+        setIsFoodSkipped(false);
         
         const occupied = [];
         const rows = 12;
@@ -259,26 +303,22 @@
         setStep('seats');
       };
 
-      // ФУНКЦИЯ ДИНАМИЧЕСКОЙ СЛУЧАЙНОЙ ГЕНЕРАЦИИ ОТЕЛЕЙ НА ОСНОВЕ ПАРАМЕТРОВ ГОРОДА
+      // ГЕНЕРАЦИЯ ОТЕЛЕЙ С УЧЕТОМ НАСЕЛЕНИЯ И РАЗНЫХ РАЙОНОВ
       const handleOpenHotelsStep = () => {
         if (chosenSeats.length !== Number(params.passengers)) {
           alert(`Выберите ровно столько мест, сколько пассажиров (${params.passengers} шт.)`);
           return;
         }
 
-        // Ищем целевой город в нашей базе для понимания его "масштаба населения"
         const targetCityObj = CITIES.find(c => c.code === params.to) || { hotelCount: 3 };
         const requiredCount = targetCityObj.hotelCount;
 
-        // Перемешиваем пулы названий, картинок и районов для максимальной случайности без повторов внутри одного списка
         const shuffledNames = [...HOTEL_NAMES_POOL].sort(() => 0.5 - Math.random());
         const shuffledImages = [...HOTEL_IMAGES_POOL].sort(() => 0.5 - Math.random());
         const shuffledDistricts = [...HOTEL_DISTRICTS_POOL].sort(() => 0.5 - Math.random());
 
-        // Формируем уникальный список под размер города
         const generatedHotels = Array.from({ length: requiredCount }).map((_, i) => {
           const hotelTemplate = shuffledNames[i % shuffledNames.length];
-          // Делаем небольшую случайную вариацию цены, чтобы отели не были всегда одинаковыми по цене
           const randomPriceOffset = Math.floor((Math.random() - 0.5) * 2000); 
 
           return {
@@ -292,6 +332,21 @@
 
         setCurrentHotelsList(generatedHotels);
         setStep('hotels');
+      };
+
+      // ПРОВЕРКА НАЛИЧИЯ ПИТАНИЯ НА РЕЙСЕ ПЕРЕД ПЕРЕХОДОМ ДАЛЬШЕ
+      const handleNextAfterHotels = (hotelObj = null) => {
+        if (hotelObj) {
+          setSelectedHotel({ ...hotelObj, totalTripPrice: hotelObj.price * params.passengers });
+        } else {
+          setSelectedHotel(null);
+        }
+
+        if (selectedFlight.hasFood) {
+          setStep('food');
+        } else {
+          setStep('ticket');
+        }
       };
 
       const handleSeatClick = (seatId, isBusinessRow) => {
@@ -336,6 +391,7 @@
           tripId,
           flight: selectedFlight,
           hotel: selectedHotel, 
+          foodMenu: isFoodSkipped ? null : selectedFoodMenu,
           seats: chosenSeats,
           passengers: passengerNames,
           class: params.flightClass,
@@ -355,7 +411,7 @@
       };
 
       const sortedFlights = [...flights].sort((a, b) => sortBy === 'cheap' ? a.price - b.price : b.price - a.price);
-      const isAllSeatsSelected = chosenSeats.length === Number(params.passengers);
+      const isAllSeatsSelected = chosenSeats.length === Number(params.passengers) && params.passengers > 0;
 
       const getCityName = (code) => {
         const found = CITIES.find(c => c.code === code);
@@ -370,6 +426,7 @@
           { key: 'results', label: 'Выбор рейса' },
           { key: 'seats', label: 'Места' },
           { key: 'hotels', label: 'Отель' },
+          ...(selectedFlight?.hasFood ? [{ key: 'food', label: 'Питание' }] : []),
           { key: 'ticket', label: 'Билет' }
         ];
 
@@ -474,7 +531,15 @@
                           </div>
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Пассажиры (Лимит: 1–5 чел.)</label>
-                            <input type="number" min="1" max="5" value={params.passengers} onChange={handlePassengersChange} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8] font-bold" />
+                            {/* УЛУЧШЕНИЕ: Трюк с пустой строчкой вместо нуля */}
+                            <input 
+                              type="number" 
+                              min="1" 
+                              max="5" 
+                              value={params.passengers === 0 ? '' : params.passengers} 
+                              onChange={handlePassengersChange} 
+                              className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8] font-bold" 
+                            />
                           </div>
                         </div>
                         <div className="flex gap-4 pt-2 text-sm">
@@ -494,7 +559,10 @@
                     {suggestions.map(flight => (
                       <div key={flight.id} className="min-w-[280px] bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-4 snap-start shrink-0 relative overflow-hidden">
                         <div className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">SALE</div>
-                        <div className="text-xs font-bold text-gray-400">{flight.airline}</div>
+                        <div className="text-xs font-bold text-gray-400 flex justify-between items-center">
+                          <span>{flight.airline}</span>
+                          <span className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-black">{flight.hasFood ? "🍱 Еда есть" : "🚫 Без еды"}</span>
+                        </div>
                         <div className="flex justify-between items-center">
                           <div><div className="text-2xl font-black">{flight.from}</div><div className="text-xs text-gray-500">{flight.departure}</div></div>
                           <IconArrow />
@@ -524,7 +592,15 @@
                 <h2 className="text-xl font-bold">Рейсы: {getCityName(params.from)} → {getCityName(params.to)}</h2>
                 {sortedFlights.map(flight => (
                   <div key={flight.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-4">
-                    <div className="flex justify-between text-xs font-bold text-gray-400"><span>{flight.airline}</span><span>{flight.flightNumber}</span></div>
+                    <div className="flex justify-between text-xs font-bold text-gray-400">
+                      <span>{flight.airline}</span>
+                      <div className="flex gap-2 items-center">
+                        <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${flight.hasFood ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-400'}`}>
+                          {flight.hasFood ? "🍱 Питание включено" : "🚫 Без питания"}
+                        </span>
+                        <span>{flight.flightNumber}</span>
+                      </div>
+                    </div>
                     <div className="flex justify-between items-center">
                       <div><div className="text-2xl font-bold">{flight.departure}</div><div className="text-xs text-gray-500">{flight.from}</div></div>
                       <div className="text-center flex-1 px-4 text-xs text-gray-400">
@@ -607,7 +683,6 @@
                     <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-[#0057b8] rounded border-b-2 border-blue-900"></div>Ваше</div>
                   </div>
 
-                  {/* КНОПКА ПОДТВЕРЖДЕНИЯ С ЗАПУСКОМ СЛУЧАЙНОЙ ГЕНЕРАЦИИ ОТЕЛЕЙ НА ОСНОВЕ РАЗМЕРА ГОРОДА */}
                   <button 
                     onClick={handleOpenHotelsStep} 
                     className={`w-full mt-6 py-4 rounded-xl font-bold shadow-md transition-all ${isAllSeatsSelected ? 'bg-[#0057b8] text-white active:scale-95' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
@@ -618,13 +693,13 @@
               </div>
             )}
 
-            {/* ЭКРАН 4: ВЫБОР ОТЕЛЯ (ДИНАМИЧЕСКИЙ, ЗАВИСИТ ОТ ГОРОДА НАЗНАЧЕНИЯ) */}
+            {/* ЭКРАН 4: ВЫБОР ОТЕЛЯ (УЧИТЫВАЕТ НАСЕЛЕНИЕ) */}
             {step === 'hotels' && selectedFlight && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <button onClick={() => setStep('seats')} className="text-[#0057b8] text-sm font-semibold">← Назад к выбору мест</button>
                   <button 
-                    onClick={() => { setSelectedHotel(null); setStep('ticket'); }} 
+                    onClick={() => handleNextAfterHotels(null)} 
                     className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors"
                   >
                     Пропустить отель ➔
@@ -652,7 +727,6 @@
                       <div className="p-5 flex flex-col flex-1 justify-between gap-4">
                         <div>
                           <h3 className="font-black text-lg text-slate-800 leading-tight">{hotel.name}</h3>
-                          {/* Вывод уникального сгенерированного района вместо дефолтного */}
                           <p className="text-xs text-blue-600 font-semibold mt-1">📍 {hotel.district}</p>
                         </div>
                         <div className="flex justify-between items-center pt-3 border-t">
@@ -661,7 +735,7 @@
                             <span className="text-[10px] text-gray-400 block font-bold">за ночь ({params.passengers} пасс.)</span>
                           </div>
                           <button 
-                            onClick={() => { setSelectedHotel({ ...hotel, totalTripPrice: hotel.price * params.passengers }); setStep('ticket'); }} 
+                            onClick={() => handleNextAfterHotels(hotel)} 
                             className="bg-[#0057b8] text-white font-bold text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm"
                           >
                             Забронировать
@@ -674,10 +748,119 @@
               </div>
             )}
 
-            {/* ЭКРАН 5: ГОТОВЫЙ БИЛЕТ С МУЛЬТИ-ИМЕНАМИ И ВАУЧЕРОМ */}
+            {/* ЭКРАН 5: КОНСТРУКТОР БОРТОВОГО ПИТАНИЯ С ФОТОГРАФИЯМИ */}
+            {step === 'food' && selectedFlight && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <button onClick={() => setStep('hotels')} className="text-[#0057b8] text-sm font-semibold">← Назад к отелям</button>
+                  <button 
+                    onClick={() => { setIsFoodSkipped(true); setStep('ticket'); }} 
+                    className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors"
+                  >
+                    Отказаться от питания ➔
+                  </button>
+                </div>
+
+                <div className="bg-orange-50 p-5 rounded-2xl border border-orange-100">
+                  <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    🍱 Шеф-меню на борту рейса {selectedFlight.flightNumber}
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Соберите идеальный бесплатный ланч-сет премиум-класса для комфортного полёта.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Горячее */}
+                  <div>
+                    <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 1: Основное горячее блюдо</h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {FOOD_MENU_OPTIONS.mains.map(item => (
+                        <div 
+                          key={item.id} 
+                          onClick={() => setSelectedFoodMenu({...selectedFoodMenu, main: item})}
+                          className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm transition-all text-center ${selectedFoodMenu.main.id === item.id ? 'border-orange-500 bg-orange-50/30 scale-[1.02]' : 'border-gray-200'}`}
+                        >
+                          <img src={item.img} alt="" className="w-full h-24 object-cover" />
+                          <div className="p-2">
+                            <div className="text-[10px] font-bold text-orange-600">{item.type}</div>
+                            <div className="text-xs font-bold text-slate-800 leading-tight mt-0.5">{item.name}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Гарниры */}
+                  <div>
+                    <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 2: Дополнительный гарнир</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {FOOD_MENU_OPTIONS.sides.map(item => (
+                        <div 
+                          key={item.id} 
+                          onClick={() => setSelectedFoodMenu({...selectedFoodMenu, side: item})}
+                          className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm flex items-center p-2 gap-3 transition-all ${selectedFoodMenu.side.id === item.id ? 'border-orange-500 bg-orange-50/30' : 'border-gray-200'}`}
+                        >
+                          <img src={item.img} alt="" className="w-14 h-14 rounded-lg object-cover" />
+                          <div className="text-xs font-bold text-slate-800">{item.name}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Напитки */}
+                  <div>
+                    <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 3: Напиток на борту</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {FOOD_MENU_OPTIONS.drinks.map(item => (
+                        <div 
+                          key={item.id} 
+                          onClick={() => setSelectedFoodMenu({...selectedFoodMenu, drink: item})}
+                          className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm flex items-center p-2 gap-3 transition-all ${selectedFoodMenu.drink.id === item.id ? 'border-orange-500 bg-orange-50/30' : 'border-gray-200'}`}
+                        >
+                          <img src={item.img} alt="" className="w-14 h-14 rounded-lg object-cover" />
+                          <div className="text-xs font-bold text-slate-800">{item.name}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Десерты */}
+                  <div>
+                    <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 4: Авиа-десерт</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {FOOD_MENU_OPTIONS.desserts.map(item => (
+                        <div 
+                          key={item.id} 
+                          onClick={() => setSelectedFoodMenu({...selectedFoodMenu, dessert: item})}
+                          className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm flex items-center p-2 gap-3 transition-all ${selectedFoodMenu.dessert.id === item.id ? 'border-orange-500 bg-orange-50/30' : 'border-gray-200'}`}
+                        >
+                          <img src={item.img} alt="" className="w-14 h-14 rounded-lg object-cover" />
+                          <div className="text-xs font-bold text-slate-800">{item.name}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => { setIsFoodSkipped(false); setStep('ticket'); }} 
+                  className="w-full bg-orange-500 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition-all text-sm mt-4"
+                >
+                  ✓ Подтвердить рацион и перейти к билетам
+                </button>
+              </div>
+            )}
+
+            {/* ЭКРАН 6: ГОТОВЫЙ БИЛЕТ С МУЛЬТИ-ИМЕНАМИ И ВСЕМИ ВАУЧЕРАМИ */}
             {step === 'ticket' && selectedFlight && (
               <div className="flex flex-col items-center">
-                <button onClick={() => setStep('hotels')} className="text-[#0057b8] text-sm font-semibold mb-4 self-start">← Изменить выбор жилья</button>
+                <button 
+                  onClick={() => selectedFlight.hasFood ? setStep('food') : setStep('hotels')} 
+                  className="text-[#0057b8] text-sm font-semibold mb-4 self-start"
+                >
+                  ← Назад к предыдущему шагу
+                </button>
 
                 {/* БЛОК ИМЁН ПАССАЖИРОВ */}
                 <div className="w-full bg-white p-5 rounded-xl border mb-6 shadow-sm space-y-3">
@@ -754,7 +937,7 @@
                     </div>
                   </div>
 
-                  {/* ОТЕЛЬНЫЙ ВАУЧЕР С РАЙОНОМ */}
+                  {/* ОТЕЛЬНЫЙ ВАУЧЕР */}
                   {selectedHotel && (
                     <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-green-200 relative animate-fade-in">
                       <div className="bg-green-600 text-white p-3 flex justify-between items-center">
@@ -769,7 +952,42 @@
                           <h4 className="font-black text-sm text-slate-800 truncate">{selectedHotel.name}</h4>
                           <p className="text-[10px] text-blue-600 font-bold mt-0.5">📍 {selectedHotel.district}</p>
                           <div className="mt-2 text-[11px] bg-green-50 text-green-700 px-2 py-1 rounded font-mono inline-block font-bold">
-                            Гостей: {params.passengers} | Номер забронирован
+                            Гостей: {params.passengers} | Номер подтвержден
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* БОРТОВОЙ ЛАНЧ-ВАУЧЕР */}
+                  {selectedFlight.hasFood && !isFoodSkipped && (
+                    <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-orange-200 relative">
+                      <div className="bg-orange-500 text-white p-3 flex justify-between items-center">
+                        <span className="font-bold text-xs tracking-wider flex items-center gap-1">
+                          🍱 БОРТОВОЕ ПИТАНИЕ С ЛОГОТИПОМ
+                        </span>
+                        <span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">IN-FLIGHT MEAL</span>
+                      </div>
+                      <div className="p-4 space-y-3">
+                        <div className="flex items-center gap-3 border-b pb-2">
+                          <img src={selectedFoodMenu.main.img} alt="" className="w-10 h-10 rounded-lg object-cover border" />
+                          <div>
+                            <div className="text-[9px] font-bold text-gray-400 uppercase">Горячее блюдо</div>
+                            <div className="text-xs font-black text-slate-800">{selectedFoodMenu.main.name}</div>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 pt-1 text-center">
+                          <div className="bg-orange-50/50 p-1.5 rounded-lg border border-orange-100">
+                            <div className="text-[8px] text-gray-400 font-bold uppercase">Гарнир</div>
+                            <div className="text-[10px] font-bold text-slate-700 mt-0.5 truncate">{selectedFoodMenu.side.name}</div>
+                          </div>
+                          <div className="bg-orange-50/50 p-1.5 rounded-lg border border-orange-100">
+                            <div className="text-[8px] text-gray-400 font-bold uppercase">Напиток</div>
+                            <div className="text-[10px] font-bold text-slate-700 mt-0.5 truncate">{selectedFoodMenu.drink.name}</div>
+                          </div>
+                          <div className="bg-orange-50/50 p-1.5 rounded-lg border border-orange-100">
+                            <div className="text-[8px] text-gray-400 font-bold uppercase">Десерт</div>
+                            <div className="text-[10px] font-bold text-slate-700 mt-0.5 truncate">{selectedFoodMenu.dessert.name}</div>
                           </div>
                         </div>
                       </div>
@@ -779,11 +997,14 @@
                   {/* ОБЩИЙ QR КОД */}
                   <div className="bg-white p-4 rounded-2xl border border-gray-200 flex justify-between items-center">
                     <div className="flex flex-col">
-                       <span className="text-[9px] text-gray-400 font-bold uppercase mb-1">СКАНИРОВАТЬ ДЛЯ ПРОВЕРКИ</span>
+                       <span className="text-[9px] text-gray-400 font-bold uppercase mb-1">СКАНИРОВАТЬ НА СТОЙКЕ РЕГИСТРАЦИИ</span>
                        <span className="text-[11px] font-mono font-bold">ID Поездки: {selectedFlight.id}</span>
-                       {selectedHotel && <span className="text-[10px] text-green-600 font-bold mt-1">✓ Комбо: Рейс + Отель</span>}
+                       <span className="text-[10px] text-blue-600 font-bold mt-1">
+                         {selectedHotel ? "✓ Авиа + Отель" : "✓ Только авиабилет"}
+                         {selectedFlight.hasFood && !isFoodSkipped ? " + 🍱 Питание" : ""}
+                       </span>
                     </div>
-                    <QRCodeBlock text={`ID:${selectedFlight.id}|PASSENGERS:${passengerNames.join(',')}|FLIGHT:${selectedFlight.flightNumber}|SEATS:${chosenSeats.join(',')}|HOTEL:${selectedHotel ? selectedHotel.name : 'NONE'}`} />
+                    <QRCodeBlock text={`ID:${selectedFlight.id}|PASSENGERS:${passengerNames.join(',')}|FLIGHT:${selectedFlight.flightNumber}|SEATS:${chosenSeats.join(',')}|HOTEL:${selectedHotel ? selectedHotel.name : 'NONE'}|FOOD:${isFoodSkipped ? 'NONE' : selectedFoodMenu.main.name}`} />
                   </div>
                 </div>
 
@@ -799,7 +1020,7 @@
               </div>
             )}
 
-            {/* ЭКРАН 6: МОИ ПОЕЗДКИ */}
+            {/* ЭКРАН 7: МОИ ПОЕЗДКИ */}
             {step === 'trips' && (
               <div className="space-y-4">
                 <button onClick={() => setStep('search')} className="text-[#0057b8] text-sm font-semibold mb-2">← На главную</button>
@@ -818,6 +1039,12 @@
                         onClick={() => {
                           setSelectedFlight(trip.flight);
                           setSelectedHotel(trip.hotel);
+                          if (trip.foodMenu) {
+                            setSelectedFoodMenu(trip.foodMenu);
+                            setIsFoodSkipped(false);
+                          } else {
+                            setIsFoodSkipped(true);
+                          }
                           setChosenSeats(trip.seats);
                           setPassengerNames(trip.passengers);
                           setParams({...params, passengers: trip.passengers.length, flightClass: trip.class, baggage: trip.options.baggage, pet: trip.options.pet});
@@ -837,7 +1064,12 @@
                             </span>
                             {trip.hotel && (
                               <span className="text-[11px] bg-green-50 text-green-700 px-2 py-0.5 rounded-md font-bold flex items-center gap-0.5">
-                                🏨 {trip.hotel.name} ({trip.hotel.district})
+                                🏨 {trip.hotel.name}
+                              </span>
+                            )}
+                            {trip.foodMenu && (
+                              <span className="text-[11px] bg-orange-50 text-orange-700 px-2 py-0.5 rounded-md font-bold">
+                                🍱 {trip.foodMenu.main.name}
                               </span>
                             )}
                           </div>
