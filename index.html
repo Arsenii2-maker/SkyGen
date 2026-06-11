@@ -30,23 +30,28 @@
 
   <script type="text/babel">
     
-    // === БАЗА ГОРОДОВ (30 МЕГАПОЛИСОВ) ===
+    // === БАЗА ГОРОДОВ (40 МЕГАПОЛИСОВ) ===
     const CITIES = [
-      { city: "Москва", code: "SVO" }, { city: "Дубай", code: "DXB" },
-      { city: "Нью-Йорк", code: "JFK" }, { city: "Лондон", code: "LHR" },
-      { city: "Токио", code: "HND" }, { city: "Париж", code: "CDG" },
-      { city: "Стамбул", code: "IST" }, { city: "Бангкок", code: "BKK" },
-      { city: "Сеул", code: "ICN" }, { city: "Сингапур", code: "SIN" },
-      { city: "Лос-Анджелес", code: "LAX" }, { city: "Рим", code: "FCO" },
-      { city: "Барселона", code: "BCN" }, { city: "Берлин", code: "BER" },
-      { city: "Сидней", code: "SYD" }, { city: "Шанхай", code: "PVG" },
-      { city: "Каир", code: "CAI" }, { city: "Рио-де-Жанейро", code: "GIG" },
-      { city: "Дели", code: "DEL" }, { city: "Мальдивы", code: "MLE" },
-      { city: "Амстердам", code: "AMS" }, { city: "Мадрид", code: "MAD" },
-      { city: "Торонто", code: "YYZ" }, { city: "Майами", code: "MIA" },
-      { city: "Доха", code: "DOH" }, { city: "Мюнхен", code: "MUC" },
-      { city: "Вена", code: "VIE" }, { city: "Мумбаи", code: "BOM" },
-      { city: "Гонконг", code: "HKG" }, { city: "Милан", code: "MXP" }
+      { city: "Москва", code: "SVO" }, { city: "Владивосток", code: "VVO" },
+      { city: "Шанхай", code: "PVG" }, { city: "Сочи", code: "AER" },
+      { city: "Санкт-Петербург", code: "LED" }, { city: "Новосибирск", code: "OVB" },
+      { city: "Екатеринбург", code: "SVX" }, { city: "Казань", code: "KZN" },
+      { city: "Ташкент", code: "TAS" }, { city: "Астана", code: "NQZ" },
+      { city: "Дубай", code: "DXB" }, { city: "Нью-Йорк", code: "JFK" }, 
+      { city: "Лондон", code: "LHR" }, { city: "Токио", code: "HND" }, 
+      { city: "Париж", code: "CDG" }, { city: "Стамбул", code: "IST" }, 
+      { city: "Бангкок", code: "BKK" }, { city: "Пхукет", code: "HKT" },
+      { city: "Сеул", code: "ICN" }, { city: "Сингапур", code: "SIN" }, 
+      { city: "Лос-Анджелес", code: "LAX" }, { city: "Рим", code: "FCO" }, 
+      { city: "Барселона", code: "BCN" }, { city: "Берлин", code: "BER" }, 
+      { city: "Сидней", code: "SYD" }, { city: "Пекин", code: "PEK" }, 
+      { city: "Каир", code: "CAI" }, { city: "Рио-де-Жанейро", code: "GIG" }, 
+      { city: "Дели", code: "DEL" }, { city: "Мальдивы", code: "MLE" }, 
+      { city: "Амстердам", code: "AMS" }, { city: "Мадрид", code: "MAD" }, 
+      { city: "Торонто", code: "YYZ" }, { city: "Майами", code: "MIA" }, 
+      { city: "Доха", code: "DOH" }, { stroke: "MUC", city: "Мюнхен", code: "MUC" }, 
+      { city: "Вена", code: "VIE" }, { city: "Гонконг", code: "HKG" }, 
+      { city: "Милан", code: "MXP" }, { city: "Анталья", code: "AYT" }
     ];
 
     const AIRLINES = ["SkyGen Airlines", "Oceanic Air", "Global Jet", "AeroNomad"];
@@ -108,7 +113,7 @@
       const [suggestions, setSuggestions] = React.useState([]);
 
       const [params, setParams] = React.useState({
-        from: 'SVO', to: 'DXB',
+        from: 'SVO', to: 'VVO',
         dateFrom: new Date().toISOString().split('T')[0],
         dateTo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         passengers: 1, flightClass: 'Эконом', baggage: true, pet: false
@@ -119,8 +124,10 @@
       
       // Карта кресел
       const [occupiedSeats, setOccupiedSeats] = React.useState([]);
-      const [chosenSeats, setChosenSeats] = React.useState([]); // Массив для поддержки мульти-выбора
-      const [passengerName, setPassengerName] = React.useState('NYASHIK');
+      const [chosenSeats, setChosenSeats] = React.useState([]); 
+      
+      // Массив имён пассажиров (динамический)
+      const [passengerNames, setPassengerNames] = React.useState(['NYASHIK']);
 
       // Мои поездки (localStorage)
       const [trips, setTrips] = React.useState(() => {
@@ -142,11 +149,32 @@
         setSuggestions(randomFlights);
       }, []);
 
+      // Синхронизация количества полей имён с числом пассажиров
+      React.useEffect(() => {
+        const count = Number(params.passengers);
+        setPassengerNames(prev => {
+          const next = [...prev];
+          if (next.length < count) {
+            for (let i = next.length; i < count; i++) next.push(`PASSENGER ${i + 1}`);
+          } else if (next.length > count) {
+            return next.slice(0, count);
+          }
+          return next;
+        });
+      }, [params.passengers]);
+
       const handleDateFromChange = (e) => {
         const newDateFrom = e.target.value;
         let newDateTo = params.dateTo;
         if (new Date(newDateFrom) > new Date(newDateTo)) newDateTo = newDateFrom;
         setParams({ ...params, dateFrom: newDateFrom, dateTo: newDateTo });
+      };
+
+      const handlePassengersChange = (e) => {
+        let val = Math.floor(Number(e.target.value));
+        if (val > 5) val = 5; // Верхний лимит в 5 человек
+        if (val < 1) val = 1; // Нижний лимит
+        setParams({ ...params, passengers: val });
       };
 
       const handleSearch = (e) => {
@@ -165,9 +193,8 @@
 
       const goToSeatSelection = (flight) => {
         setSelectedFlight(flight);
-        setChosenSeats([]); // сброс мест
+        setChosenSeats([]); 
         
-        // Генерируем занятые места
         const occupied = [];
         const rows = 12;
         const cols = ['A','B','C','D','E','F'];
@@ -180,7 +207,6 @@
         setStep('seats');
       };
 
-      // Логика клика по сиденью
       const handleSeatClick = (seatId, isBusinessRow) => {
         if (isBusinessRow && params.flightClass !== 'Бизнес') {
           alert("Эти места доступны только для Бизнес-класса!");
@@ -188,10 +214,8 @@
         }
 
         if (chosenSeats.includes(seatId)) {
-          // Если место уже выбрано, убираем его
           setChosenSeats(chosenSeats.filter(s => s !== seatId));
         } else {
-          // Если пытаемся выбрать больше, чем пассажиров
           if (chosenSeats.length >= Number(params.passengers)) {
             alert(`Вы выбрали максимальное количество мест для ${params.passengers} пасс.`);
             return;
@@ -200,11 +224,17 @@
         }
       };
 
+      const handleNameChange = (index, value) => {
+        const updatedNames = [...passengerNames];
+        updatedNames[index] = value.toUpperCase();
+        setPassengerNames(updatedNames);
+      };
+
       const handleDownloadTicket = async () => {
         if (!ticketRef.current) return;
         const canvas = await html2canvas(ticketRef.current, { scale: 2 });
         const link = document.createElement('a');
-        link.download = `Ticket_${selectedFlight.flightNumber}.png`;
+        link.download = `Tickets_${selectedFlight.flightNumber}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
       };
@@ -219,7 +249,7 @@
           tripId,
           flight: selectedFlight,
           seats: chosenSeats,
-          passenger: passengerName,
+          passengers: passengerNames,
           class: params.flightClass,
           options: { baggage: params.baggage, pet: params.pet }
         };
@@ -272,7 +302,6 @@
                   
                   {isSearchOpen && (
                     <div className="p-6">
-                      {/* noValidate отключает дефолтные английские тултипы браузера */}
                       <form onSubmit={handleSearch} noValidate className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
@@ -289,11 +318,11 @@
                           </div>
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Туда</label>
-                            <input type="date" value={params.dateFrom} onChange={handleDateFromChange} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8]" />
+                            <input type="date" value={params.dateFrom} onChange={handleDateFromChange} className="w-full p-3 border rounded-xl outline-none" />
                           </div>
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Обратно</label>
-                            <input type="date" value={params.dateTo} onChange={e => setParams({...params, dateTo: e.target.value})} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8]" />
+                            <input type="date" value={params.dateTo} onChange={e => setParams({...params, dateTo: e.target.value})} className="w-full p-3 border rounded-xl outline-none" />
                           </div>
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Класс обслуживания</label>
@@ -303,8 +332,8 @@
                             </select>
                           </div>
                           <div>
-                            <label className="text-xs font-bold text-gray-400 block mb-1">Пассажиры</label>
-                            <input type="number" min="1" max="9" value={params.passengers} onChange={e => setParams({...params, passengers: e.target.value})} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8]" />
+                            <label className="text-xs font-bold text-gray-400 block mb-1">Пассажиры (макс. 5)</label>
+                            <input type="number" min="1" max="5" value={params.passengers} onChange={handlePassengersChange} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8]" />
                           </div>
                         </div>
                         <div className="flex gap-4 pt-2 text-sm">
@@ -380,7 +409,7 @@
                 <div className="w-full max-w-md bg-white p-6 rounded-3xl shadow-lg border border-gray-200">
                   <div className="text-center mb-4">
                     <h2 className="text-2xl font-black text-slate-800">Выберите место</h2>
-                    <p className="text-xs text-gray-400">Пассажиров: <span className="font-bold text-slate-700">{params.passengers}</span> • Выбрано классов: <span className="font-bold text-blue-600">{params.flightClass}</span></p>
+                    <p className="text-xs text-gray-400">Пассажиров: <span className="font-bold text-slate-700">{params.passengers}</span> • Класс: <span className="font-bold text-blue-600">{params.flightClass}</span></p>
                   </div>
 
                   <div className="bg-gray-50 rounded-full py-1.5 mb-6 mx-auto w-3/4 text-center text-[10px] font-bold text-gray-400 tracking-widest border border-gray-200">
@@ -390,7 +419,7 @@
                   <div className="flex flex-col gap-3 items-center">
                     {Array.from({ length: 12 }).map((_, rIndex) => {
                       const row = rIndex + 1;
-                      const isBusinessRow = row <= 2; // Ряды 1 и 2 — Бизнес-класс
+                      const isBusinessRow = row <= 2; 
                       
                       return (
                         <div key={row} className="flex items-center gap-3">
@@ -447,14 +476,26 @@
               </div>
             )}
 
-            {/* ЭКРАН 4: ГОТОВЫЙ БИЛЕТ С QR КОДОМ */}
+            {/* ЭКРАН 4: ГОТОВЫЙ БИЛЕТ С МУЛЬТИ-ИМЕНАМИ */}
             {step === 'ticket' && selectedFlight && (
               <div className="flex flex-col items-center">
                 <button onClick={() => setStep('seats')} className="text-[#0057b8] text-sm font-semibold mb-4 self-start">← Изменить место</button>
 
-                <div className="w-full bg-white p-4 rounded-xl border mb-6 shadow-sm">
-                  <label className="text-xs font-bold text-gray-400 block mb-1">Имя пассажира латиницей:</label>
-                  <input type="text" value={passengerName} onChange={(e) => setPassengerName(e.target.value.toUpperCase())} className="w-full p-3 border rounded-xl font-mono uppercase outline-none focus:border-[#0057b8]" placeholder="IVAN IVANOV" />
+                {/* БЛОК ДИНАМИЧЕСКИХ ИМЁН ПАССАЖИРОВ */}
+                <div className="w-full bg-white p-5 rounded-xl border mb-6 shadow-sm space-y-3">
+                  <h3 className="text-sm font-bold text-slate-700 border-b pb-1.5">Имена пассажиров латиницей:</h3>
+                  {passengerNames.map((name, idx) => (
+                    <div key={idx}>
+                      <label className="text-[10px] font-bold text-gray-400 block mb-0.5">Пассажир {idx + 1} (Место {chosenSeats[idx] || '?'})</label>
+                      <input 
+                        type="text" 
+                        value={name} 
+                        onChange={(e) => handleNameChange(idx, e.target.value)} 
+                        className="w-full p-2.5 border rounded-xl font-mono uppercase outline-none focus:border-[#0057b8]" 
+                        placeholder="IVAN IVANOV" 
+                      />
+                    </div>
+                  ))}
                 </div>
 
                 {/* САМ БИЛЕТ */}
@@ -466,11 +507,13 @@
                   
                   <div className="p-5 space-y-4">
                     <div className="flex justify-between border-b pb-3">
-                      <div>
-                        <div className="text-[10px] uppercase text-gray-400 font-bold">Passenger</div>
-                        <div className="font-mono font-bold text-lg">{passengerName || 'GUEST'}</div>
+                      <div className="flex-1 mr-2">
+                        <div className="text-[10px] uppercase text-gray-400 font-bold">Passengers</div>
+                        <div className="font-mono font-bold text-xs max-h-24 overflow-y-auto leading-relaxed whitespace-pre-line">
+                          {passengerNames.map((n, i) => `${i+1}. ${n || 'GUEST'} [${chosenSeats[i] || ''}]`).join('\n')}
+                        </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right shrink-0">
                         <div className="text-[10px] uppercase text-gray-400 font-bold">Flight</div>
                         <div className="font-mono font-bold text-lg">{selectedFlight.flightNumber}</div>
                       </div>
@@ -498,8 +541,8 @@
                         <div className="font-bold text-lg">{selectedFlight.gate}</div>
                       </div>
                       <div>
-                        <div className="text-[9px] text-gray-400 font-bold uppercase">Место</div>
-                        <div className="font-bold font-mono text-sm text-[#0057b8] break-words max-w-full leading-tight pt-1">{chosenSeats.join(', ')}</div>
+                        <div className="text-[9px] text-gray-400 font-bold uppercase">Все Места</div>
+                        <div className="font-bold font-mono text-xs text-[#0057b8] break-words max-w-full leading-tight pt-1">{chosenSeats.join(', ')}</div>
                       </div>
                     </div>
 
@@ -514,7 +557,7 @@
                          <span className="text-[9px] text-gray-400 font-bold uppercase mb-1">СКАНИРОВАТЬ ПРИ ПОСАДКЕ</span>
                          <span className="text-[11px] font-mono font-bold">PNR: {selectedFlight.id}</span>
                       </div>
-                      <QRCodeBlock text={`PNR:${selectedFlight.id}|PASSENGER:${passengerName}|FLIGHT:${selectedFlight.flightNumber}|FROM:${selectedFlight.from}|TO:${selectedFlight.to}|SEATS:${chosenSeats.join(',')}`} />
+                      <QRCodeBlock text={`PNR:${selectedFlight.id}|PASSENGERS:${passengerNames.join(',')}|FLIGHT:${selectedFlight.flightNumber}|FROM:${selectedFlight.from}|TO:${selectedFlight.to}|SEATS:${chosenSeats.join(',')}`} />
                     </div>
                   </div>
                 </div>
@@ -547,17 +590,19 @@
                         key={trip.tripId} 
                         onClick={() => {
                           setSelectedFlight(trip.flight);
-                          setChosenSeats(trip.seats || [trip.seat]);
-                          setPassengerName(trip.passenger);
-                          setParams({...params, flightClass: trip.class, baggage: trip.options.baggage, pet: trip.options.pet});
+                          setChosenSeats(trip.seats);
+                          setPassengerNames(trip.passengers || [trip.passenger]);
+                          setParams({...params, passengers: trip.passengers ? trip.passengers.length : 1, flightClass: trip.class, baggage: trip.options.baggage, pet: trip.options.pet});
                           setStep('ticket');
                         }}
                         className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center cursor-pointer hover:shadow-md transition-shadow group"
                       >
-                        <div className="flex flex-col">
+                        <div className="flex flex-col max-w-[85%]">
                           <span className="text-xs text-gray-400 font-bold mb-1">{trip.flight.dateFrom} • Рейс {trip.flight.flightNumber}</span>
                           <span className="text-lg font-black">{trip.flight.from} ➔ {trip.flight.to}</span>
-                          <span className="text-sm font-mono text-[#0057b8] mt-1">{trip.passenger} • Места: {trip.seats ? trip.seats.join(', ') : trip.seat}</span>
+                          <span className="text-xs font-mono text-[#0057b8] mt-1 truncate">
+                            Пассажиры: {(trip.passengers || [trip.passenger]).join(', ')} • Места: {trip.seats.join(', ')}
+                          </span>
                         </div>
                         <button onClick={(e) => deleteTrip(e, trip.tripId)} className="p-2 opacity-50 group-hover:opacity-100 transition-opacity">
                           <IconTrash />
