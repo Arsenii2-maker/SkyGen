@@ -30,37 +30,73 @@
 
   <script type="text/babel">
     
-    // === БАЗА ГОРОДОВ (40 МЕГАПОЛИСОВ) ===
+    // === БАЗА ГОРОДОВ (40 МЕГАПОЛИСОВ С УЧЕТОМ ОБЪЕМА ОТЕЛЕЙ ПО НАСЕЛЕНИЮ) ===
     const CITIES = [
-      { city: "Москва", code: "SVO" }, { city: "Владивосток", code: "VVO" },
-      { city: "Шанхай", code: "PVG" }, { city: "Сочи", code: "AER" },
-      { city: "Санкт-Петербург", code: "LED" }, { city: "Новосибирск", code: "OVB" },
-      { city: "Екатеринбург", code: "SVX" }, { city: "Казань", code: "KZN" },
-      { city: "Ташкент", code: "TAS" }, { city: "Астана", code: "NQZ" },
-      { city: "Дубай", code: "DXB" }, { city: "Нью-Йорк", code: "JFK" }, 
-      { city: "Лондон", code: "LHR" }, { city: "Токио", code: "HND" }, 
-      { city: "Париж", code: "CDG" }, { city: "Стамбул", code: "IST" }, 
-      { city: "Бангкок", code: "BKK" }, { city: "Пхукет", code: "HKT" },
-      { city: "Сеул", code: "ICN" }, { city: "Сингапур", code: "SIN" }, 
-      { city: "Лос-Анджелес", code: "LAX" }, { city: "Рим", code: "FCO" }, 
-      { city: "Барселона", code: "BCN" }, { city: "Берлин", code: "BER" }, 
-      { city: "Сидней", code: "SYD" }, { city: "Пекин", code: "PEK" }, 
-      { city: "Каир", code: "CAI" }, { city: "Рио-де-Жанейро", code: "GIG" }, 
-      { city: "Дели", code: "DEL" }, { city: "Мальдивы", code: "MLE" }, 
-      { city: "Амстердам", code: "AMS" }, { city: "Мадрид", code: "MAD" }, 
-      { city: "Торонто", code: "YYZ" }, { city: "Майами", code: "MIA" }, 
-      { city: "Доха", code: "DOH" }, { city: "Мюнхен", code: "MUC" }, 
-      { city: "Вена", code: "VIE" }, { city: "Гонконг", code: "HKG" }, 
-      { city: "Милан", code: "MXP" }, { city: "Анталья", code: "AYT" }
+      { city: "Москва", code: "SVO", hotelCount: 7 }, { city: "Владивосток", code: "VVO", hotelCount: 2 },
+      { city: "Шанхай", code: "PVG", hotelCount: 7 }, { city: "Сочи", code: "AER", hotelCount: 3 },
+      { city: "Санкт-Петербург", code: "LED", hotelCount: 6 }, { city: "Новосибирск", code: "OVB", hotelCount: 3 },
+      { city: "Екатеринбург", code: "SVX", hotelCount: 3 }, { city: "Казань", code: "KZN", hotelCount: 3 },
+      { city: "Ташкент", code: "TAS", hotelCount: 2 }, { city: "Астана", code: "NQZ", hotelCount: 2 },
+      { city: "Дубай", code: "DXB", hotelCount: 7 }, { city: "Нью-Йорк", code: "JFK", hotelCount: 7 }, 
+      { city: "Лондон", code: "LHR", hotelCount: 7 }, { city: "Токио", code: "HND", hotelCount: 7 }, 
+      { city: "Париж", code: "CDG", hotelCount: 6 }, { city: "Стамбул", code: "IST", hotelCount: 6 }, 
+      { city: "Бангкок", code: "BKK", hotelCount: 4 }, { city: "Пхукет", code: "HKT", hotelCount: 2 },
+      { city: "Сеул", code: "ICN", hotelCount: 6 }, { city: "Сингапур", code: "SIN", hotelCount: 6 }, 
+      { city: "Лос-Анджелес", code: "LAX", hotelCount: 6 }, { city: "Рим", code: "FCO", hotelCount: 5 }, 
+      { city: "Барселона", code: "BCN", hotelCount: 5 }, { city: "Берлин", code: "BER", hotelCount: 5 }, 
+      { city: "Сидней", code: "SYD", hotelCount: 5 }, { city: "Пекин", code: "PEK", hotelCount: 7 }, 
+      { city: "Каир", code: "CAI", hotelCount: 3 }, { city: "Рио-де-Жанейро", code: "GIG", hotelCount: 3 }, 
+      { city: "Дели", code: "DEL", hotelCount: 6 }, { city: "Мальдивы", code: "MLE", hotelCount: 1 }, 
+      { city: "Амстердам", code: "AMS", hotelCount: 4 }, { city: "Мадрид", code: "MAD", hotelCount: 4 }, 
+      { city: "Торонто", code: "YYZ", hotelCount: 4 }, { city: "Майами", code: "MIA", hotelCount: 3 }, 
+      { city: "Доха", code: "DOH", hotelCount: 4 }, { city: "Мюнхен", code: "MUC", hotelCount: 4 }, 
+      { city: "Вена", code: "VIE", hotelCount: 4 }, { city: "Гонконг", code: "HKG", hotelCount: 6 }, 
+      { city: "Милан", code: "MXP", hotelCount: 5 }, { city: "Анталья", code: "AYT", hotelCount: 2 }
     ];
 
-    // === БАЗА ОТЕЛЕЙ С ФОТОГРАФИЯМИ ИЗ ИНТЕРНЕТА ===
-    const HOTELS_POOL = [
-      { name: "Grand Royal Luxury Hotel", stars: "⭐⭐⭐⭐⭐", price: 14500, img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80" },
-      { name: "Radisson Blu Premium Resort", stars: "⭐⭐⭐⭐⭐", price: 11200, img: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80" },
-      { name: "Plaza Central Suites", stars: "⭐⭐⭐⭐", price: 7800, img: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80" },
-      { name: "Sea Breeze Comfort Inn", stars: "⭐⭐⭐⭐", price: 6200, img: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80" },
-      { name: "Holiday Hub & SPA", stars: "⭐⭐⭐", price: 4500, img: "https://images.unsplash.com/photo-1455587734955-081b22074842?auto=format&fit=crop&w=600&q=80" }
+    // === БОЛЬШОЙ ПУЛ НАЗВАНИЙ ОТЕЛЕЙ ===
+    const HOTEL_NAMES_POOL = [
+      { name: "Grand Royal Luxury Hotel", stars: "⭐⭐⭐⭐⭐", price: 14500 },
+      { name: "Radisson Blu Premium Resort", stars: "⭐⭐⭐⭐⭐", price: 11200 },
+      { name: "Plaza Central Suites", stars: "⭐⭐⭐⭐", price: 7800 },
+      { name: "Sea Breeze Comfort Inn", stars: "⭐⭐⭐⭐", price: 6200 },
+      { name: "Metropolitan Boutique Hotel", stars: "⭐⭐⭐⭐⭐", price: 13400 },
+      { name: "Hilton Garden Premium", stars: "⭐⭐⭐⭐", price: 8900 },
+      { name: "Skyline View Apartments", stars: "⭐⭐⭐⭐", price: 7100 },
+      { name: "Continental Plaza Stay", stars: "⭐⭐⭐⭐⭐", price: 15600 },
+      { name: "Urban Eco Green Hub", stars: "⭐⭐⭐", price: 4500 },
+      { name: "Astoria Historic Palace", stars: "⭐⭐⭐⭐⭐", price: 12800 },
+      { name: "Parkside Comfort Hotel", stars: "⭐⭐⭐⭐", price: 6900 },
+      { name: "Vibe Select Design Suites", stars: "⭐⭐⭐⭐", price: 8300 },
+      { name: "Golden Gates Resort & SPA", stars: "⭐⭐⭐⭐⭐", price: 16200 },
+      { name: "Holiday Life Cozy Inn", stars: "⭐⭐⭐", price: 4200 },
+      { name: "Sunset Beach View Villa", stars: "⭐⭐⭐⭐⭐", price: 17500 }
+    ];
+
+    // === БОЛЬШОЙ ПУЛ ГАРАНТИРОВАННО РАБОЧИХ ИЗОБРАЖЕНИЙ (15 ШТ) ===
+    const HOTEL_IMAGES_POOL = [
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1606046604972-77cc76aee944?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1517840901100-8179e982ca41?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1498503182468-3b51cbb6cb24?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80"
+    ];
+
+    // === РАЗЛИЧНЫЕ РАЙОНЫ ДЛЯ ОТЕЛЕЙ ===
+    const HOTEL_DISTRICTS_POOL = [
+      "Исторический центр города", "Прибрежная курортная зона", "Деловой квартал (Сити)", 
+      "Живописная набережная", "Тихий спальный район", "Культурно-туристический центр", 
+      "Район у главного парка", "Премиальный загородный комплекс"
     ];
 
     const AIRLINES = ["SkyGen Airlines", "Oceanic Air", "Global Jet", "AeroNomad"];
@@ -131,13 +167,16 @@
       
       const [flights, setFlights] = React.useState([]);
       const [selectedFlight, setSelectedFlight] = React.useState(null);
-      const [selectedHotel, setSelectedHotel] = React.useState(null); // Состояние для выбранного отеля
+      
+      // Динамический список отелей для конкретного выбранного города
+      const [currentHotelsList, setCurrentHotelsList] = React.useState([]);
+      const [selectedHotel, setSelectedHotel] = React.useState(null);
       
       // Карта кресел
       const [occupiedSeats, setOccupiedSeats] = React.useState([]);
       const [chosenSeats, setChosenSeats] = React.useState([]); 
       
-      // Массив имён пассажиров (динамический)
+      // Массив имён пассажиров
       const [passengerNames, setPassengerNames] = React.useState(['NYASHIK']);
 
       // Хранилище поездок (localStorage)
@@ -205,7 +244,7 @@
 
       const goToSeatSelection = (flight) => {
         setSelectedFlight(flight);
-        setSelectedHotel(null); // Сброс отеля при новом бронировании
+        setSelectedHotel(null); 
         setChosenSeats([]); 
         
         const occupied = [];
@@ -218,6 +257,41 @@
         }
         setOccupiedSeats(occupied);
         setStep('seats');
+      };
+
+      // ФУНКЦИЯ ДИНАМИЧЕСКОЙ СЛУЧАЙНОЙ ГЕНЕРАЦИИ ОТЕЛЕЙ НА ОСНОВЕ ПАРАМЕТРОВ ГОРОДА
+      const handleOpenHotelsStep = () => {
+        if (chosenSeats.length !== Number(params.passengers)) {
+          alert(`Выберите ровно столько мест, сколько пассажиров (${params.passengers} шт.)`);
+          return;
+        }
+
+        // Ищем целевой город в нашей базе для понимания его "масштаба населения"
+        const targetCityObj = CITIES.find(c => c.code === params.to) || { hotelCount: 3 };
+        const requiredCount = targetCityObj.hotelCount;
+
+        // Перемешиваем пулы названий, картинок и районов для максимальной случайности без повторов внутри одного списка
+        const shuffledNames = [...HOTEL_NAMES_POOL].sort(() => 0.5 - Math.random());
+        const shuffledImages = [...HOTEL_IMAGES_POOL].sort(() => 0.5 - Math.random());
+        const shuffledDistricts = [...HOTEL_DISTRICTS_POOL].sort(() => 0.5 - Math.random());
+
+        // Формируем уникальный список под размер города
+        const generatedHotels = Array.from({ length: requiredCount }).map((_, i) => {
+          const hotelTemplate = shuffledNames[i % shuffledNames.length];
+          // Делаем небольшую случайную вариацию цены, чтобы отели не были всегда одинаковыми по цене
+          const randomPriceOffset = Math.floor((Math.random() - 0.5) * 2000); 
+
+          return {
+            name: hotelTemplate.name,
+            stars: hotelTemplate.stars,
+            price: Math.max(3000, hotelTemplate.price + randomPriceOffset),
+            img: shuffledImages[i % shuffledImages.length],
+            district: shuffledDistricts[i % shuffledDistricts.length]
+          };
+        });
+
+        setCurrentHotelsList(generatedHotels);
+        setStep('hotels');
       };
 
       const handleSeatClick = (seatId, isBusinessRow) => {
@@ -261,7 +335,7 @@
         const newTrip = {
           tripId,
           flight: selectedFlight,
-          hotel: selectedHotel, // Сохраняем информацию об отеле (может быть null)
+          hotel: selectedHotel, 
           seats: chosenSeats,
           passengers: passengerNames,
           class: params.flightClass,
@@ -283,13 +357,12 @@
       const sortedFlights = [...flights].sort((a, b) => sortBy === 'cheap' ? a.price - b.price : b.price - a.price);
       const isAllSeatsSelected = chosenSeats.length === Number(params.passengers);
 
-      // Получаем название города по его коду IATA
       const getCityName = (code) => {
         const found = CITIES.find(c => c.code === code);
         return found ? found.city : code;
       };
 
-      // === КОМПОНЕНТ ИНДИКАТОРА ШАГОВ (ИНДИКАТОР ПРОГРЕССА) ===
+      // === КОМПОНЕНТ ИНДИКАТОРА ШАГОВ ===
       const StepIndicator = () => {
         if (step === 'search' || step === 'trips') return null;
         
@@ -348,7 +421,6 @@
 
           <main className="max-w-4xl mx-auto w-full py-6 px-4 flex-1">
             
-            {/* Твой новый индикатор шагов */}
             <StepIndicator />
 
             {/* ЭКРАН 1: ПОИСК И ПРЕДЛОЖЕНИЯ */}
@@ -535,8 +607,9 @@
                     <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-[#0057b8] rounded border-b-2 border-blue-900"></div>Ваше</div>
                   </div>
 
+                  {/* КНОПКА ПОДТВЕРЖДЕНИЯ С ЗАПУСКОМ СЛУЧАЙНОЙ ГЕНЕРАЦИИ ОТЕЛЕЙ НА ОСНОВЕ РАЗМЕРА ГОРОДА */}
                   <button 
-                    onClick={() => isAllSeatsSelected ? setStep('hotels') : alert(`Выберите ровно столько мест, сколько пассажиров (${params.passengers} шт.)`)} 
+                    onClick={handleOpenHotelsStep} 
                     className={`w-full mt-6 py-4 rounded-xl font-bold shadow-md transition-all ${isAllSeatsSelected ? 'bg-[#0057b8] text-white active:scale-95' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
                   >
                     {isAllSeatsSelected ? `Подтвердить места и перейти к отелям` : `Выбрано мест: ${chosenSeats.length} из ${params.passengers}`}
@@ -545,7 +618,7 @@
               </div>
             )}
 
-            {/* НОВЫЙ ЭКРАН 4: ВЫБОР ОТЕЛЯ (ОПЦИОНАЛЬНО) */}
+            {/* ЭКРАН 4: ВЫБОР ОТЕЛЯ (ДИНАМИЧЕСКИЙ, ЗАВИСИТ ОТ ГОРОДА НАЗНАЧЕНИЯ) */}
             {step === 'hotels' && selectedFlight && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
@@ -560,17 +633,17 @@
 
                 <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100">
                   <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <IconHotel /> Жилье в городе {getCityName(params.to)}
+                    <IconHotel /> Варианты жилья в г. {getCityName(params.to)}
                   </h2>
                   <p className="text-xs text-gray-500 mt-1">
-                    Мы подобрали лучшие варианты на ваши даты. Номера автоматически бронируются с расчетом под количество гостей: <span className="font-bold text-[#0057b8]">{params.passengers} чел.</span>
+                    Найдено доступных вариантов под размер мегаполиса: <span className="font-extrabold text-[#0057b8]">{currentHotelsList.length}</span>. Номера рассчитаны на <span className="font-bold text-slate-700">{params.passengers} чел.</span>
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {HOTELS_POOL.map((hotel, idx) => (
+                  {currentHotelsList.map((hotel, idx) => (
                     <div key={idx} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-shadow">
-                      <div className="h-48 w-full overflow-hidden relative">
+                      <div className="h-48 w-full overflow-hidden relative bg-gray-100">
                         <img src={hotel.img} alt={hotel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-slate-800 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm">
                           {hotel.stars}
@@ -579,7 +652,8 @@
                       <div className="p-5 flex flex-col flex-1 justify-between gap-4">
                         <div>
                           <h3 className="font-black text-lg text-slate-800 leading-tight">{hotel.name}</h3>
-                          <p className="text-xs text-gray-400 mt-1">г. {getCityName(params.to)}, центральный район</p>
+                          {/* Вывод уникального сгенерированного района вместо дефолтного */}
+                          <p className="text-xs text-blue-600 font-semibold mt-1">📍 {hotel.district}</p>
                         </div>
                         <div className="flex justify-between items-center pt-3 border-t">
                           <div>
@@ -600,12 +674,12 @@
               </div>
             )}
 
-            {/* ЭКРАН 5: ГОТОВЫЙ БИЛЕТ С МУЛЬТИ-ИМЕНАМИ И ОTEXTОМ */}
+            {/* ЭКРАН 5: ГОТОВЫЙ БИЛЕТ С МУЛЬТИ-ИМЕНАМИ И ВАУЧЕРОМ */}
             {step === 'ticket' && selectedFlight && (
               <div className="flex flex-col items-center">
                 <button onClick={() => setStep('hotels')} className="text-[#0057b8] text-sm font-semibold mb-4 self-start">← Изменить выбор жилья</button>
 
-                {/* БЛОК ДИНАМИЧЕСКИХ ИМЁН ПАССАЖИРОВ */}
+                {/* БЛОК ИМЁН ПАССАЖИРОВ */}
                 <div className="w-full bg-white p-5 rounded-xl border mb-6 shadow-sm space-y-3">
                   <h3 className="text-sm font-bold text-slate-700 border-b pb-1.5">Имена пассажиров латиницей:</h3>
                   {passengerNames.map((name, idx) => (
@@ -622,10 +696,10 @@
                   ))}
                 </div>
 
-                {/* ЕДИНЫЙ КОМПЛЕКСНЫЙ БИЛЕТ ДЛЯ СКАЧИВАНИЯ */}
+                {/* КАРТОЧКА ДЛЯ СКАЧИВАНИЯ */}
                 <div ref={ticketRef} className="bg-gray-100 p-3 rounded-3xl w-full max-w-md border border-gray-300 space-y-4">
                   
-                  {/* ЧАСТЬ 1: ПОСАДОЧНЫЙ ТАЛОН */}
+                  {/* ПОСАДОЧНЫЙ ТАЛОН */}
                   <div className="bg-white rounded-2xl shadow-md overflow-hidden relative border border-gray-200">
                     <div className="bg-[#0057b8] text-white p-4 flex justify-between items-center">
                       <span className="font-bold tracking-wider">{selectedFlight.airline}</span>
@@ -680,7 +754,7 @@
                     </div>
                   </div>
 
-                  {/* ЧАСТЬ 2: ВАУЧЕР НА ОТЕЛЬ (ЕСЛИ ВЫБРАН) */}
+                  {/* ОТЕЛЬНЫЙ ВАУЧЕР С РАЙОНОМ */}
                   {selectedHotel && (
                     <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-green-200 relative animate-fade-in">
                       <div className="bg-green-600 text-white p-3 flex justify-between items-center">
@@ -693,7 +767,7 @@
                         <img src={selectedHotel.img} alt="" className="w-16 h-16 rounded-xl object-cover border" />
                         <div className="flex-1 min-w-0">
                           <h4 className="font-black text-sm text-slate-800 truncate">{selectedHotel.name}</h4>
-                          <p className="text-[10px] text-gray-400 font-bold mt-0.5">{selectedHotel.stars} • {getCityName(params.to)}</p>
+                          <p className="text-[10px] text-blue-600 font-bold mt-0.5">📍 {selectedHotel.district}</p>
                           <div className="mt-2 text-[11px] bg-green-50 text-green-700 px-2 py-1 rounded font-mono inline-block font-bold">
                             Гостей: {params.passengers} | Номер забронирован
                           </div>
@@ -702,7 +776,7 @@
                     </div>
                   )}
 
-                  {/* ОБЩИЙ QR КОД ДЛЯ АВИА + ОТЕЛЯ */}
+                  {/* ОБЩИЙ QR КОД */}
                   <div className="bg-white p-4 rounded-2xl border border-gray-200 flex justify-between items-center">
                     <div className="flex flex-col">
                        <span className="text-[9px] text-gray-400 font-bold uppercase mb-1">СКАНИРОВАТЬ ДЛЯ ПРОВЕРКИ</span>
@@ -725,7 +799,7 @@
               </div>
             )}
 
-            {/* ЭКРАН 6: МОИ ПОЕЗДКИ / ИСТОРИЯ ПОКУПОК */}
+            {/* ЭКРАН 6: МОИ ПОЕЗДКИ */}
             {step === 'trips' && (
               <div className="space-y-4">
                 <button onClick={() => setStep('search')} className="text-[#0057b8] text-sm font-semibold mb-2">← На главную</button>
@@ -763,7 +837,7 @@
                             </span>
                             {trip.hotel && (
                               <span className="text-[11px] bg-green-50 text-green-700 px-2 py-0.5 rounded-md font-bold flex items-center gap-0.5">
-                                🏨 Отель: {trip.hotel.name}
+                                🏨 {trip.hotel.name} ({trip.hotel.district})
                               </span>
                             )}
                           </div>
