@@ -87,12 +87,12 @@
     const QRCodeBlock = ({ text }) => {
       const qrRef = React.useRef(null);
       React.useEffect(() => {
-        qrRef.current.innerHTML = ""; // Очищаем старый
+        qrRef.current.innerHTML = ""; 
         new QRCode(qrRef.current, {
           text: text,
           width: 80,
           height: 80,
-          colorDark: "#1e293b", // темно-синий/сланцевый
+          colorDark: "#1e293b", 
           colorLight: "#ffffff",
           correctLevel: QRCode.CorrectLevel.L
         });
@@ -102,8 +102,7 @@
 
     // === ГЛАВНЫЙ КОМПОНЕНТ ПРИЛОЖЕНИЯ ===
     function App() {
-      // Состояния приложения
-      const [step, setStep] = React.useState('search'); // 'search', 'results', 'seats', 'ticket', 'trips'
+      const [step, setStep] = React.useState('search'); 
       const [isSearchOpen, setIsSearchOpen] = React.useState(false);
       const [sortBy, setSortBy] = React.useState('cheap'); 
       const [suggestions, setSuggestions] = React.useState([]);
@@ -120,7 +119,7 @@
       
       // Карта кресел
       const [occupiedSeats, setOccupiedSeats] = React.useState([]);
-      const [chosenSeat, setChosenSeat] = React.useState('');
+      const [chosenSeats, setChosenSeats] = React.useState([]); // Массив для поддержки мульти-выбора
       const [passengerName, setPassengerName] = React.useState('NYASHIK');
 
       // Мои поездки (localStorage)
@@ -131,7 +130,6 @@
 
       const ticketRef = React.useRef(null);
 
-      // Генерируем предложения один раз при загрузке
       React.useEffect(() => {
         const randomFlights = Array.from({ length: 8 }).map(() => {
           const fromCity = CITIES[Math.floor(Math.random() * CITIES.length)];
@@ -165,12 +163,11 @@
         setStep('results');
       };
 
-      // Переход к выбору мест
       const goToSeatSelection = (flight) => {
         setSelectedFlight(flight);
-        setChosenSeat('');
+        setChosenSeats([]); // сброс мест
         
-        // Генерируем занятые места (шанс ~40%)
+        // Генерируем занятые места
         const occupied = [];
         const rows = 12;
         const cols = ['A','B','C','D','E','F'];
@@ -183,6 +180,26 @@
         setStep('seats');
       };
 
+      // Логика клика по сиденью
+      const handleSeatClick = (seatId, isBusinessRow) => {
+        if (isBusinessRow && params.flightClass !== 'Бизнес') {
+          alert("Эти места доступны только для Бизнес-класса!");
+          return;
+        }
+
+        if (chosenSeats.includes(seatId)) {
+          // Если место уже выбрано, убираем его
+          setChosenSeats(chosenSeats.filter(s => s !== seatId));
+        } else {
+          // Если пытаемся выбрать больше, чем пассажиров
+          if (chosenSeats.length >= Number(params.passengers)) {
+            alert(`Вы выбрали максимальное количество мест для ${params.passengers} пасс.`);
+            return;
+          }
+          setChosenSeats([...chosenSeats, seatId]);
+        }
+      };
+
       const handleDownloadTicket = async () => {
         if (!ticketRef.current) return;
         const canvas = await html2canvas(ticketRef.current, { scale: 2 });
@@ -193,7 +210,7 @@
       };
 
       const saveToMyTrips = () => {
-        const tripId = selectedFlight.id + chosenSeat; // уникальный ID поездки
+        const tripId = selectedFlight.id + chosenSeats.join('-');
         if (trips.some(t => t.tripId === tripId)) {
           alert("Этот билет уже сохранён в Мои поездки!");
           return;
@@ -201,7 +218,7 @@
         const newTrip = {
           tripId,
           flight: selectedFlight,
-          seat: chosenSeat,
+          seats: chosenSeats,
           passenger: passengerName,
           class: params.flightClass,
           options: { baggage: params.baggage, pet: params.pet }
@@ -220,6 +237,7 @@
       };
 
       const sortedFlights = [...flights].sort((a, b) => sortBy === 'cheap' ? a.price - b.price : b.price - a.price);
+      const isAllSeatsSelected = chosenSeats.length === Number(params.passengers);
 
       return (
         <div className="min-h-screen flex flex-col pb-10">
@@ -254,7 +272,8 @@
                   
                   {isSearchOpen && (
                     <div className="p-6">
-                      <form onSubmit={handleSearch} className="space-y-4">
+                      {/* noValidate отключает дефолтные английские тултипы браузера */}
+                      <form onSubmit={handleSearch} noValidate className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Откуда</label>
@@ -274,7 +293,7 @@
                           </div>
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Обратно</label>
-                            <input type="date" value={params.dateTo} min={params.dateFrom} onChange={e => setParams({...params, dateTo: e.target.value})} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8]" />
+                            <input type="date" value={params.dateTo} onChange={e => setParams({...params, dateTo: e.target.value})} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8]" />
                           </div>
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Класс обслуживания</label>
@@ -356,34 +375,38 @@
 
             {/* ЭКРАН 3: ВЫБОР МЕСТА */}
             {step === 'seats' && selectedFlight && (
-              <div className="flex flex-col items-center animate-fade-in">
+              <div className="flex flex-col items-center">
                 <button onClick={() => setStep('results')} className="text-[#0057b8] text-sm font-semibold mb-4 self-start">← Назад к рейсам</button>
                 <div className="w-full max-w-md bg-white p-6 rounded-3xl shadow-lg border border-gray-200">
-                  <div className="text-center mb-6">
+                  <div className="text-center mb-4">
                     <h2 className="text-2xl font-black text-slate-800">Выберите место</h2>
-                    <p className="text-sm text-gray-400">Рейс {selectedFlight.flightNumber}</p>
+                    <p className="text-xs text-gray-400">Пассажиров: <span className="font-bold text-slate-700">{params.passengers}</span> • Выбрано классов: <span className="font-bold text-blue-600">{params.flightClass}</span></p>
                   </div>
 
-                  <div className="bg-gray-50 rounded-full py-2 mb-6 mx-auto w-3/4 text-center text-xs font-bold text-gray-300 border border-gray-200">
+                  <div className="bg-gray-50 rounded-full py-1.5 mb-6 mx-auto w-3/4 text-center text-[10px] font-bold text-gray-400 tracking-widest border border-gray-200">
                     НОС САМОЛЁТА
                   </div>
 
                   <div className="flex flex-col gap-3 items-center">
                     {Array.from({ length: 12 }).map((_, rIndex) => {
                       const row = rIndex + 1;
+                      const isBusinessRow = row <= 2; // Ряды 1 и 2 — Бизнес-класс
+                      
                       return (
                         <div key={row} className="flex items-center gap-3">
                           <div className="flex gap-2">
                             {['A','B','C'].map(c => {
                               const seatId = `${row}${c}`;
                               const isOccup = occupiedSeats.includes(seatId);
-                              const isSelected = chosenSeat === seatId;
+                              const isSelected = chosenSeats.includes(seatId);
+                              
                               let btnClass = "w-10 h-10 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
                               if (isOccup) btnClass += "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed opacity-60";
                               else if (isSelected) btnClass += "bg-[#0057b8] text-white border-blue-900 scale-110 shadow-md";
+                              else if (isBusinessRow) btnClass += "bg-yellow-100 text-yellow-700 border-yellow-400 hover:bg-yellow-200";
                               else btnClass += "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100";
                               
-                              return <div key={seatId} onClick={() => !isOccup && setChosenSeat(seatId)} className={btnClass}>{c}</div>
+                              return <div key={seatId} onClick={() => !isOccup && handleSeatClick(seatId, isBusinessRow)} className={btnClass}>{c}</div>
                             })}
                           </div>
                           <div className="w-6 text-center text-xs font-bold text-gray-300">{row}</div>
@@ -391,13 +414,15 @@
                             {['D','E','F'].map(c => {
                               const seatId = `${row}${c}`;
                               const isOccup = occupiedSeats.includes(seatId);
-                              const isSelected = chosenSeat === seatId;
+                              const isSelected = chosenSeats.includes(seatId);
+                              
                               let btnClass = "w-10 h-10 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
                               if (isOccup) btnClass += "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed opacity-60";
                               else if (isSelected) btnClass += "bg-[#0057b8] text-white border-blue-900 scale-110 shadow-md";
+                              else if (isBusinessRow) btnClass += "bg-yellow-100 text-yellow-700 border-yellow-400 hover:bg-yellow-200";
                               else btnClass += "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100";
                               
-                              return <div key={seatId} onClick={() => !isOccup && setChosenSeat(seatId)} className={btnClass}>{c}</div>
+                              return <div key={seatId} onClick={() => !isOccup && handleSeatClick(seatId, isBusinessRow)} className={btnClass}>{c}</div>
                             })}
                           </div>
                         </div>
@@ -405,17 +430,18 @@
                     })}
                   </div>
 
-                  <div className="flex justify-center gap-6 mt-8 text-xs font-bold text-gray-500">
-                    <div className="flex items-center gap-2"><div className="w-4 h-4 bg-gray-200 rounded border-b-2 border-gray-300"></div>Занято</div>
-                    <div className="flex items-center gap-2"><div className="w-4 h-4 bg-blue-50 rounded border-b-2 border-blue-200"></div>Свободно</div>
-                    <div className="flex items-center gap-2"><div className="w-4 h-4 bg-[#0057b8] rounded border-b-2 border-blue-900"></div>Ваше</div>
+                  <div className="flex justify-center gap-4 mt-8 text-xs font-bold text-gray-500 flex-wrap">
+                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-gray-200 rounded border-b-2 border-gray-300"></div>Занято</div>
+                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-blue-50 rounded border-b-2 border-blue-200"></div>Эконом</div>
+                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-yellow-100 rounded border-b-2 border-yellow-400"></div>Бизнес</div>
+                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-[#0057b8] rounded border-b-2 border-blue-900"></div>Ваше</div>
                   </div>
 
                   <button 
-                    onClick={() => chosenSeat ? setStep('ticket') : alert('Сначала выберите место!')} 
-                    className={`w-full mt-6 py-4 rounded-xl font-bold shadow-md transition-all ${chosenSeat ? 'bg-[#0057b8] text-white active:scale-95' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                    onClick={() => isAllSeatsSelected ? setStep('ticket') : alert(`Пожалуйста, выберите ровно столько мест, сколько пассажиров (${params.passengers} шт.)`)} 
+                    className={`w-full mt-6 py-4 rounded-xl font-bold shadow-md transition-all ${isAllSeatsSelected ? 'bg-[#0057b8] text-white active:scale-95' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
                   >
-                    {chosenSeat ? `Подтвердить место ${chosenSeat}` : 'Выберите место'}
+                    {isAllSeatsSelected ? `Подтвердить места: ${chosenSeats.join(', ')}` : `Выбрано мест: ${chosenSeats.length} из ${params.passengers}`}
                   </button>
                 </div>
               </div>
@@ -473,7 +499,7 @@
                       </div>
                       <div>
                         <div className="text-[9px] text-gray-400 font-bold uppercase">Место</div>
-                        <div className="font-bold font-mono text-xl text-[#0057b8]">{chosenSeat}</div>
+                        <div className="font-bold font-mono text-sm text-[#0057b8] break-words max-w-full leading-tight pt-1">{chosenSeats.join(', ')}</div>
                       </div>
                     </div>
 
@@ -488,7 +514,7 @@
                          <span className="text-[9px] text-gray-400 font-bold uppercase mb-1">СКАНИРОВАТЬ ПРИ ПОСАДКЕ</span>
                          <span className="text-[11px] font-mono font-bold">PNR: {selectedFlight.id}</span>
                       </div>
-                      <QRCodeBlock text={`PNR:${selectedFlight.id}|PASSENGER:${passengerName}|FLIGHT:${selectedFlight.flightNumber}|FROM:${selectedFlight.from}|TO:${selectedFlight.to}|SEAT:${chosenSeat}`} />
+                      <QRCodeBlock text={`PNR:${selectedFlight.id}|PASSENGER:${passengerName}|FLIGHT:${selectedFlight.flightNumber}|FROM:${selectedFlight.from}|TO:${selectedFlight.to}|SEATS:${chosenSeats.join(',')}`} />
                     </div>
                   </div>
                 </div>
@@ -521,7 +547,7 @@
                         key={trip.tripId} 
                         onClick={() => {
                           setSelectedFlight(trip.flight);
-                          setChosenSeat(trip.seat);
+                          setChosenSeats(trip.seats || [trip.seat]);
                           setPassengerName(trip.passenger);
                           setParams({...params, flightClass: trip.class, baggage: trip.options.baggage, pet: trip.options.pet});
                           setStep('ticket');
@@ -531,7 +557,7 @@
                         <div className="flex flex-col">
                           <span className="text-xs text-gray-400 font-bold mb-1">{trip.flight.dateFrom} • Рейс {trip.flight.flightNumber}</span>
                           <span className="text-lg font-black">{trip.flight.from} ➔ {trip.flight.to}</span>
-                          <span className="text-sm font-mono text-[#0057b8] mt-1">{trip.passenger} • Место {trip.seat}</span>
+                          <span className="text-sm font-mono text-[#0057b8] mt-1">{trip.passenger} • Места: {trip.seats ? trip.seats.join(', ') : trip.seat}</span>
                         </div>
                         <button onClick={(e) => deleteTrip(e, trip.tripId)} className="p-2 opacity-50 group-hover:opacity-100 transition-opacity">
                           <IconTrash />
