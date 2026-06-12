@@ -5,18 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SKYGEN — Панель бронирования & Отели</title>
   
-  <!-- Подключаем Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Подключаем React, ReactDOM и Babel -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   
-  <!-- Библиотека для скачивания билета в галерею -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   
-  <!-- Библиотека для генерации настоящих QR-кодов -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
@@ -30,66 +26,78 @@
 
   <script type="text/babel">
     
-    // === БАЗА ГОРОДОВ (40 МЕГАПОЛИСОВ С УЧЕТОМ ОБЪЕМА ОТЕЛЕЙ ПО НАСЕЛЕНИЮ) ===
+    // === БАЗА ГОРОДОВ (50 МЕГАПОЛИСОВ С УЧЕТОМ СТРАН ДЛЯ СОРТИРОВКИ) ===
     const CITIES = [
-      { city: "Москва", code: "SVO", hotelCount: 7 }, { city: "Владивосток", code: "VVO", hotelCount: 2 },
-      { city: "Шанхай", code: "PVG", hotelCount: 7 }, { city: "Сочи", code: "AER", hotelCount: 3 },
-      { city: "Санкт-Петербург", code: "LED", hotelCount: 6 }, { city: "Новосибирск", code: "OVB", hotelCount: 3 },
-      { city: "Екатеринбург", code: "SVX", hotelCount: 3 }, { city: "Казань", code: "KZN", hotelCount: 3 },
-      { city: "Ташкент", code: "TAS", hotelCount: 2 }, { city: "Астана", code: "NQZ", hotelCount: 2 },
-      { city: "Дубай", code: "DXB", hotelCount: 7 }, { city: "Нью-Йорк", code: "JFK", hotelCount: 7 }, 
-      { city: "Лондон", code: "LHR", hotelCount: 7 }, { city: "Токио", code: "HND", hotelCount: 7 }, 
-      { city: "Париж", code: "CDG", hotelCount: 6 }, { city: "Стамбул", code: "IST", hotelCount: 6 }, 
-      { city: "Бангкок", code: "BKK", hotelCount: 4 }, { city: "Пхукет", code: "HKT", hotelCount: 2 },
-      { city: "Сеул", code: "ICN", hotelCount: 6 }, { city: "Сингапур", code: "SIN", hotelCount: 6 }, 
-      { city: "Лос-Анджелес", code: "LAX", hotelCount: 6 }, { city: "Рим", code: "FCO", hotelCount: 5 }, 
-      { city: "Барселона", code: "BCN", hotelCount: 5 }, { city: "Берлин", code: "BER", hotelCount: 5 }, 
-      { city: "Сидней", code: "SYD", hotelCount: 5 }, { city: "Пекин", code: "PEK", hotelCount: 7 }, 
-      { city: "Каир", code: "CAI", hotelCount: 3 }, { city: "Рио-де-Жанейро", code: "GIG", hotelCount: 3 }, 
-      { city: "Дели", code: "DEL", hotelCount: 6 }, { city: "Мальдивы", code: "MLE", hotelCount: 1 }, 
-      { city: "Амстердам", code: "AMS", hotelCount: 4 }, { city: "Мадрид", code: "MAD", hotelCount: 4 }, 
-      { city: "Торонто", code: "YYZ", hotelCount: 4 }, { city: "Майами", code: "MIA", hotelCount: 3 }, 
-      { city: "Доха", code: "DOH", hotelCount: 4 }, { city: "Мюнхен", code: "MUC", hotelCount: 4 }, 
-      { city: "Вена", code: "VIE", hotelCount: 4 }, { city: "Гонконг", code: "HKG", hotelCount: 6 }, 
-      { city: "Милан", code: "MXP", hotelCount: 5 }, { city: "Анталья", code: "AYT", hotelCount: 2 }
+      { city: "Москва", country: "Россия", code: "SVO", hotelCount: 7 }, 
+      { city: "Владивосток", country: "Россия", code: "VVO", hotelCount: 2 },
+      { city: "Шанхай", country: "Китай", code: "PVG", hotelCount: 7 }, 
+      { city: "Сочи", country: "Россия", code: "AER", hotelCount: 3 },
+      { city: "Санкт-Петербург", country: "Россия", code: "LED", hotelCount: 6 }, 
+      { city: "Новосибирск", country: "Россия", code: "OVB", hotelCount: 3 },
+      { city: "Екатеринбург", country: "Россия", code: "SVX", hotelCount: 3 }, 
+      { city: "Казань", country: "Россия", code: "KZN", hotelCount: 3 },
+      { city: "Ташкент", country: "Узбекистан", code: "TAS", hotelCount: 2 }, 
+      { city: "Астана", country: "Казахстан", code: "NQZ", hotelCount: 2 },
+      { city: "Дубай", country: "ОАЭ", code: "DXB", hotelCount: 7 }, 
+      { city: "Нью-Йорк", country: "США", code: "JFK", hotelCount: 7 }, 
+      { city: "Лондон", country: "Великобритания", code: "LHR", hotelCount: 7 }, 
+      { city: "Токио", country: "Япония", code: "HND", hotelCount: 7 }, 
+      { city: "Париж", country: "Франция", code: "CDG", hotelCount: 6 }, 
+      { city: "Стамбул", country: "Турция", code: "IST", hotelCount: 6 }, 
+      { city: "Бангкок", country: "Таиланд", code: "BKK", hotelCount: 4 }, 
+      { city: "Пхукет", country: "Таиланд", code: "HKT", hotelCount: 2 },
+      { city: "Сеул", country: "Южная Корея", code: "ICN", hotelCount: 6 }, 
+      { city: "Сингапур", country: "Сингапур", code: "SIN", hotelCount: 6 }, 
+      { city: "Лос-Анджелес", country: "США", code: "LAX", hotelCount: 6 }, 
+      { city: "Рим", country: "Италия", code: "FCO", hotelCount: 5 }, 
+      { city: "Барселона", country: "Испания", code: "BCN", hotelCount: 5 }, 
+      { city: "Берлин", country: "Германия", code: "BER", hotelCount: 5 }, 
+      { city: "Сидней", country: "Австралия", code: "SYD", hotelCount: 5 }, 
+      { city: "Пекин", country: "Китай", code: "PEK", hotelCount: 7 }, 
+      { city: "Каир", country: "Египет", code: "CAI", hotelCount: 3 }, 
+      { city: "Рио-де-Жанейро", country: "Бразилия", code: "GIG", hotelCount: 3 }, 
+      { city: "Дели", country: "Индия", code: "DEL", hotelCount: 6 }, 
+      { city: "Мальдивы", country: "Мальдивы", code: "MLE", hotelCount: 1 }, 
+      { city: "Амстердам", country: "Нидерланды", code: "AMS", hotelCount: 4 }, 
+      { city: "Мадрид", country: "Испания", code: "MAD", hotelCount: 4 }, 
+      { city: "Торонто", country: "Канада", code: "YYZ", hotelCount: 4 }, 
+      { city: "Майами", country: "США", code: "MIA", hotelCount: 3 }, 
+      { city: "Доха", country: "Катар", code: "DOH", hotelCount: 4 }, 
+      { city: "Мюнхен", country: "Германия", code: "MUC", hotelCount: 4 }, 
+      { city: "Вена", country: "Австрия", code: "VIE", hotelCount: 4 }, 
+      { city: "Гонконг", country: "Гонконг", code: "HKG", hotelCount: 6 }, 
+      { city: "Милан", country: "Италия", code: "MXP", hotelCount: 5 }, 
+      { city: "Анталья", country: "Турция", code: "AYT", hotelCount: 2 },
+      // 10 новых городов
+      { city: "Куала-Лумпур", country: "Малайзия", code: "KUL", hotelCount: 6 },
+      { city: "Гуанчжоу", country: "Китай", code: "CAN", hotelCount: 5 },
+      { city: "Шэньчжэнь", country: "Китай", code: "SZX", hotelCount: 5 },
+      { city: "Чэнду", country: "Китай", code: "CTU", hotelCount: 4 },
+      { city: "Бали", country: "Индонезия", code: "DPS", hotelCount: 5 },
+      { city: "Манила", country: "Филиппины", code: "MNL", hotelCount: 4 },
+      { city: "Джакарта", country: "Индонезия", code: "CGK", hotelCount: 4 },
+      { city: "Ханой", country: "Вьетнам", code: "HAN", hotelCount: 4 },
+      { city: "Хошимин", country: "Вьетнам", code: "SGN", hotelCount: 4 },
+      { city: "Коломбо", country: "Шри-Ланка", code: "CMB", hotelCount: 3 }
     ];
 
-    // === БОЛЬШОЙ ПУЛ НАЗВАНИЙ ОТЕЛЕЙ ===
+    // === БОЛЬШОЙ ПУЛ НАЗВАНИЙ И КАРТИНОК ОТЕЛЕЙ (ИСПРАВЛЕНЫ ССЫЛКИ И ПРИВЯЗАНЫ НАПРЯМУЮ) ===
     const HOTEL_NAMES_POOL = [
-      { name: "Grand Royal Luxury Hotel", stars: "⭐⭐⭐⭐⭐", price: 14500 },
-      { name: "Radisson Blu Premium Resort", stars: "⭐⭐⭐⭐⭐", price: 11200 },
-      { name: "Plaza Central Suites", stars: "⭐⭐⭐⭐", price: 7800 },
-      { name: "Sea Breeze Comfort Inn", stars: "⭐⭐⭐⭐", price: 6200 },
-      { name: "Metropolitan Boutique Hotel", stars: "⭐⭐⭐⭐⭐", price: 13400 },
-      { name: "Hilton Garden Premium", stars: "⭐⭐⭐⭐", price: 8900 },
-      { name: "Skyline View Apartments", stars: "⭐⭐⭐⭐", price: 7100 },
-      { name: "Continental Plaza Stay", stars: "⭐⭐⭐⭐⭐", price: 15600 },
-      { name: "Urban Eco Green Hub", stars: "⭐⭐⭐", price: 4500 },
-      { name: "Astoria Historic Palace", stars: "⭐⭐⭐⭐⭐", price: 12800 },
-      { name: "Parkside Comfort Hotel", stars: "⭐⭐⭐⭐", price: 6900 },
-      { name: "Vibe Select Design Suites", stars: "⭐⭐⭐⭐", price: 8300 },
-      { name: "Golden Gates Resort & SPA", stars: "⭐⭐⭐⭐⭐", price: 16200 },
-      { name: "Holiday Life Cozy Inn", stars: "⭐⭐⭐", price: 4200 },
-      { name: "Sunset Beach View Villa", stars: "⭐⭐⭐⭐⭐", price: 17500 }
-    ];
-
-    // === БОЛЬШОЙ ПУЛ ГАРАНТИРОВАННО РАБОЧИХ ИЗОБРАЖЕНИЙ ОТЕЛЕЙ ===
-    const HOTEL_IMAGES_POOL = [
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1606046604972-77cc76aee944?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1517840901100-8179e982ca41?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1498503182468-3b51cbb6cb24?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80"
+      { name: "Grand Royal Luxury Hotel", stars: "⭐⭐⭐⭐⭐", price: 14500, img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80" },
+      { name: "Radisson Blu Premium Resort", stars: "⭐⭐⭐⭐⭐", price: 11200, img: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80" },
+      { name: "Plaza Central Suites", stars: "⭐⭐⭐⭐", price: 7800, img: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80" },
+      { name: "Sea Breeze Comfort Inn", stars: "⭐⭐⭐⭐", price: 6200, img: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80" },
+      { name: "Metropolitan Boutique Hotel", stars: "⭐⭐⭐⭐⭐", price: 13400, img: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80" },
+      { name: "Hilton Garden Premium", stars: "⭐⭐⭐⭐", price: 8900, img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=600&q=80" }, // Исправлено: рабочая и красивая картинка
+      { name: "Skyline View Apartments", stars: "⭐⭐⭐⭐", price: 7100, img: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=600&q=80" },
+      { name: "Continental Plaza Stay", stars: "⭐⭐⭐⭐⭐", price: 15600, img: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80" },
+      { name: "Urban Eco Green Hub", stars: "⭐⭐⭐", price: 4500, img: "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=600&q=80" },
+      { name: "Astoria Historic Palace", stars: "⭐⭐⭐⭐⭐", price: 12800, img: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80" },
+      { name: "Parkside Comfort Hotel", stars: "⭐⭐⭐⭐", price: 6900, img: "https://images.unsplash.com/photo-1606046604972-77cc76aee944?auto=format&fit=crop&w=600&q=80" },
+      { name: "Vibe Select Design Suites", stars: "⭐⭐⭐⭐", price: 8300, img: "https://images.unsplash.com/photo-1517840901100-8179e982ca41?auto=format&fit=crop&w=600&q=80" },
+      { name: "Golden Gates Resort & SPA", stars: "⭐⭐⭐⭐⭐", price: 16200, img: "https://images.unsplash.com/photo-1498503182468-3b51cbb6cb24?auto=format&fit=crop&w=600&q=80" },
+      { name: "Holiday Life Cozy Inn", stars: "⭐⭐⭐", price: 4200, img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80" },
+      { name: "Sunset Beach View Villa", stars: "⭐⭐⭐⭐⭐", price: 17500, img: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=600&q=80" }
     ];
 
     // === РАЗЛИЧНЫЕ РАЙОНЫ ДЛЯ ОТЕЛЕЙ ===
@@ -99,17 +107,17 @@
       "Район у главного парка", "Премиальный загородный комплекс"
     ];
 
-    // === БАЗА БЛЮД ДЛЯ КОНСТРУКТОРА ПИТАНИЯ ===
+    // === БАЗА БЛЮД (ВСЕ ОШИБОЧНЫЕ ИЗОБРАЖЕНИЯ ЗАМЕНЕНЫ НА НАСТОЯЩИЕ И НАУЧНЫЕ КАРТИНКИ ЕДЫ) ===
     const FOOD_MENU_OPTIONS = {
       mains: [
         { id: "m1", name: "Куриное филе-гриль под соусом", type: "Мясо/Птица", img: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=300&q=80" },
         { id: "m2", name: "Стейк из запечённого лосося", type: "Рыба", img: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=300&q=80" },
-        { id: "m3", name: "Нежные митболы из говядины", type: "Мясо", img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=300&q=80" },
+        { id: "m3", name: "Нежные митболы из говядины", type: "Мясо", img: "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=300&q=80" }, // Исправлено: теперь на картинке реальные митболы вместо стейка
         { id: "m4", name: "Средиземноморские овощи-гриль", type: "Вегетарианское", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80" }
       ],
       sides: [
-        { id: "s1", name: "Пряный рассыпчатый рис", img: "https://images.unsplash.com/photo-1516685018646-549198525c1b?auto=format&fit=crop&w=300&q=80" },
-        { id: "s2", name: "Золотистые картофельные дольки", img: "https://images.unsplash.com/photo-1518310383802-640c2de311b2?auto=format&fit=crop&w=300&q=80" }
+        { id: "s1", name: "Пряный рассыпчатый рис", img: "https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=300&q=80" }, // Исправлено: теперь на картинке рассыпчатый рис вместо лапши
+        { id: "s2", name: "Золотистые картофельные дольки", img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=300&q=80" } // Исправлено: теперь картофельные дольки вместо танцующих девочек
       ],
       drinks: [
         { id: "d1", name: "Свежесваренный Капучино", img: "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=300&q=80" },
@@ -117,7 +125,7 @@
       ],
       desserts: [
         { id: "de1", name: "Французский круассан", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=300&q=80" },
-        { id: "de2", name: "Шоколадный мини-чизкейк", img: "https://images.unsplash.com/photo-1524351199679-46cddf530c04?auto=format&fit=crop&w=300&q=80" }
+        { id: "de2", name: "Шоколадный мини-чизкейк", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=300&q=80" } // Исправлено: добавлена настоящая аппетитная картинка шоколадного десерта
       ]
     };
 
@@ -130,7 +138,6 @@
     const IconBriefcase = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>;
     const IconTrash = () => <svg className="w-5 h-5 inline text-red-400 hover:text-red-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>;
     const IconHotel = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>;
-    const IconFood = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>; // Временная замена для иконки еды
 
     // === ГЕНЕРАТОР РЕЙСОВ ===
     const generateFlights = (fromCode, toCode, dateFrom, dateTo, count = 6) => {
@@ -153,7 +160,7 @@
           dateFrom: dateFrom,
           dateTo: dateTo,
           gate: `G${Math.floor(Math.random() * 50) + 1}`,
-          hasFood: Math.random() > 0.35 // У ~65% рейсов есть питание на борту
+          hasFood: Math.random() > 0.35
         };
       });
     };
@@ -177,13 +184,14 @@
 
     // === ГЛАВНЫЙ КОМПОНЕНТ ПРИЛОЖЕНИЯ ===
     function App() {
-      const [step, setStep] = React.useState('search'); // search, results, seats, hotels, food, ticket, trips
+      const [step, setStep] = React.useState('search'); 
       const [isSearchOpen, setIsSearchOpen] = React.useState(false);
       const [sortBy, setSortBy] = React.useState('cheap'); 
+      const [citySortType, setCitySortType] = React.useState('city'); // 'city' или 'country'
       const [suggestions, setSuggestions] = React.useState([]);
 
       const [params, setParams] = React.useState({
-        from: 'SVO', to: 'VVO',
+        from: 'SVO', to: 'KUL',
         dateFrom: new Date().toISOString().split('T')[0],
         dateTo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         passengers: 1, flightClass: 'Эконом', baggage: true, pet: false
@@ -236,7 +244,7 @@
       // Синхронизация количества полей имён с числом пассажиров
       React.useEffect(() => {
         const count = Number(params.passengers);
-        if (count < 1) return; // Чтобы не ломалось во время очистки поля ввода
+        if (count < 1) return;
         setPassengerNames(prev => {
           const next = [...prev];
           if (next.length < count) {
@@ -255,7 +263,6 @@
         setParams({ ...params, dateFrom: newDateFrom, dateTo: newDateTo });
       };
 
-      // ИСПРАВЛЕНИЕ БАГА: Позволяем вводить пустую строку/удалять ноль
       const handlePassengersChange = (e) => {
         const valStr = e.target.value;
         if (valStr === '') {
@@ -303,7 +310,7 @@
         setStep('seats');
       };
 
-      // ГЕНЕРАЦИЯ ОТЕЛЕЙ С УЧЕТОМ НАСЕЛЕНИЯ И РАЗНЫХ РАЙОНОВ
+      // ГЕНЕРАЦИЯ ОТЕЛЕЙ С УЧЕТОМ СВЯЗАННЫХ ССЫЛОК ИЗ ШАБЛОНОВ
       const handleOpenHotelsStep = () => {
         if (chosenSeats.length !== Number(params.passengers)) {
           alert(`Выберите ровно столько мест, сколько пассажиров (${params.passengers} шт.)`);
@@ -314,7 +321,6 @@
         const requiredCount = targetCityObj.hotelCount;
 
         const shuffledNames = [...HOTEL_NAMES_POOL].sort(() => 0.5 - Math.random());
-        const shuffledImages = [...HOTEL_IMAGES_POOL].sort(() => 0.5 - Math.random());
         const shuffledDistricts = [...HOTEL_DISTRICTS_POOL].sort(() => 0.5 - Math.random());
 
         const generatedHotels = Array.from({ length: requiredCount }).map((_, i) => {
@@ -325,7 +331,7 @@
             name: hotelTemplate.name,
             stars: hotelTemplate.stars,
             price: Math.max(3000, hotelTemplate.price + randomPriceOffset),
-            img: shuffledImages[i % shuffledImages.length],
+            img: hotelTemplate.img, // Напрямую берем рабочую привязанную картинку
             district: shuffledDistricts[i % shuffledDistricts.length]
           };
         });
@@ -334,7 +340,6 @@
         setStep('hotels');
       };
 
-      // ПРОВЕРКА НАЛИЧИЯ ПИТАНИЯ НА РЕЙСЕ ПЕРЕД ПЕРЕХОДОМ ДАЛЬШЕ
       const handleNextAfterHotels = (hotelObj = null) => {
         if (hotelObj) {
           setSelectedHotel({ ...hotelObj, totalTripPrice: hotelObj.price * params.passengers });
@@ -418,7 +423,18 @@
         return found ? found.city : code;
       };
 
-      // === КОМПОНЕНТ ИНДИКАТОРА ШАГОВ ===
+      // Логика сортировки списка городов на лету
+      const getSortedCitiesList = () => {
+        return [...CITIES].sort((a, b) => {
+          if (citySortType === 'city') {
+            return a.city.localeCompare(b.city, 'ru');
+          } else {
+            // Сначала по первой букве страны, если одинаковые — по городу
+            return a.country.localeCompare(b.country, 'ru') || a.city.localeCompare(b.city, 'ru');
+          }
+        });
+      };
+
       const StepIndicator = () => {
         if (step === 'search' || step === 'trips') return null;
         
@@ -501,17 +517,25 @@
                   {isSearchOpen && (
                     <div className="p-6">
                       <form onSubmit={handleSearch} noValidate className="space-y-4">
+                        
+                        {/* КНОПКИ ПЕРЕКЛЮЧЕНИЯ СОРТИРОВКИ ГОРОДОВ */}
+                        <div className="flex justify-end gap-4 text-xs font-bold text-gray-400 border-b pb-2">
+                          <span>Сортировка городов:</span>
+                          <button type="button" onClick={() => setCitySortType('city')} className={`hover:text-[#0057b8] ${citySortType === 'city' ? 'text-[#0057b8] underline' : ''}`}>По первой букве города</button>
+                          <button type="button" onClick={() => setCitySortType('country')} className={`hover:text-[#0057b8] ${citySortType === 'country' ? 'text-[#0057b8] underline' : ''}`}>По первой букве страны</button>
+                        </div>
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Откуда</label>
-                            <select value={params.from} onChange={e => setParams({...params, from: e.target.value})} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8]">
-                              {CITIES.map(c => <option key={c.code} value={c.code}>{c.city} ({c.code})</option>)}
+                            <select value={params.from} onChange={e => setParams({...params, from: e.target.value})} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8] text-sm">
+                              {getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country}</option>)}
                             </select>
                           </div>
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Куда</label>
-                            <select value={params.to} onChange={e => setParams({...params, to: e.target.value})} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8]">
-                              {CITIES.map(c => <option key={c.code} value={c.code}>{c.city} ({c.code})</option>)}
+                            <select value={params.to} onChange={e => setParams({...params, to: e.target.value})} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8] text-sm">
+                              {getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country}</option>)}
                             </select>
                           </div>
                           <div>
@@ -531,7 +555,6 @@
                           </div>
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Пассажиры (Лимит: 1–5 чел.)</label>
-                            {/* УЛУЧШЕНИЕ: Трюк с пустой строчкой вместо нуля */}
                             <input 
                               type="number" 
                               min="1" 
@@ -648,7 +671,7 @@
                               
                               let btnClass = "w-10 h-10 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
                               if (isOccup) btnClass += "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed opacity-60";
-                              else if (isSelected) btnClass += "bg-[#0057b8] text-white border-blue-900 scale-110 shadow-md";
+                              else if (isSelected) btnClass += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md";
                               else if (isBusinessRow) btnClass += "bg-yellow-100 text-yellow-700 border-yellow-400 hover:bg-yellow-200";
                               else btnClass += "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100";
                               
@@ -664,7 +687,7 @@
                               
                               let btnClass = "w-10 h-10 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
                               if (isOccup) btnClass += "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed opacity-60";
-                              else if (isSelected) btnClass += "bg-[#0057b8] text-white border-blue-900 scale-110 shadow-md";
+                              else if (isSelected) btnClass += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md";
                               else if (isBusinessRow) btnClass += "bg-yellow-100 text-yellow-700 border-yellow-400 hover:bg-yellow-200";
                               else btnClass += "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100";
                               
@@ -693,7 +716,7 @@
               </div>
             )}
 
-            {/* ЭКРАН 4: ВЫБОР ОТЕЛЯ (УЧИТЫВАЕТ НАСЕЛЕНИЕ) */}
+            {/* ЭКРАН 4: ВЫБОР ОТЕЛЯ */}
             {step === 'hotels' && selectedFlight && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
@@ -719,7 +742,7 @@
                   {currentHotelsList.map((hotel, idx) => (
                     <div key={idx} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-shadow">
                       <div className="h-48 w-full overflow-hidden relative bg-gray-100">
-                        <img src={hotel.img} alt={hotel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <img src={hotel.img} alt={hotel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; }} />
                         <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-slate-800 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm">
                           {hotel.stars}
                         </div>
@@ -947,7 +970,7 @@
                         <span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">HOTEL BOOKING</span>
                       </div>
                       <div className="p-4 flex gap-4">
-                        <img src={selectedHotel.img} alt="" className="w-16 h-16 rounded-xl object-cover border" />
+                        <img src={selectedHotel.img} alt="" className="w-16 h-16 rounded-xl object-cover border" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; }} />
                         <div className="flex-1 min-w-0">
                           <h4 className="font-black text-sm text-slate-800 truncate">{selectedHotel.name}</h4>
                           <p className="text-[10px] text-blue-600 font-bold mt-0.5">📍 {selectedHotel.district}</p>
