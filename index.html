@@ -26,69 +26,93 @@
 
   <script type="text/babel">
     
-    // === БАЗА ГОРОДОВ (70 МЕГАПОЛИСОВ С УЧЕТОМ СТРАН ДЛЯ СОРТИРОВКИ) ===
+    // === БАЗА ГОРОДОВ (75 МЕГАПОЛИСОВ С УЧЕТОМ ЧАСОВЫХ ПОЯСОВ И ПОГОДЫ) ===
     const CITIES = [
-      { city: "Москва", country: "Россия", code: "SVO", hotelCount: 7 }, 
-      { city: "Владивосток", country: "Россия", code: "VVO", hotelCount: 2 },
-      { city: "Шанхай", country: "Китай", code: "PVG", hotelCount: 7 }, 
-      { city: "Сочи", country: "Россия", code: "AER", hotelCount: 3 },
-      { city: "Санкт-Петербург", country: "Россия", code: "LED", hotelCount: 6 }, 
-      { city: "Новосибирск", country: "Россия", code: "OVB", hotelCount: 3 },
-      { city: "Екатеринбург", country: "Россия", code: "SVX", hotelCount: 3 }, 
-      { city: "Казань", country: "Россия", code: "KZN", hotelCount: 3 },
-      { city: "Ташкент", country: "Узбекистан", code: "TAS", hotelCount: 2 }, 
-      { city: "Астана", country: "Казахстан", code: "NQZ", hotelCount: 2 },
-      { city: "Дубай", country: "ОАЭ", code: "DXB", hotelCount: 7 }, 
-      { city: "Нью-Йорк", country: "США", code: "JFK", hotelCount: 7 }, 
-      { city: "Лондон", country: "Великобритания", code: "LHR", hotelCount: 7 }, 
-      { city: "Токио", country: "Япония", code: "HND", hotelCount: 7 }, 
-      { city: "Париж", country: "Франция", code: "CDG", hotelCount: 6 }, 
-      { city: "Стамбул", country: "Турция", code: "IST", hotelCount: 6 }, 
-      { city: "Бангкок", country: "Таиланд", code: "BKK", hotelCount: 4 }, 
-      { city: "Пхукет", country: "Таиланд", code: "HKT", hotelCount: 2 },
-      { city: "Сеул", country: "Южная Корея", code: "ICN", hotelCount: 6 }, 
-      { city: "Сингапур", country: "Сингапур", code: "SIN", hotelCount: 6 }, 
-      { city: "Лос-Анджелес", country: "США", code: "LAX", hotelCount: 6 }, 
-      { city: "Рим", country: "Италия", code: "FCO", hotelCount: 5 }, 
-      { city: "Барселона", country: "Испания", code: "BCN", hotelCount: 5 }, 
-      { city: "Берлин", country: "Германия", code: "BER", hotelCount: 5 }, 
-      { city: "Сидней", country: "Австралия", code: "SYD", hotelCount: 5 }, 
-      { city: "Пекин", country: "Китай", code: "PEK", hotelCount: 7 }, 
-      { city: "Каир", country: "Египет", code: "CAI", hotelCount: 3 }, 
-      { city: "Рио-де-Жанейро", country: "Бразилия", code: "GIG", hotelCount: 3 }, 
-      { city: "Дели", country: "Индия", code: "DEL", hotelCount: 6 }, 
-      { city: "Мальдивы", country: "Мальдивы", code: "MLE", hotelCount: 1 }, 
-      { city: "Амстердам", country: "Нидерланды", code: "AMS", hotelCount: 4 }, 
-      { city: "Мадрид", country: "Испания", code: "MAD", hotelCount: 4 }, 
-      { city: "Торонто", country: "Канада", code: "YYZ", hotelCount: 4 }, 
-      { city: "Майами", country: "США", code: "MIA", hotelCount: 3 }, 
-      { city: "Доха", country: "Катар", code: "DOH", hotelCount: 4 }, 
-      { city: "Мюнхен", country: "Германия", code: "MUC", hotelCount: 4 }, 
-      { city: "Вена", country: "Австрия", code: "VIE", hotelCount: 4 }, 
-      { city: "Гонконг", country: "Гонконг", code: "HKG", hotelCount: 6 }, 
-      { city: "Милан", country: "Италия", code: "MXP", hotelCount: 5 }, 
-      { city: "Анталья", country: "Турция", code: "AYT", hotelCount: 2 },
-      // 10 новых городов
-      { city: "Куала-Лумпур", country: "Малайзия", code: "KUL", hotelCount: 6 },
-      { city: "Гуанчжоу", country: "Китай", code: "CAN", hotelCount: 5 },
-      { city: "Шэньчжэнь", country: "Китай", code: "SZX", hotelCount: 5 },
-      { city: "Чэнду", country: "Китай", code: "CTU", hotelCount: 4 },
-      { city: "Бали", country: "Индонезия", code: "DPS", hotelCount: 5 },
-      { city: "Манила", country: "Филиппины", code: "MNL", hotelCount: 4 },
-      { city: "Джакарта", country: "Индонезия", code: "CGK", hotelCount: 4 },
-      { city: "Ханой", country: "Вьетнам", code: "HAN", hotelCount: 4 },
-      { city: "Хошимин", country: "Вьетнам", code: "SGN", hotelCount: 4 },
-      { city: "Коломбо", country: "Шри-Ланка", code: "CMB", hotelCount: 3 }
+      { city: "Москва", country: "Россия", code: "SVO", hotelCount: 7, timezone: "UTC+3", weather: "☀️ +23°C" }, 
+      { city: "Владивосток", country: "Россия", code: "VVO", hotelCount: 2, timezone: "UTC+10", weather: "⛅ +17°C" },
+      { city: "Шанхай", country: "Китай", code: "PVG", hotelCount: 7, timezone: "UTC+8", weather: "🌧️ +26°C" }, 
+      { city: "Сочи", country: "Россия", code: "AER", hotelCount: 3, timezone: "UTC+3", weather: "☀️ +27°C" },
+      { city: "Санкт-Петербург", country: "Россия", code: "LED", hotelCount: 6, timezone: "UTC+3", weather: "☁️ +19°C" }, 
+      { city: "Новосибирск", country: "Россия", code: "OVB", hotelCount: 3, timezone: "UTC+7", weather: "☀️ +22°C" },
+      { city: "Екатеринбург", country: "Россия", code: "SVX", hotelCount: 3, timezone: "UTC+5", weather: "⛅ +20°C" }, 
+      { city: "Казань", country: "Россия", code: "KZN", hotelCount: 3, timezone: "UTC+3", weather: "☀️ +21°C" },
+      { city: "Ташкент", country: "Узбекистан", code: "TAS", hotelCount: 2, timezone: "UTC+5", weather: "☀️ +33°C" }, 
+      { city: "Астана", country: "Казахстан", code: "NQZ", hotelCount: 2, timezone: "UTC+5", weather: "⛅ +24°C" },
+      { city: "Дубай", country: "ОАЭ", code: "DXB", hotelCount: 7, timezone: "UTC+4", weather: "☀️ +39°C" }, 
+      { city: "Нью-Йорк", country: "США", code: "JFK", hotelCount: 7, timezone: "UTC-4", weather: "⛅ +25°C" }, 
+      { city: "Лондон", country: "Великобритания", code: "LHR", hotelCount: 7, timezone: "UTC+1", weather: "🌧️ +16°C" }, 
+      { city: "Токио", country: "Япония", code: "HND", hotelCount: 7, timezone: "UTC+9", weather: "☀️ +28°C" }, 
+      { city: "Париж", country: "Франция", code: "CDG", hotelCount: 6, timezone: "UTC+2", weather: "⛅ +22°C" }, 
+      { city: "Стамбул", country: "Турция", code: "IST", hotelCount: 6, timezone: "UTC+3", weather: "☀️ +26°C" }, 
+      { city: "Бангкок", country: "Таиланд", code: "BKK", hotelCount: 4, timezone: "UTC+7", weather: "🌧️ +32°C" }, 
+      { city: "Пхукет", country: "Таиланд", code: "HKT", hotelCount: 2, timezone: "UTC+7", weather: "⛅ +31°C" },
+      { city: "Сеул", country: "Южная Корея", code: "ICN", hotelCount: 6, timezone: "UTC+9", weather: "☀️ +25°C" }, 
+      { city: "Сингапур", country: "Сингапур", code: "SIN", hotelCount: 6, timezone: "UTC+8", weather: "🌧️ +30°C" }, 
+      { city: "Лос-Анджелес", country: "США", code: "LAX", hotelCount: 6, timezone: "UTC-7", weather: "☀️ +26°C" }, 
+      { city: "Рим", country: "Италия", code: "FCO", hotelCount: 5, timezone: "UTC+2", weather: "☀️ +29°C" }, 
+      { city: "Барселона", country: "Испания", code: "BCN", hotelCount: 5, timezone: "UTC+2", weather: "☀️ +27°C" }, 
+      { city: "Берлин", country: "Германия", code: "BER", hotelCount: 5, timezone: "UTC+2", weather: "⛅ +21°C" }, 
+      { city: "Сидней", country: "Австралия", code: "SYD", hotelCount: 5, timezone: "UTC+10", weather: "☀️ +18°C" }, 
+      { city: "Пекин", country: "Китай", code: "PEK", hotelCount: 7, timezone: "UTC+8", weather: "☀️ +29°C" }, 
+      { city: "Каир", country: "Египет", code: "CAI", hotelCount: 3, timezone: "UTC+3", weather: "☀️ +35°C" }, 
+      { city: "Рио-де-Жанейро", country: "Бразилия", code: "GIG", hotelCount: 3, timezone: "UTC-3", weather: "⛅ +24°C" }, 
+      { city: "Дели", country: "Индия", code: "DEL", hotelCount: 6, timezone: "UTC+5.30", weather: "☀️ +38°C" }, 
+      { city: "Мальдивы", country: "Мальдивы", code: "MLE", hotelCount: 1, timezone: "UTC+5", weather: "☀️ +30°C" }, 
+      { city: "Амстердам", country: "Нидерланды", code: "AMS", hotelCount: 4, timezone: "UTC+2", weather: "🌧️ +17°C" }, 
+      { city: "Мадрид", country: "Испания", code: "MAD", hotelCount: 4, timezone: "UTC+2", weather: "☀️ +31°C" }, 
+      { city: "Торонто", country: "Канада", code: "YYZ", hotelCount: 4, timezone: "UTC-4", weather: "⛅ +22°C" }, 
+      { city: "Майами", country: "США", code: "MIA", hotelCount: 3, timezone: "UTC-4", weather: "☀️ +30°C" }, 
+      { city: "Доха", country: "Катар", code: "DOH", hotelCount: 4, timezone: "UTC+3", weather: "☀️ +37°C" }, 
+      { city: "Мюнхен", country: "Германия", code: "MUC", hotelCount: 4, timezone: "UTC+2", weather: "☁️ +19°C" }, 
+      { city: "Вена", country: "Австрия", code: "VIE", hotelCount: 4, timezone: "UTC+2", weather: "☀️ +23°C" }, 
+      { city: "Гонконг", country: "Гонконг", code: "HKG", hotelCount: 6, timezone: "UTC+8", weather: "🌧️ +27°C" }, 
+      { city: "Милан", country: "Италия", code: "MXP", hotelCount: 5, timezone: "UTC+2", weather: "⛅ +25°C" }, 
+      { city: "Анталья", country: "Турция", code: "AYT", hotelCount: 2, timezone: "UTC+3", weather: "☀️ +32°C" },
+      { city: "Куала-Лумпур", country: "Малайзия", code: "KUL", hotelCount: 6, timezone: "UTC+8", weather: "🌧️ +31°C" },
+      { city: "Гуанчжоу", country: "Китай", code: "CAN", hotelCount: 5, timezone: "UTC+8", weather: "🌧️ +29°C" },
+      { city: "Шэньчжэнь", country: "Китай", code: "SZX", hotelCount: 5, timezone: "UTC+8", weather: "⛅ +30°C" },
+      { city: "Чэнду", country: "Китай", code: "CTU", hotelCount: 4, timezone: "UTC+8", weather: "☁️ +26°C" },
+      { city: "Бали", country: "Индонезия", code: "DPS", hotelCount: 5, timezone: "UTC+8", weather: "☀️ +29°C" },
+      { city: "Манила", country: "Филиппины", code: "MNL", hotelCount: 4, timezone: "UTC+8", weather: "🌧️ +32°C" },
+      { city: "Джакарта", country: "Индонезия", code: "CGK", hotelCount: 4, timezone: "UTC+7", weather: "🌧️ +30°C" },
+      { city: "Ханой", country: "Вьетнам", code: "HAN", hotelCount: 4, timezone: "UTC+7", weather: "⛅ +28°C" },
+      { city: "Хошимин", country: "Вьетнам", code: "SGN", hotelCount: 4, timezone: "UTC+7", weather: "🌧️ +31°C" },
+      { city: "Коломбо", country: "Шри-Ланка", code: "CMB", hotelCount: 3, timezone: "UTC+5.30", weather: "🌧️ +29°C" },
+      // === 25 НОВЫХ ГОРОДОВ И МЕГАПОЛИСОВ ===
+      { city: "Алматы", country: "Казахстан", code: "ALA", hotelCount: 4, timezone: "UTC+5", weather: "☀️ +26°C" },
+      { city: "Калининград", country: "Россия", code: "KGD", hotelCount: 3, timezone: "UTC+2", weather: "⛅ +18°C" },
+      { city: "Иркутск", country: "Россия", code: "IKT", hotelCount: 3, timezone: "UTC+8", weather: "☀️ +21°C" },
+      { city: "Нижний Новгород", country: "Россия", code: "GOJ", hotelCount: 3, timezone: "UTC+3", weather: "⛅ +20°C" },
+      { city: "Абу-Даби", country: "ОАЭ", code: "AUH", hotelCount: 5, timezone: "UTC+4", weather: "☀️ +38°C" },
+      { city: "Эр-Рияд", country: "Саудовская Аравия", code: "RUH", hotelCount: 4, timezone: "UTC+3", weather: "☀️ +41°C" },
+      { city: "Ницца", country: "Франция", code: "NCE", hotelCount: 4, timezone: "UTC+2", weather: "☀️ +26°C" },
+      { city: "Венеция", country: "Италия", code: "VCE", hotelCount: 4, timezone: "UTC+2", weather: "⛅ +24°C" },
+      { city: "Валенсия", country: "Испания", code: "VLC", hotelCount: 3, timezone: "UTC+2", weather: "☀️ +28°C" },
+      { city: "Афины", country: "Греция", code: "ATH", hotelCount: 5, timezone: "UTC+3", weather: "☀️ +32°C" },
+      { city: "Шарм-эль-Шейх", country: "Египет", code: "SSH", hotelCount: 4, timezone: "UTC+3", weather: "☀️ +36°C" },
+      { city: "Осака", country: "Япония", code: "KIX", hotelCount: 5, timezone: "UTC+9", weather: "🌧️ +26°C" },
+      { city: "Пусан", country: "Южная Корея", code: "PUS", hotelCount: 4, timezone: "UTC+9", weather: "⛅ +24°C" },
+      { city: "Сан-Франциско", country: "США", code: "SFO", hotelCount: 5, timezone: "UTC-7", weather: "🌫️ +16°C" },
+      { city: "Чикаго", country: "США", code: "ORD", hotelCount: 4, timezone: "UTC-5", weather: "⛅ +23°C" },
+      { city: "Франкфурт", country: "Германия", code: "FRA", hotelCount: 5, timezone: "UTC+2", weather: "☁️ +19°C" },
+      { city: "Мельбурн", country: "Австралия", code: "MEL", hotelCount: 5, timezone: "UTC+10", weather: "🌧️ +14°C" },
+      { city: "Ханчжоу", country: "Китай", code: "HGH", hotelCount: 4, timezone: "UTC+8", weather: "🌧️ +25°C" },
+      { city: "Чунцин", country: "Китай", code: "CKG", hotelCount: 5, timezone: "UTC+8", weather: "🌫️ +28°C" },
+      { city: "Чиангмай", country: "Таиланд", code: "CNX", hotelCount: 3, timezone: "UTC+7", weather: "🌧️ +29°C" },
+      { city: "Лангкави", country: "Малайзия", code: "LGK", hotelCount: 3, timezone: "UTC+7", weather: "⛅ +30°C" },
+      { city: "Пенанг", country: "Малайзия", code: "PEN", hotelCount: 4, timezone: "UTC+8", weather: "🌧️ +31°C" },
+      { city: "Маврикий", country: "Маврикий", code: "MRU", hotelCount: 3, timezone: "UTC+4", weather: "☀️ +26°C" },
+      { city: "Сейшелы", country: "Сейшельские о-ва", code: "SEZ", hotelCount: 2, timezone: "UTC+4", weather: "☀️ +28°C" },
+      { city: "Манчестер", country: "Великобритания", code: "MAN", hotelCount: 3, timezone: "UTC+1", weather: "🌧️ +15°C" }
     ];
 
-    // === БОЛЬШОЙ ПУЛ НАЗВАНИЙ И КАРТИНОК ОТЕЛЕЙ (ИСПРАВЛЕНЫ ССЫЛКИ И ПРИВЯЗАНЫ НАПРЯМУЮ) ===
     const HOTEL_NAMES_POOL = [
       { name: "Grand Royal Luxury Hotel", stars: "⭐⭐⭐⭐⭐", price: 14500, img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80" },
       { name: "Radisson Blu Premium Resort", stars: "⭐⭐⭐⭐⭐", price: 11200, img: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80" },
       { name: "Plaza Central Suites", stars: "⭐⭐⭐⭐", price: 7800, img: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80" },
       { name: "Sea Breeze Comfort Inn", stars: "⭐⭐⭐⭐", price: 6200, img: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80" },
       { name: "Metropolitan Boutique Hotel", stars: "⭐⭐⭐⭐⭐", price: 13400, img: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80" },
-      { name: "Hilton Garden Premium", stars: "⭐⭐⭐⭐", price: 8900, img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=600&q=80" }, // Исправлено: рабочая и красивая картинка
+      { name: "Hilton Garden Premium", stars: "⭐⭐⭐⭐", price: 8900, img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=600&q=80" },
       { name: "Skyline View Apartments", stars: "⭐⭐⭐⭐", price: 7100, img: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=600&q=80" },
       { name: "Continental Plaza Stay", stars: "⭐⭐⭐⭐⭐", price: 15600, img: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80" },
       { name: "Urban Eco Green Hub", stars: "⭐⭐⭐", price: 4500, img: "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=600&q=80" },
@@ -100,24 +124,22 @@
       { name: "Sunset Beach View Villa", stars: "⭐⭐⭐⭐⭐", price: 17500, img: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=600&q=80" }
     ];
 
-    // === РАЗЛИЧНЫЕ РАЙОНЫ ДЛЯ ОТЕЛЕЙ ===
     const HOTEL_DISTRICTS_POOL = [
       "Исторический центр города", "Прибрежная курортная зона", "Деловой квартал (Сити)", 
       "Живописная набережная", "Тихий спальный район", "Культурно-туристический центр", 
       "Район у главного парка", "Премиальный загородный комплекс"
     ];
 
-    // === БАЗА БЛЮД (ВСЕ ОШИБОЧНЫЕ ИЗОБРАЖЕНИЯ ЗАМЕНЕНЫ НА НАСТОЯЩИЕ И НАУЧНЫЕ КАРТИНКИ ЕДЫ) ===
     const FOOD_MENU_OPTIONS = {
       mains: [
         { id: "m1", name: "Куриное филе-гриль под соусом", type: "Мясо/Птица", img: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=300&q=80" },
         { id: "m2", name: "Стейк из запечённого лосося", type: "Рыба", img: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=300&q=80" },
-        { id: "m3", name: "Нежные митболы из говядины", type: "Мясо", img: "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=300&q=80" }, // Исправлено: теперь на картинке реальные митболы вместо стейка
+        { id: "m3", name: "Нежные митболы из говядины", type: "Мясо", img: "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=300&q=80" },
         { id: "m4", name: "Средиземноморские овощи-гриль", type: "Вегетарианское", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80" }
       ],
       sides: [
-        { id: "s1", name: "Пряный рассыпчатый рис", img: "https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=300&q=80" }, // Исправлено: теперь на картинке рассыпчатый рис вместо лапши
-        { id: "s2", name: "Золотистые картофельные дольки", img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=300&q=80" } // Исправлено: теперь картофельные дольки вместо танцующих девочек
+        { id: "s1", name: "Пряный рассыпчатый рис", img: "https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=300&q=80" },
+        { id: "s2", name: "Золотистые картофельные дольки", img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=300&q=80" }
       ],
       drinks: [
         { id: "d1", name: "Свежесваренный Капучино", img: "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=300&q=80" },
@@ -125,7 +147,7 @@
       ],
       desserts: [
         { id: "de1", name: "Французский круассан", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=300&q=80" },
-        { id: "de2", name: "Шоколадный мини-чизкейк", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=300&q=80" } // Исправлено: добавлена настоящая аппетитная картинка шоколадного десерта
+        { id: "de2", name: "Шоколадный мини-чизкейк", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=300&q=80" }
       ]
     };
 
@@ -138,6 +160,8 @@
     const IconBriefcase = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>;
     const IconTrash = () => <svg className="w-5 h-5 inline text-red-400 hover:text-red-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>;
     const IconHotel = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>;
+    const IconCloud = () => <svg className="w-4 h-4 inline text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>;
+    const IconClock = () => <svg className="w-4 h-4 inline text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
 
     // === ГЕНЕРАТОР РЕЙСОВ ===
     const generateFlights = (fromCode, toCode, dateFrom, dateTo, count = 6) => {
@@ -185,10 +209,10 @@
     // === ГЛАВНЫЙ КОМПОНЕНТ ПРИЛОЖЕНИЯ ===
     function App() {
       const [step, setStep] = React.useState('search'); 
-      const [isSearchOpen, setIsSearchOpen] = React.useState(false);
+      const [isSearchOpen, setIsSearchOpen] = React.useState(true);
       const [sortBy, setSortBy] = React.useState('cheap'); 
-      const [citySortType, setCitySortType] = React.useState('city'); // 'city' или 'country'
-      const [suggestions, setSuggestions] = React.useState([]);
+      const [citySortType, setCitySortType] = React.useState('city'); 
+      const [cityCards, setCityCards] = React.useState([]);
 
       const [params, setParams] = React.useState({
         from: 'SVO', to: 'KUL',
@@ -200,11 +224,9 @@
       const [flights, setFlights] = React.useState([]);
       const [selectedFlight, setSelectedFlight] = React.useState(null);
       
-      // Списки отелей
       const [currentHotelsList, setCurrentHotelsList] = React.useState([]);
       const [selectedHotel, setSelectedHotel] = React.useState(null);
 
-      // Выбранное меню питания
       const [selectedFoodMenu, setSelectedFoodMenu] = React.useState({
         main: FOOD_MENU_OPTIONS.mains[0],
         side: FOOD_MENU_OPTIONS.sides[0],
@@ -213,14 +235,11 @@
       });
       const [isFoodSkipped, setIsFoodSkipped] = React.useState(false);
       
-      // Карта кресел
       const [occupiedSeats, setOccupiedSeats] = React.useState([]);
       const [chosenSeats, setChosenSeats] = React.useState([]); 
       
-      // Массив имён пассажиров
       const [passengerNames, setPassengerNames] = React.useState(['NYASHIK']);
 
-      // Хранилище поездок (localStorage)
       const [trips, setTrips] = React.useState(() => {
         const saved = localStorage.getItem('skygen_trips');
         return saved ? JSON.parse(saved) : [];
@@ -228,20 +247,20 @@
 
       const ticketRef = React.useRef(null);
 
-      // Генерация спецпредложений на старте
+      // Генерация интерактивных карточек популярных городов
       React.useEffect(() => {
-        const randomFlights = Array.from({ length: 8 }).map(() => {
-          const fromCity = CITIES[Math.floor(Math.random() * CITIES.length)];
-          let toCity = CITIES[Math.floor(Math.random() * CITIES.length)];
-          while(fromCity.code === toCity.code) toCity = CITIES[Math.floor(Math.random() * CITIES.length)];
-          const dFrom = new Date().toISOString().split('T')[0];
-          const dTo = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-          return generateFlights(fromCity.code, toCity.code, dFrom, dTo, 1)[0];
+        const selectedForCards = [...CITIES].sort(() => 0.5 - Math.random()).slice(0, 8);
+        const generatedCards = selectedForCards.map(cityObj => {
+          const mockFlight = generateFlights("SVO", cityObj.code, params.dateFrom, params.dateTo, 1)[0];
+          return {
+            ...cityObj,
+            price: mockFlight.price,
+            flight: mockFlight
+          };
         });
-        setSuggestions(randomFlights);
+        setCityCards(generatedCards);
       }, []);
 
-      // Синхронизация количества полей имён с числом пассажиров
       React.useEffect(() => {
         const count = Number(params.passengers);
         if (count < 1) return;
@@ -275,7 +294,7 @@
       };
 
       const handleSearch = (e) => {
-        e.preventDefault();
+        if(e) e.preventDefault();
         if (params.passengers < 1) {
           alert("Укажите хотя бы 1 пассажира!");
           return;
@@ -290,6 +309,21 @@
         }
         setFlights(generateFlights(params.from, params.to, params.dateFrom, params.dateTo, 6));
         setStep('results');
+      };
+
+      const selectCityCard = (targetCode) => {
+        if(params.from === targetCode) {
+          alert("Этот город уже выбран как пункт отправления. Выберите другой город!");
+          return;
+        }
+        const updatedParams = { ...params, to: targetCode };
+        setParams(updatedParams);
+        
+        // Автоматический запуск поиска по клику на карточку города
+        setTimeout(() => {
+          setFlights(generateFlights(params.from, targetCode, params.dateFrom, params.dateTo, 6));
+          setStep('results');
+        }, 100);
       };
 
       const goToSeatSelection = (flight) => {
@@ -310,7 +344,6 @@
         setStep('seats');
       };
 
-      // ГЕНЕРАЦИЯ ОТЕЛЕЙ С УЧЕТОМ СВЯЗАННЫХ ССЫЛОК ИЗ ШАБЛОНОВ
       const handleOpenHotelsStep = () => {
         if (chosenSeats.length !== Number(params.passengers)) {
           alert(`Выберите ровно столько мест, сколько пассажиров (${params.passengers} шт.)`);
@@ -331,7 +364,7 @@
             name: hotelTemplate.name,
             stars: hotelTemplate.stars,
             price: Math.max(3000, hotelTemplate.price + randomPriceOffset),
-            img: hotelTemplate.img, // Напрямую берем рабочую привязанную картинку
+            img: hotelTemplate.img, 
             district: shuffledDistricts[i % shuffledDistricts.length]
           };
         });
@@ -418,18 +451,15 @@
       const sortedFlights = [...flights].sort((a, b) => sortBy === 'cheap' ? a.price - b.price : b.price - a.price);
       const isAllSeatsSelected = chosenSeats.length === Number(params.passengers) && params.passengers > 0;
 
-      const getCityName = (code) => {
-        const found = CITIES.find(c => c.code === code);
-        return found ? found.city : code;
+      const getCityInfo = (code) => {
+        return CITIES.find(c => c.code === code) || { city: code, country: "", timezone: "", weather: "" };
       };
 
-      // Логика сортировки списка городов на лету
       const getSortedCitiesList = () => {
         return [...CITIES].sort((a, b) => {
           if (citySortType === 'city') {
             return a.city.localeCompare(b.city, 'ru');
           } else {
-            // Сначала по первой букве страны, если одинаковые — по городу
             return a.country.localeCompare(b.country, 'ru') || a.city.localeCompare(b.city, 'ru');
           }
         });
@@ -479,7 +509,7 @@
         <div className="min-h-screen flex flex-col pb-10">
           {/* ШАПКА */}
           <header className="bg-[#0057b8] text-white py-4 px-6 shadow-md flex items-center justify-between z-10 sticky top-0">
-            <div className="flex items-center gap-2 text-xl font-bold tracking-wider cursor-pointer" onClick={() => {setStep('search'); setIsSearchOpen(false);}}>
+            <div className="flex items-center gap-2 text-xl font-bold tracking-wider cursor-pointer" onClick={() => {setStep('search'); setIsSearchOpen(true);}}>
               <IconPlane />
               <span>SKYGEN</span>
             </div>
@@ -496,7 +526,7 @@
             
             <StepIndicator />
 
-            {/* ЭКРАН 1: ПОИСК И ПРЕДЛОЖЕНИЯ */}
+            {/* ЭКРАН 1: ПОИСК И КАРТОЧКИ ГОРОДОВ */}
             {step === 'search' && (
               <div className="space-y-8">
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300">
@@ -504,57 +534,58 @@
                     className="p-5 flex justify-between items-center bg-[#0057b8] text-white cursor-pointer active:bg-blue-800 transition-colors"
                     onClick={() => setIsSearchOpen(!isSearchOpen)}
                   >
-                    <h1 className="text-xl font-bold flex items-center gap-3"><IconTicket /> Купить билеты / Отели</h1>
+                    <h1 className="text-xl font-bold flex items-center gap-3"><IconTicket /> Панель бронирования авиабилетов & отелей</h1>
                     <span className="text-2xl leading-none font-light">{isSearchOpen ? '−' : '+'}</span>
                   </div>
-                  
-                  {(!isSearchOpen) && (
-                    <div className="p-6 text-center text-gray-400 font-semibold text-sm">
-                      Нажмите сюда, чтобы открыть форму поиска путешествия 👇
-                    </div>
-                  )}
 
                   {isSearchOpen && (
                     <div className="p-6">
                       <form onSubmit={handleSearch} noValidate className="space-y-4">
                         
-                        {/* КНОПКИ ПЕРЕКЛЮЧЕНИЯ СОРТИРОВКИ ГОРОДОВ */}
                         <div className="flex justify-end gap-4 text-xs font-bold text-gray-400 border-b pb-2">
-                          <span>Сортировка городов:</span>
-                          <button type="button" onClick={() => setCitySortType('city')} className={`hover:text-[#0057b8] ${citySortType === 'city' ? 'text-[#0057b8] underline' : ''}`}>По первой букве города</button>
-                          <button type="button" onClick={() => setCitySortType('country')} className={`hover:text-[#0057b8] ${citySortType === 'country' ? 'text-[#0057b8] underline' : ''}`}>По первой букве страны</button>
+                          <span>Сортировка списков:</span>
+                          <button type="button" onClick={() => setCitySortType('city')} className={`hover:text-[#0057b8] ${citySortType === 'city' ? 'text-[#0057b8] underline' : ''}`}>По алфавиту города</button>
+                          <button type="button" onClick={() => setCitySortType('country')} className={`hover:text-[#0057b8] ${citySortType === 'country' ? 'text-[#0057b8] underline' : ''}`}>По алфавиту страны</button>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
-                            <label className="text-xs font-bold text-gray-400 block mb-1">Откуда</label>
-                            <select value={params.from} onChange={e => setParams({...params, from: e.target.value})} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8] text-sm">
-                              {getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country}</option>)}
+                            <label className="text-xs font-bold text-gray-400 block mb-1">Пункт вылета (Откуда)</label>
+                            <select value={params.from} onChange={e => setParams({...params, from: e.target.value})} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8] text-sm font-medium">
+                              {getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country} [{c.timezone}]</option>)}
                             </select>
+                            <div className="text-[11px] text-gray-400 mt-1 flex gap-3 px-1">
+                              <span><IconCloud /> Погода: {getCityInfo(params.from).weather}</span>
+                              <span><IconClock /> Пояс: {getCityInfo(params.from).timezone}</span>
+                            </div>
                           </div>
                           <div>
-                            <label className="text-xs font-bold text-gray-400 block mb-1">Куда</label>
-                            <select value={params.to} onChange={e => setParams({...params, to: e.target.value})} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8] text-sm">
-                              {getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country}</option>)}
+                            <label className="text-xs font-bold text-gray-400 block mb-1">Пункт назначения (Куда)</label>
+                            <select value={params.to} onChange={e => setParams({...params, to: e.target.value})} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8] text-sm font-medium">
+                              {getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country} [{c.timezone}]</option>)}
                             </select>
+                            <div className="text-[11px] text-blue-600 mt-1 flex gap-3 px-1 font-semibold">
+                              <span><IconCloud /> Погода: {getCityInfo(params.to).weather}</span>
+                              <span><IconClock /> Пояс: {getCityInfo(params.to).timezone}</span>
+                            </div>
                           </div>
                           <div>
-                            <label className="text-xs font-bold text-gray-400 block mb-1">Туда</label>
-                            <input type="date" value={params.dateFrom} onChange={handleDateFromChange} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8]" />
+                            <label className="text-xs font-bold text-gray-400 block mb-1">Дата туда</label>
+                            <input type="date" value={params.dateFrom} onChange={handleDateFromChange} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8] font-medium" />
                           </div>
                           <div>
-                            <label className="text-xs font-bold text-gray-400 block mb-1">Обратно</label>
-                            <input type="date" value={params.dateTo} onChange={e => setParams({...params, dateTo: e.target.value})} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8]" />
+                            <label className="text-xs font-bold text-gray-400 block mb-1">Дата обратно</label>
+                            <input type="date" value={params.dateTo} onChange={e => setParams({...params, dateTo: e.target.value})} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8] font-medium" />
                           </div>
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Класс обслуживания</label>
-                            <select value={params.flightClass} onChange={e => setParams({...params, flightClass: e.target.value})} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8]">
+                            <select value={params.flightClass} onChange={e => setParams({...params, flightClass: e.target.value})} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8] font-medium">
                               <option>Эконом</option>
                               <option>Бизнес</option>
                             </select>
                           </div>
                           <div>
-                            <label className="text-xs font-bold text-gray-400 block mb-1">Пассажиры (Лимит: 1–5 чел.)</label>
+                            <label className="text-xs font-bold text-gray-400 block mb-1">Количество пассажиров (1–5)</label>
                             <input 
                               type="number" 
                               min="1" 
@@ -565,35 +596,58 @@
                             />
                           </div>
                         </div>
-                        <div className="flex gap-4 pt-2 text-sm">
+                        <div className="flex gap-6 pt-2 text-sm font-medium text-slate-600">
                           <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={params.baggage} onChange={e => setParams({...params, baggage: e.target.checked})} className="w-4 h-4 accent-[#0057b8]" /><span>Багаж включен</span></label>
-                          <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={params.pet} onChange={e => setParams({...params, pet: e.target.checked})} className="w-4 h-4 accent-[#0057b8]" /><span>С питомцем</span></label>
+                          <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={params.pet} onChange={e => setParams({...params, pet: e.target.checked})} className="w-4 h-4 accent-[#0057b8]" /><span>Путешествие с питомцем</span></label>
                         </div>
-                        <button type="submit" className="w-full bg-[#0057b8] text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition-all">Найти рейсы</button>
+                        <button type="submit" className="w-full bg-[#0057b8] text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition-all text-sm tracking-wide">НАЙТИ ДОСТУПНЫЕ РЕЙСЫ</button>
                       </form>
                     </div>
                   )}
                 </div>
 
-                {/* Горячие предложения */}
+                {/* ОБНОВЛЕННЫЕ ИНТЕРАКТИВНЫЕ КАРТОЧКИ ГОРОДОВ */}
                 <div>
-                  <h2 className="text-xl font-bold mb-4 text-slate-800">🔥 Популярные рейсы со скидкой</h2>
-                  <div className="flex overflow-x-auto gap-4 pb-4 snap-x hide-scrollbar">
-                    {suggestions.map(flight => (
-                      <div key={flight.id} className="min-w-[280px] bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-4 snap-start shrink-0 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">SALE</div>
-                        <div className="text-xs font-bold text-gray-400 flex justify-between items-center">
-                          <span>{flight.airline}</span>
-                          <span className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-black">{flight.hasFood ? "🍱 Еда есть" : "🚫 Без еды"}</span>
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 mb-4 flex justify-between items-center">
+                    <div>
+                      <h2 className="text-lg font-bold text-slate-800">🌍 Обновленные карточки мегаполисов</h2>
+                      <p className="text-xs text-gray-500">Нажмите на карточку любого города, чтобы мгновенно выбрать его целью своего путешествия</p>
+                    </div>
+                    <span className="text-xs font-bold bg-white text-[#0057b8] px-2 py-1 rounded-lg border shadow-sm">Всего локаций: {CITIES.length}</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    {cityCards.map(city => (
+                      <div 
+                        key={city.code} 
+                        onClick={() => selectCityCard(city.code)}
+                        className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col justify-between gap-3 cursor-pointer hover:border-[#0057b8] hover:shadow-md transition-all group relative overflow-hidden"
+                      >
+                        <div className="absolute top-0 right-0 bg-orange-500 text-white text-[9px] font-black px-2 py-0.5 rounded-bl">RECOMMENDED</div>
+                        
+                        <div>
+                          <div className="flex justify-between items-start">
+                            <span className="text-xs font-bold text-gray-400 block truncate max-w-[70%]">{city.country}</span>
+                            <span className="text-xs font-mono bg-slate-100 font-bold px-1.5 py-0.5 rounded text-slate-600">{city.code}</span>
+                          </div>
+                          <h3 className="text-lg font-black text-slate-800 mt-1 group-hover:text-[#0057b8] transition-colors">{city.city}</h3>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <div><div className="text-2xl font-black">{flight.from}</div><div className="text-xs text-gray-500">{flight.departure}</div></div>
-                          <IconArrow />
-                          <div className="text-right"><div className="text-2xl font-black">{flight.to}</div><div className="text-xs text-gray-500">{flight.arrival}</div></div>
+
+                        {/* Виджеты погоды и часового пояса внутри карточки */}
+                        <div className="bg-slate-50 rounded-lg p-2 space-y-1 text-xs font-medium">
+                          <div className="flex justify-between text-slate-700">
+                            <span>Погода сейчас:</span>
+                            <span className="font-bold">{city.weather}</span>
+                          </div>
+                          <div className="flex justify-between text-slate-500 text-[11px]">
+                            <span>Время (пояс):</span>
+                            <span className="font-bold font-mono text-amber-600">{city.timezone}</span>
+                          </div>
                         </div>
-                        <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-                          <span className="text-lg font-extrabold text-[#0057b8]">{flight.price.toLocaleString('ru-RU')} ₽</span>
-                          <button onClick={() => goToSeatSelection(flight)} className="bg-[#0057b8] text-white px-4 py-2 rounded-lg font-bold text-xs">Выбрать</button>
+
+                        <div className="flex justify-between items-center pt-2 border-t border-gray-100 text-xs">
+                          <span className="text-gray-400 font-bold">Отелей: <span className="text-slate-700">{city.hotelCount}</span></span>
+                          <span className="font-extrabold text-[#0057b8] bg-blue-50 px-2 py-1 rounded-md">от {city.price.toLocaleString('ru-RU')} ₽</span>
                         </div>
                       </div>
                     ))}
@@ -605,37 +659,57 @@
             {/* ЭКРАН 2: РЕЗУЛЬТАТЫ ПОИСКА */}
             {step === 'results' && (
               <div className="space-y-4">
-                <div className="flex justify-between mb-2">
-                  <button onClick={() => {setStep('search'); setIsSearchOpen(true);}} className="text-[#0057b8] text-sm font-semibold">← Изменить поиск</button>
-                  <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="p-1 border rounded bg-white text-xs text-[#0057b8] font-semibold outline-none">
-                    <option value="cheap">Сначала дешёвые</option>
-                    <option value="expensive">Сначала дорогие</option>
+                <div className="flex justify-between mb-2 items-center">
+                  <button onClick={() => {setStep('search'); setIsSearchOpen(true);}} className="text-[#0057b8] text-sm font-semibold hover:underline">← Изменить критерии поиска</button>
+                  <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="p-1.5 border rounded-lg bg-white text-xs text-[#0057b8] font-bold outline-none border-blue-200">
+                    <option value="cheap">Сортировка: Сначала дешёвые</option>
+                    <option value="expensive">Сортировка: Сначала дорогие</option>
                   </select>
                 </div>
-                <h2 className="text-xl font-bold">Рейсы: {getCityName(params.from)} → {getCityName(params.to)}</h2>
+
+                <div className="bg-white p-4 rounded-xl border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-sm">
+                  <div>
+                    <h2 className="text-xl font-bold">Рейсы: {getCityInfo(params.from).city} → {getCityInfo(params.to).city}</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">Дата отправления: {params.dateFrom} | Возврат: {params.dateTo}</p>
+                  </div>
+                  
+                  {/* Метеопанель в результатах */}
+                  <div className="bg-blue-50 rounded-lg p-2.5 text-xs font-semibold text-slate-700 border flex gap-4">
+                    <div>📍 Целевой мегаполис: <span className="text-blue-700 font-bold">{getCityInfo(params.to).city}</span></div>
+                    <div>Погода: <span className="text-orange-600 font-bold">{getCityInfo(params.to).weather}</span></div>
+                    <div>Пояс: <span className="text-amber-600 font-bold font-mono">{getCityInfo(params.to).timezone}</span></div>
+                  </div>
+                </div>
+
                 {sortedFlights.map(flight => (
-                  <div key={flight.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-4">
+                  <div key={flight.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-4 hover:shadow-md transition-shadow">
                     <div className="flex justify-between text-xs font-bold text-gray-400">
                       <span>{flight.airline}</span>
                       <div className="flex gap-2 items-center">
                         <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${flight.hasFood ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-400'}`}>
                           {flight.hasFood ? "🍱 Питание включено" : "🚫 Без питания"}
                         </span>
-                        <span>{flight.flightNumber}</span>
+                        <span className="font-mono text-slate-600">{flight.flightNumber}</span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <div><div className="text-2xl font-bold">{flight.departure}</div><div className="text-xs text-gray-500">{flight.from}</div></div>
-                      <div className="text-center flex-1 px-4 text-xs text-gray-400">
-                        <div>{flight.duration}</div>
-                        <div className="h-px bg-gray-200 my-1 relative"></div>
-                        <div className="text-[10px]">{flight.dateFrom}</div>
+                      <div>
+                        <div className="text-2xl font-bold text-slate-800">{flight.departure}</div>
+                        <div className="text-xs text-gray-500 font-mono">{flight.from} ({getCityInfo(flight.from).timezone})</div>
                       </div>
-                      <div className="text-right"><div className="text-2xl font-bold">{flight.arrival}</div><div className="text-xs text-gray-500">{flight.to}</div></div>
+                      <div className="text-center flex-1 px-4 text-xs text-gray-400">
+                        <div className="font-semibold text-slate-600">{flight.duration}</div>
+                        <div className="h-px bg-gray-200 my-1 relative"></div>
+                        <div className="text-[10px] font-mono">{flight.dateFrom}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-slate-800">{flight.arrival}</div>
+                        <div className="text-xs text-gray-500 font-mono">{flight.to} ({getCityInfo(flight.to).timezone})</div>
+                      </div>
                     </div>
-                    <div className="flex justify-between items-center pt-3 border-t">
-                      <span className="text-xl font-extrabold text-[#0057b8]">{flight.price.toLocaleString('ru-RU')} ₽</span>
-                      <button onClick={() => goToSeatSelection(flight)} className="bg-[#0057b8] text-white px-5 py-2 rounded-lg font-bold text-sm">Выбрать</button>
+                    <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+                      <span className="text-xl font-black text-[#0057b8]">{flight.price.toLocaleString('ru-RU')} ₽</span>
+                      <button onClick={() => goToSeatSelection(flight)} className="bg-[#0057b8] text-white px-5 py-2.5 rounded-lg font-bold text-sm active:scale-95 transition-all shadow-sm">Выбрать этот рейс</button>
                     </div>
                   </div>
                 ))}
@@ -645,15 +719,15 @@
             {/* ЭКРАН 3: ВЫБОР МЕСТА */}
             {step === 'seats' && selectedFlight && (
               <div className="flex flex-col items-center">
-                <button onClick={() => setStep('results')} className="text-[#0057b8] text-sm font-semibold mb-4 self-start">← Назад к рейсам</button>
+                <button onClick={() => setStep('results')} className="text-[#0057b8] text-sm font-semibold mb-4 self-start hover:underline">← Вернуться к результатам</button>
                 <div className="w-full max-w-md bg-white p-6 rounded-3xl shadow-lg border border-gray-200">
                   <div className="text-center mb-4">
-                    <h2 className="text-2xl font-black text-slate-800">Выберите место</h2>
-                    <p className="text-xs text-gray-400">Пассажиров: <span className="font-bold text-slate-700">{params.passengers}</span> • Класс: <span className="font-bold text-blue-600">{params.flightClass}</span></p>
+                    <h2 className="text-2xl font-black text-slate-800">Конфигурация мест</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">Пассажиров: <span className="font-bold text-slate-700">{params.passengers}</span> • Класс: <span className="font-bold text-blue-600">{params.flightClass}</span></p>
                   </div>
 
                   <div className="bg-gray-50 rounded-full py-1.5 mb-6 mx-auto w-3/4 text-center text-[10px] font-bold text-gray-400 tracking-widest border border-gray-200">
-                    НОС САМОЛЁТА
+                    НОСОВАЯ ЧАСТЬ САМОЛЁТА
                   </div>
 
                   <div className="flex flex-col gap-3 items-center">
@@ -703,7 +777,7 @@
                     <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-gray-200 rounded border-b-2 border-gray-300"></div>Занято</div>
                     <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-blue-50 rounded border-b-2 border-blue-200"></div>Эконом</div>
                     <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-yellow-100 rounded border-b-2 border-yellow-400"></div>Бизнес</div>
-                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-[#0057b8] rounded border-b-2 border-blue-900"></div>Ваше</div>
+                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-[#0057b8] rounded border-b-2 border-blue-900"></div>Выбрано</div>
                   </div>
 
                   <button 
@@ -720,7 +794,7 @@
             {step === 'hotels' && selectedFlight && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <button onClick={() => setStep('seats')} className="text-[#0057b8] text-sm font-semibold">← Назад к выбору мест</button>
+                  <button onClick={() => setStep('seats')} className="text-[#0057b8] text-sm font-semibold hover:underline">← Назад к выбору мест</button>
                   <button 
                     onClick={() => handleNextAfterHotels(null)} 
                     className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors"
@@ -729,13 +803,20 @@
                   </button>
                 </div>
 
-                <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100">
-                  <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <IconHotel /> Варианты жилья в г. {getCityName(params.to)}
-                  </h2>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Найдено доступных вариантов под размер мегаполиса: <span className="font-extrabold text-[#0057b8]">{currentHotelsList.length}</span>. Номера рассчитаны на <span className="font-bold text-slate-700">{params.passengers} чел.</span>
-                  </p>
+                <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100 flex justify-between items-center flex-wrap gap-3">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                      <IconHotel /> Доступные отели: г. {getCityInfo(params.to).city}
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Размер мегаполиса открыл для бронирования вариантов: <span className="font-extrabold text-[#0057b8]">{currentHotelsList.length}</span>. Все комнаты рассчитаны на <span className="font-bold text-slate-700">{params.passengers} чел.</span>
+                    </p>
+                  </div>
+                  {/* Информация о климате в целевом месте */}
+                  <div className="text-xs bg-white border px-3 py-1.5 rounded-lg text-slate-600 font-semibold space-y-0.5">
+                    <div>Погода там: <span className="text-orange-600 font-bold">{getCityInfo(params.to).weather}</span></div>
+                    <div>Время: <span className="text-amber-600 font-mono font-bold">{getCityInfo(params.to).timezone}</span></div>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -761,7 +842,7 @@
                             onClick={() => handleNextAfterHotels(hotel)} 
                             className="bg-[#0057b8] text-white font-bold text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm"
                           >
-                            Забронировать
+                            Забронировать номер
                           </button>
                         </div>
                       </div>
@@ -771,11 +852,11 @@
               </div>
             )}
 
-            {/* ЭКРАН 5: КОНСТРУКТОР БОРТОВОГО ПИТАНИЯ С ФОТОГРАФИЯМИ */}
+            {/* ЭКРАН 5: КОНСТРУКТОР БОРТОВОГО ПИТАНИЯ */}
             {step === 'food' && selectedFlight && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <button onClick={() => setStep('hotels')} className="text-[#0057b8] text-sm font-semibold">← Назад к отелям</button>
+                  <button onClick={() => setStep('hotels')} className="text-[#0057b8] text-sm font-semibold hover:underline">← Назад к отелям</button>
                   <button 
                     onClick={() => { setIsFoodSkipped(true); setStep('ticket'); }} 
                     className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors"
@@ -870,32 +951,32 @@
                   onClick={() => { setIsFoodSkipped(false); setStep('ticket'); }} 
                   className="w-full bg-orange-500 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition-all text-sm mt-4"
                 >
-                  ✓ Подтвердить рацион и перейти к билетам
+                  ✓ Подтвердить выбранный рацион и перейти к билетам
                 </button>
               </div>
             )}
 
-            {/* ЭКРАН 6: ГОТОВЫЙ БИЛЕТ С МУЛЬТИ-ИМЕНАМИ И ВСЕМИ ВАУЧЕРАМИ */}
+            {/* ЭКРАН 6: ГОТОВЫЙ БИЛЕТ С ВАУЧЕРАМИ И МЕТЕОДАННЫМИ */}
             {step === 'ticket' && selectedFlight && (
               <div className="flex flex-col items-center">
                 <button 
                   onClick={() => selectedFlight.hasFood ? setStep('food') : setStep('hotels')} 
-                  className="text-[#0057b8] text-sm font-semibold mb-4 self-start"
+                  className="text-[#0057b8] text-sm font-semibold mb-4 self-start hover:underline"
                 >
-                  ← Назад к предыдущему шагу
+                  ← Вернуться на шаг назад
                 </button>
 
                 {/* БЛОК ИМЁН ПАССАЖИРОВ */}
                 <div className="w-full bg-white p-5 rounded-xl border mb-6 shadow-sm space-y-3">
-                  <h3 className="text-sm font-bold text-slate-700 border-b pb-1.5">Имена пассажиров латиницей:</h3>
+                  <h3 className="text-sm font-bold text-slate-700 border-b pb-1.5">Данные пассажиров (Латиница):</h3>
                   {passengerNames.map((name, idx) => (
                     <div key={idx}>
-                      <label className="text-[10px] font-bold text-gray-400 block mb-0.5">Пассажир {idx + 1} (Место {chosenSeats[idx] || '?'})</label>
+                      <label className="text-[10px] font-bold text-gray-400 block mb-0.5">Пассажир {idx + 1} (Посадочное место: {chosenSeats[idx] || '?'})</label>
                       <input 
                         type="text" 
                         value={name} 
                         onChange={(e) => handleNameChange(idx, e.target.value)} 
-                        className="w-full p-2.5 border rounded-xl font-mono uppercase outline-none focus:border-[#0057b8]" 
+                        className="w-full p-2.5 border rounded-xl font-mono uppercase text-sm outline-none focus:border-[#0057b8]" 
                         placeholder="IVAN IVANOV" 
                       />
                     </div>
@@ -922,30 +1003,30 @@
                         </div>
                         <div className="text-right shrink-0">
                           <div className="text-[10px] uppercase text-gray-400 font-bold">Flight</div>
-                          <div className="font-mono font-bold text-lg">{selectedFlight.flightNumber}</div>
+                          <div className="font-mono font-bold text-lg text-blue-600">{selectedFlight.flightNumber}</div>
                         </div>
                       </div>
 
                       <div className="flex justify-between items-center py-2">
                         <div>
-                          <div className="text-4xl font-black">{selectedFlight.from}</div>
-                          <div className="text-[10px] text-gray-400 font-bold">Вылет {selectedFlight.departure}</div>
+                          <div className="text-4xl font-black text-slate-800">{selectedFlight.from}</div>
+                          <div className="text-[10px] text-gray-400 font-bold">Вылет {selectedFlight.departure} ({getCityInfo(selectedFlight.from).timezone})</div>
                         </div>
                         <div className="text-gray-300 text-xl">➔</div>
                         <div className="text-right">
-                          <div className="text-4xl font-black">{selectedFlight.to}</div>
-                          <div className="text-[10px] text-gray-400 font-bold">Прилет {selectedFlight.arrival}</div>
+                          <div className="text-4xl font-black text-slate-800">{selectedFlight.to}</div>
+                          <div className="text-[10px] text-gray-400 font-bold">Прилет {selectedFlight.arrival} ({getCityInfo(selectedFlight.to).timezone})</div>
                         </div>
                       </div>
 
                       <div className="grid grid-cols-3 gap-2 bg-gray-50 p-3 rounded-xl text-center text-sm border">
                         <div>
                           <div className="text-[9px] text-gray-400 font-bold uppercase">Дата вылета</div>
-                          <div className="font-bold text-[11px] leading-tight mt-1">{selectedFlight.dateFrom}</div>
+                          <div className="font-bold text-[11px] leading-tight mt-1 text-slate-700">{selectedFlight.dateFrom}</div>
                         </div>
                         <div>
                           <div className="text-[9px] text-gray-400 font-bold uppercase">Выход</div>
-                          <div className="font-bold text-lg">{selectedFlight.gate}</div>
+                          <div className="font-bold text-lg text-slate-800">{selectedFlight.gate}</div>
                         </div>
                         <div>
                           <div className="text-[9px] text-gray-400 font-bold uppercase">Все Места</div>
@@ -953,7 +1034,13 @@
                         </div>
                       </div>
 
-                      <div className="flex justify-between items-center pt-2 text-[10px] font-bold text-gray-400">
+                      {/* Дополнительный погодный информер на посадочном талоне */}
+                      <div className="bg-blue-50/70 text-slate-700 rounded-lg p-2 text-[11px] font-semibold flex justify-between border border-blue-100">
+                        <span>🌤️ Погода в месте прибытия: {getCityInfo(selectedFlight.to).weather}</span>
+                        <span className="font-mono text-amber-700">{getCityInfo(selectedFlight.to).timezone}</span>
+                      </div>
+
+                      <div className="flex justify-between items-center pt-1 text-[10px] font-bold text-gray-400">
                         <div>КЛАСС: {params.flightClass.toUpperCase()}</div>
                         <div>{params.baggage ? '✓ БАГАЖ' : ''} {params.pet ? '• ПИТОМЕЦ' : ''}</div>
                       </div>
@@ -962,7 +1049,7 @@
 
                   {/* ОТЕЛЬНЫЙ ВАУЧЕР */}
                   {selectedHotel && (
-                    <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-green-200 relative animate-fade-in">
+                    <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-green-200 relative">
                       <div className="bg-green-600 text-white p-3 flex justify-between items-center">
                         <span className="font-bold text-xs tracking-wider flex items-center gap-1">
                           <IconHotel /> ВАУЧЕР НА ПРОЖИВАНИЕ
@@ -1019,9 +1106,9 @@
 
                   {/* ОБЩИЙ QR КОД */}
                   <div className="bg-white p-4 rounded-2xl border border-gray-200 flex justify-between items-center">
-                    <div className="flex flex-col">
-                       <span className="text-[9px] text-gray-400 font-bold uppercase mb-1">СКАНИРОВАТЬ НА СТОЙКЕ РЕГИСТРАЦИИ</span>
-                       <span className="text-[11px] font-mono font-bold">ID Поездки: {selectedFlight.id}</span>
+                    <div className="flex flex-col max-w-[70%]">
+                       <span className="text-[9px] text-gray-400 font-bold uppercase mb-1">РЕГИСТРАЦИОННЫЙ QR-КОД</span>
+                       <span className="text-[11px] font-mono font-bold truncate">ID: {selectedFlight.id}</span>
                        <span className="text-[10px] text-blue-600 font-bold mt-1">
                          {selectedHotel ? "✓ Авиа + Отель" : "✓ Только авиабилет"}
                          {selectedFlight.hasFood && !isFoodSkipped ? " + 🍱 Питание" : ""}
@@ -1034,7 +1121,7 @@
                 {/* КНОПКИ ДЕЙСТВИЯ */}
                 <div className="grid grid-cols-2 gap-4 w-full max-w-md mt-6">
                   <button onClick={handleDownloadTicket} className="bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm">
-                    💾 Сохранить в галерею
+                    💾 Скачать в галерею
                   </button>
                   <button onClick={saveToMyTrips} className="bg-[#0057b8] text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm">
                     ⭐ В Мои поездки
@@ -1046,13 +1133,13 @@
             {/* ЭКРАН 7: МОИ ПОЕЗДКИ */}
             {step === 'trips' && (
               <div className="space-y-4">
-                <button onClick={() => setStep('search')} className="text-[#0057b8] text-sm font-semibold mb-2">← На главную</button>
+                <button onClick={() => setStep('search')} className="text-[#0057b8] text-sm font-semibold mb-2 hover:underline">← На главную форму</button>
                 <h2 className="text-2xl font-bold flex items-center gap-2"><IconBriefcase /> Ваши сохраненные маршруты</h2>
                 
                 {trips.length === 0 ? (
                   <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
                     <p className="text-gray-400 font-semibold mb-2">Вы еще не сохранили ни одного билета.</p>
-                    <button onClick={() => setStep('search')} className="text-xs bg-[#0057b8] text-white px-4 py-2 rounded-lg font-bold mt-2">Найти первое путешествие</button>
+                    <button onClick={() => setStep('search')} className="text-xs bg-[#0057b8] text-white px-4 py-2 rounded-lg font-bold mt-2 shadow-sm">Найти первое путешествие</button>
                   </div>
                 ) : (
                   <div className="grid gap-4">
@@ -1079,11 +1166,14 @@
                         
                         <div className="flex flex-col max-w-[85%] space-y-1">
                           <span className="text-xs text-gray-400 font-bold">{trip.flight.dateFrom} • Рейс {trip.flight.flightNumber}</span>
-                          <span className="text-lg font-black text-slate-800">{getCityName(trip.flight.from)} ➔ {getCityName(trip.flight.to)}</span>
+                          <span className="text-lg font-black text-slate-800">{getCityInfo(trip.flight.from).city} ➔ {getCityInfo(trip.flight.to).city}</span>
                           
                           <div className="flex flex-wrap gap-2 pt-1">
-                            <span className="text-[11px] bg-blue-50 text-[#0057b8] px-2 py-0.5 rounded-md font-mono">
+                            <span className="text-[11px] bg-blue-50 text-[#0057b8] px-2 py-0.5 rounded-md font-mono font-bold">
                               Места: {trip.seats.join(', ')}
+                            </span>
+                            <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">
+                              {getCityInfo(trip.flight.to).weather} | {getCityInfo(trip.flight.to).timezone}
                             </span>
                             {trip.hotel && (
                               <span className="text-[11px] bg-green-50 text-green-700 px-2 py-0.5 rounded-md font-bold flex items-center gap-0.5">
@@ -1097,7 +1187,7 @@
                             )}
                           </div>
                           
-                          <p className="text-[10px] text-gray-400 truncate pt-1 font-medium">
+                          <p className="text-[10px] text-gray-400 truncate pt-1 font-semibold font-mono">
                             Пассажиры: {trip.passengers.join(', ')}
                           </p>
                         </div>
