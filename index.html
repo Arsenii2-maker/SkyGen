@@ -215,12 +215,13 @@
       const [cityCards, setCityCards] = React.useState([]);
 
       const [params, setParams] = React.useState(() => ({
-  from: localStorage.getItem('skygen_home_city') || 'SVO', // <--- Вот тут проверяется память
+  from: localStorage.getItem('skygen_home_city') || 'SVO',
   to: 'KUL',
-        dateFrom: new Date().toISOString().split('T')[0],
-        dateTo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        passengers: 1, flightClass: 'Эконом', baggage: true, pet: false
-      });
+  dateFrom: new Date().toISOString().split('T')[0],
+  dateTo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+  passengers: 1, flightClass: 'Эконом', baggage: true, pet: false
+})); // <-- Теперь всё закрыто корректно
+
 
 // ПРЯМО СЮДА вставляем твою функцию:
 const handleFromCityChange = (e) => {
@@ -560,7 +561,7 @@ const handleFromCityChange = (e) => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Пункт вылета (Откуда)</label>
-                          <select value={params.from} onChange={handleFromCityChange} className="...">
+                          <select value={params.from} onChange={handleFromCityChange} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8] text-sm font-medium">
                               {getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country} [{c.timezone}]</option>)}
                             </select>
                             <div className="text-[11px] text-gray-400 mt-1 flex gap-3 px-1">
