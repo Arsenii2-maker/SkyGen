@@ -249,13 +249,9 @@ React.useEffect(() => {
   <div key={city.code} onClick={()=>{
   if(params.from===city.code){alert("Выберите другой город!");return;}
   setParams({...params,to:city.code});
-    const newFlights = generateFlights(params.from, city.code, params.dateFrom, params.dateTo, 5);
-    // Используем сохранённый рейс и ставим его первым
-    newFlights.unshift(city._cachedFlight);
-    // Обновляем цену на карточке — показываем минимальную
-    const minPrice = Math.min(...newFlights.map(f => f.price));
-    setCityCards(prev => prev.map(c => c.code === city.code ? {...c, price: minPrice} : c));
-    setFlights(city._cachedFlights);
+  // Если есть сохранённые рейсы — используем их, иначе генерируем новые
+  const flightsToShow = city._cachedFlights || generateFlights(params.from, city.code, params.dateFrom, params.dateTo, 6);
+  setFlights(flightsToShow);
   setStep('results');
 }} className="bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 shadow-sm p-4 flex flex-col gap-3 cursor-pointer hover:border-[#0057b8] dark:hover:border-blue-500 hover:shadow-md transition-all group relative overflow-hidden">
     <div className="absolute top-0 right-0 bg-orange-500 text-white text-[9px] font-black px-2 py-0.5 rounded-bl">REC</div>
