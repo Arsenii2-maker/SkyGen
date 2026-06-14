@@ -466,7 +466,6 @@ const CITIES = [
                   <div className="bg-gray-50 dark:bg-slate-700 rounded-full py-2 mb-2 mx-auto w-3/4 text-center text-[10px] font-bold text-gray-500 dark:text-gray-400 tracking-widest border dark:border-slate-600">⬆ НОС САМОЛЁТА ⬆</div>
                   <div className="flex justify-center">
                     <div className="relative">
-                      {/* Крыло слева */}
                       <div className="absolute left-0 top-[120px] bottom-[120px] w-5 flex items-center justify-center text-[8px] font-bold text-gray-400 dark:text-gray-500 writing-vertical z-10">КРЫЛО САМОЛЁТА</div>
                       <div className="flex flex-col gap-1.5 pl-5">
                         {[1,2].map(row => (
@@ -502,7 +501,6 @@ const CITIES = [
                           <div className="w-[106px] h-[54px] bg-gray-100 dark:bg-slate-700 rounded-xl border-2 border-gray-300 dark:border-slate-600 flex items-center justify-center text-xl">🚻</div>
                         </div>
                       </div>
-                      {/* Крыло справа */}
                       <div className="absolute right-0 top-[120px] bottom-[120px] w-5 flex items-center justify-center text-[8px] font-bold text-gray-400 dark:text-gray-500 writing-vertical z-10">КРЫЛО САМОЛЁТА</div>
                     </div>
                   </div>
@@ -544,7 +542,26 @@ const CITIES = [
               <div className="space-y-6">
                 <div className="flex justify-between"><button onClick={()=>setStep('attractions')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold hover:underline">← К достоприм.</button><button onClick={()=>{setIsFoodSkipped(true);setStep('ticket');}} className="text-gray-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-slate-200 text-sm font-bold bg-gray-200 dark:bg-slate-600 px-4 py-2 rounded-xl">Отказаться ➔</button></div>
                 <div className="bg-orange-50 dark:bg-orange-900/20 p-5 rounded-2xl border border-orange-100 dark:border-orange-800"><h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">🍱 Шеф-меню рейса {selectedFlight.flightNumber}</h2></div>
-                {['mains','sides','drinks','desserts'].map(cat=>(<div key={cat}><h3 className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase mb-3">{cat==='mains'?'Шаг 1: Горячее блюдо':cat==='sides'?'Шаг 2: Гарнир':cat==='drinks'?'Шаг 3: Напиток':'Шаг 4: Десерт'}</h3><div className={`grid gap-3 ${cat==='mains'?'grid-cols-2 sm:grid-cols-4':'grid-cols-2'}`}>{FOOD_MENU_OPTIONS[cat].map(item=>{const sk=cat==='mains'?'main':cat==='sides'?'side':cat==='drinks'?'drink':'dessert';const isel=selectedFoodMenu[sk].id===item.id;return(<div key={item.id} onClick={()=>setSelectedFoodMenu({...selectedFoodMenu,[sk]:item})} className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white dark:bg-slate-700 shadow-sm transition-all ${cat==='mains'?'text-center':'flex items-center p-2 gap-3'} ${isel?'border-orange-500 bg-orange-50/30 dark:bg-orange-900/20 scale-[1.02]':'border-gray-200 dark:border-slate-600'}`}><img src={item.img} alt="" className={cat==='mains'?'w-full h-24 object-cover':'w-14 h-14 rounded-lg object-cover'}/><div className={cat==='mains'?'p-2':''}>{cat==='mains'&&<div className="text-[10px] font-bold text-orange-600 dark:text-orange-400">{item.type}</div>}<div className="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">{item.name}</div></div>);})}</div></div>))}
+                {['mains','sides','drinks','desserts'].map(cat => (
+                  <div key={cat}>
+                    <h3 className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase mb-3">{cat==='mains'?'Шаг 1: Горячее блюдо':cat==='sides'?'Шаг 2: Гарнир':cat==='drinks'?'Шаг 3: Напиток':'Шаг 4: Десерт'}</h3>
+                    <div className={`grid gap-3 ${cat==='mains'?'grid-cols-2 sm:grid-cols-4':'grid-cols-2'}`}>
+                      {FOOD_MENU_OPTIONS[cat].map(item => {
+                        const sk = cat==='mains'?'main':cat==='sides'?'side':cat==='drinks'?'drink':'dessert';
+                        const isel = selectedFoodMenu[sk].id === item.id;
+                        return (
+                          <div key={item.id} onClick={()=>setSelectedFoodMenu({...selectedFoodMenu,[sk]:item})} className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white dark:bg-slate-700 shadow-sm transition-all ${cat==='mains'?'text-center':'flex items-center p-2 gap-3'} ${isel?'border-orange-500 bg-orange-50/30 dark:bg-orange-900/20 scale-[1.02]':'border-gray-200 dark:border-slate-600'}`}>
+                            <img src={item.img} alt="" className={cat==='mains'?'w-full h-24 object-cover':'w-14 h-14 rounded-lg object-cover'}/>
+                            <div className={cat==='mains'?'p-2':''}>
+                              {cat==='mains' && <div className="text-[10px] font-bold text-orange-600 dark:text-orange-400">{item.type}</div>}
+                              <div className="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">{item.name}</div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
                 <button onClick={()=>{setIsFoodSkipped(false);setStep('ticket');}} className="w-full bg-orange-500 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition-all">✓ Подтвердить и перейти к билетам</button>
               </div>
             )}
@@ -554,7 +571,13 @@ const CITIES = [
                 <button onClick={()=>selectedFlight.hasFood&&!isFoodSkipped?setStep('food'):setStep('attractions')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold mb-4 self-start hover:underline">← Назад</button>
                 <div className="w-full bg-white dark:bg-slate-800 p-5 rounded-xl border dark:border-slate-700 mb-6 shadow-sm space-y-3">
                   <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200 border-b dark:border-slate-600 pb-1.5">Пассажиры:</h3>
-                  {passengerNames.map((n,i)=>(<div key={i} className="grid grid-cols-3 gap-2"><div><label className="text-[10px] text-gray-400 dark:text-gray-500 block mb-0.5">Пассажир {i+1} (Место: {chosenSeats[i]||'?'})</label><input type="text" value={n} onChange={e=>{const nn=[...passengerNames];nn[i]=e.target.value.toUpperCase();setPassengerNames(nn);}} className="w-full p-2.5 border dark:border-slate-600 rounded-xl font-mono uppercase text-sm bg-white dark:bg-slate-700 dark:text-slate-100" placeholder="IVAN IVANOV"/></div><div><label className="text-[10px] text-gray-400 dark:text-gray-500 block mb-0.5">Возраст</label><input type="number" min="0" max="120" value={passengerAges[i]||''} onChange={e=>{const na=[...passengerAges];na[i]=e.target.value===''?0:Math.min(120,Math.floor(Number(e.target.value)));setPassengerAges(na);}} className="w-full p-2.5 border dark:border-slate-600 rounded-xl font-mono text-sm bg-white dark:bg-slate-700 dark:text-slate-100"/></div><div className="flex items-end pb-2">{passengerAges[i]<=12&&<span className="text-pink-500 text-xs font-bold flex items-center gap-1"><IconGift /> Детский подарок</span>}</div></div>))}
+                  {passengerNames.map((n,i)=>(
+                    <div key={i} className="grid grid-cols-3 gap-2">
+                      <div><label className="text-[10px] text-gray-400 dark:text-gray-500 block mb-0.5">Пассажир {i+1} (Место: {chosenSeats[i]||'?'})</label><input type="text" value={n} onChange={e=>{const nn=[...passengerNames];nn[i]=e.target.value.toUpperCase();setPassengerNames(nn);}} className="w-full p-2.5 border dark:border-slate-600 rounded-xl font-mono uppercase text-sm bg-white dark:bg-slate-700 dark:text-slate-100" placeholder="IVAN IVANOV"/></div>
+                      <div><label className="text-[10px] text-gray-400 dark:text-gray-500 block mb-0.5">Возраст</label><input type="number" min="0" max="120" value={passengerAges[i]||''} onChange={e=>{const na=[...passengerAges];na[i]=e.target.value===''?0:Math.min(120,Math.floor(Number(e.target.value)));setPassengerAges(na);}} className="w-full p-2.5 border dark:border-slate-600 rounded-xl font-mono text-sm bg-white dark:bg-slate-700 dark:text-slate-100"/></div>
+                      <div className="flex items-end pb-2">{passengerAges[i]<=12&&<span className="text-pink-500 text-xs font-bold flex items-center gap-1"><IconGift /> Детский подарок</span>}</div>
+                    </div>
+                  ))}
                   {hasChild && <div className="bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-xl p-3 text-xs font-bold text-pink-600 dark:text-pink-400 flex items-center gap-2"><IconGift /> На борту вас ждёт детский подарок-сюрприз для маленьких путешественников!</div>}
                 </div>
                 <div ref={ticketRef} className="bg-gray-100 dark:bg-slate-700 p-3 rounded-3xl w-full max-w-md border border-gray-300 dark:border-slate-600 space-y-4">
@@ -562,7 +585,18 @@ const CITIES = [
                     <div className="bg-[#0057b8] text-white p-4 flex justify-between"><span className="font-bold">{selectedFlight.airline}</span><span className="text-xs border px-2 py-0.5 rounded font-mono bg-white/20">BOARDING PASS</span></div>
                     <div className="p-5 space-y-4">
                       <div className="flex justify-between border-b dark:border-slate-600 pb-3"><div><div className="text-[10px] uppercase text-gray-400 dark:text-gray-500 font-bold">Passengers</div><div className="font-mono font-bold text-xs dark:text-slate-200">{passengerNames.map((n,i)=>`${i+1}. ${n||'GUEST'} [${chosenSeats[i]||''}] ${passengerAges[i]<=12?'🎁':''}`).join('\n')}</div></div><div className="text-right"><div className="text-[10px] uppercase text-gray-400 dark:text-gray-500 font-bold">Flight</div><div className="font-mono font-bold text-lg text-blue-600 dark:text-blue-400">{selectedFlight.flightNumber}</div></div></div>
-                      {selectedFlight.isDirect?(<div className="flex justify-between py-2"><div><div className="text-4xl font-black dark:text-slate-100">{selectedFlight.from}</div><div className="text-[10px] text-gray-400 dark:text-gray-500">Вылет {selectedFlight.departure}</div></div><div className="text-gray-300 dark:text-gray-600 text-xl">➔</div><div className="text-right"><div className="text-4xl font-black dark:text-slate-100">{selectedFlight.to}</div><div className="text-[10px] text-gray-400 dark:text-gray-500">Прилет {selectedFlight.arrival}</div></div></div>):(<div className="space-y-2 py-2">{selectedFlight.legs.map((l,i)=>(<React.Fragment key={i}><div className="flex justify-between"><div><div className="text-2xl font-black dark:text-slate-100">{l.from}</div><div className="text-[9px] text-gray-400 dark:text-gray-500">Вылет {l.departure}</div></div><div className="text-gray-300 dark:text-gray-600 text-lg">➔</div><div className="text-right"><div className="text-2xl font-black dark:text-slate-100">{l.to}</div><div className="text-[9px] text-gray-400 dark:text-gray-500">Прилет {l.arrival}</div></div></div>{i<selectedFlight.legs.length-1&&<div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-lg px-3 py-1.5 text-[9px] font-bold text-amber-700 dark:text-amber-400 text-center">Пересадка: {selectedFlight.stopoverCities[i]}, {Math.floor(selectedFlight.stopoverDurations[i]/60)}ч {selectedFlight.stopoverDurations[i]%60}м</div>}</React.Fragment>))}</div>)}
+                      {selectedFlight.isDirect ? (
+                        <div className="flex justify-between py-2"><div><div className="text-4xl font-black dark:text-slate-100">{selectedFlight.from}</div><div className="text-[10px] text-gray-400 dark:text-gray-500">Вылет {selectedFlight.departure}</div></div><div className="text-gray-300 dark:text-gray-600 text-xl">➔</div><div className="text-right"><div className="text-4xl font-black dark:text-slate-100">{selectedFlight.to}</div><div className="text-[10px] text-gray-400 dark:text-gray-500">Прилет {selectedFlight.arrival}</div></div></div>
+                      ) : (
+                        <div className="space-y-2 py-2">
+                          {selectedFlight.legs.map((l,i)=>(
+                            <React.Fragment key={i}>
+                              <div className="flex justify-between"><div><div className="text-2xl font-black dark:text-slate-100">{l.from}</div><div className="text-[9px] text-gray-400 dark:text-gray-500">Вылет {l.departure}</div></div><div className="text-gray-300 dark:text-gray-600 text-lg">➔</div><div className="text-right"><div className="text-2xl font-black dark:text-slate-100">{l.to}</div><div className="text-[9px] text-gray-400 dark:text-gray-500">Прилет {l.arrival}</div></div></div>
+                              {i<selectedFlight.legs.length-1&&<div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-lg px-3 py-1.5 text-[9px] font-bold text-amber-700 dark:text-amber-400 text-center">Пересадка: {selectedFlight.stopoverCities[i]}, {Math.floor(selectedFlight.stopoverDurations[i]/60)}ч {selectedFlight.stopoverDurations[i]%60}м</div>}
+                            </React.Fragment>
+                          ))}
+                        </div>
+                      )}
                       <div className="grid grid-cols-3 gap-2 bg-gray-50 dark:bg-slate-700 p-3 rounded-xl text-center border dark:border-slate-600"><div><div className="text-[9px] text-gray-400 dark:text-gray-500 uppercase">Дата</div><div className="font-bold text-[11px] mt-1 dark:text-slate-300">{selectedFlight.dateFrom}</div></div><div><div className="text-[9px] text-gray-400 dark:text-gray-500 uppercase">Выход</div><div className="font-bold text-lg dark:text-slate-100">{selectedFlight.gate}</div></div><div><div className="text-[9px] text-gray-400 dark:text-gray-500 uppercase">Места</div><div className="font-bold font-mono text-xs text-[#0057b8] dark:text-blue-400">{chosenSeats.join(', ')}</div></div></div>
                       {hasChild && <div className="bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg p-2 text-[10px] font-bold text-pink-600 dark:text-pink-400 flex items-center gap-1.5"><IconGift /> Детский подарок на борту</div>}
                       <div className="bg-blue-50/70 dark:bg-blue-900/20 text-slate-700 dark:text-slate-300 rounded-lg p-2 text-[11px] font-semibold flex justify-between border border-blue-100 dark:border-blue-800"><span>🌤️ Погода: {getCityInfo(selectedFlight.to).weather}</span><span className="font-mono text-amber-700 dark:text-amber-400">{getCityInfo(selectedFlight.to).timezone}</span></div>
@@ -582,7 +616,31 @@ const CITIES = [
               <div className="space-y-4">
                 <button onClick={()=>setStep('search')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold mb-2 hover:underline">← На главную</button>
                 <h2 className="text-2xl font-bold dark:text-slate-100 flex items-center gap-2"><IconBriefcase /> Мои поездки</h2>
-                {trips.length===0?(<div className="text-center py-12 bg-white dark:bg-slate-800 rounded-xl border border-dashed dark:border-slate-600"><p className="text-gray-400 dark:text-gray-500 mb-2">Нет сохранённых билетов.</p><button onClick={()=>setStep('search')} className="text-xs bg-[#0057b8] text-white px-4 py-2 rounded-lg font-bold">Найти билеты</button></div>):(<div className="grid gap-4">{trips.map(t=>(<div key={t.tripId} onClick={()=>goToTicketSafely(t.flight,t.hotel,t.attractions,t.foodMenu,!t.foodMenu,t.seats,t.passengers,t.ages,t.class,t.options?.baggage,t.options?.pet)} className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border dark:border-slate-700 flex justify-between items-center cursor-pointer hover:shadow-md transition-all group relative overflow-hidden">{t.hotel&&<div className="absolute top-0 left-0 bg-green-500 w-1.5 h-full"></div>}<div className="flex flex-col max-w-[85%] space-y-1"><span className="text-xs text-gray-400 dark:text-gray-500">{t.flight.dateFrom} • {t.flight.flightNumber}</span><span className="text-lg font-black dark:text-slate-100">{getCityInfo(t.flight.from).city} ➔ {getCityInfo(t.flight.to).city}</span><div className="flex flex-wrap gap-2 pt-1"><span className="text-[11px] bg-blue-50 dark:bg-blue-900/30 text-[#0057b8] dark:text-blue-400 px-2 py-0.5 rounded-md font-mono font-bold">Места: {t.seats.join(', ')}</span>{!t.flight.isDirect&&<span className="text-[11px] bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-md font-bold">{t.flight.stops} пересад.</span>}{t.hotel&&<span className="text-[11px] bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-0.5 rounded-md font-bold">🏨 {t.hotel.name}</span>}{t.attractions?.length>0&&<span className="text-[11px] bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-md font-bold">🏛 {t.attractions.length} экск.</span>}{t.ages?.some(a=>a<=12)&&<span className="text-[11px] bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 px-2 py-0.5 rounded-md font-bold">🎁 Подарок</span>}{t.flight.hasFood?(t.foodMenu?<span className="text-[11px] bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-2 py-0.5 rounded-md font-bold">🍱 {t.foodMenu.main.name}</span>:<span className="text-[11px] bg-gray-100 dark:bg-slate-600 text-gray-400 px-2 py-0.5 rounded-md">🍱 Пропущено</span>):<span className="text-[11px] bg-gray-100 dark:bg-slate-600 text-gray-400 px-2 py-0.5 rounded-md">🚫 Без питания</span>}</div><p className="text-[10px] text-gray-400 dark:text-gray-500 truncate font-mono">{t.passengers.join(', ')}</p></div><button onClick={e=>{e.stopPropagation();const u=trips.filter(x=>x.tripId!==t.tripId);setTrips(u);localStorage.setItem('skygen_trips',JSON.stringify(u));}} className="p-2 opacity-40 group-hover:opacity-100 text-red-400 hover:text-red-600"><IconTrash/></button></div>))}</div>)}
+                {trips.length===0 ? (
+                  <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-xl border border-dashed dark:border-slate-600"><p className="text-gray-400 dark:text-gray-500 mb-2">Нет сохранённых билетов.</p><button onClick={()=>setStep('search')} className="text-xs bg-[#0057b8] text-white px-4 py-2 rounded-lg font-bold">Найти билеты</button></div>
+                ) : (
+                  <div className="grid gap-4">
+                    {trips.map(t=>(
+                      <div key={t.tripId} onClick={()=>goToTicketSafely(t.flight,t.hotel,t.attractions,t.foodMenu,!t.foodMenu,t.seats,t.passengers,t.ages,t.class,t.options?.baggage,t.options?.pet)} className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border dark:border-slate-700 flex justify-between items-center cursor-pointer hover:shadow-md transition-all group relative overflow-hidden">
+                        {t.hotel&&<div className="absolute top-0 left-0 bg-green-500 w-1.5 h-full"></div>}
+                        <div className="flex flex-col max-w-[85%] space-y-1">
+                          <span className="text-xs text-gray-400 dark:text-gray-500">{t.flight.dateFrom} • {t.flight.flightNumber}</span>
+                          <span className="text-lg font-black dark:text-slate-100">{getCityInfo(t.flight.from).city} ➔ {getCityInfo(t.flight.to).city}</span>
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            <span className="text-[11px] bg-blue-50 dark:bg-blue-900/30 text-[#0057b8] dark:text-blue-400 px-2 py-0.5 rounded-md font-mono font-bold">Места: {t.seats.join(', ')}</span>
+                            {!t.flight.isDirect&&<span className="text-[11px] bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-md font-bold">{t.flight.stops} пересад.</span>}
+                            {t.hotel&&<span className="text-[11px] bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-0.5 rounded-md font-bold">🏨 {t.hotel.name}</span>}
+                            {t.attractions?.length>0&&<span className="text-[11px] bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-md font-bold">🏛 {t.attractions.length} экск.</span>}
+                            {t.ages?.some(a=>a<=12)&&<span className="text-[11px] bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 px-2 py-0.5 rounded-md font-bold">🎁 Подарок</span>}
+                            {t.flight.hasFood ? (t.foodMenu?<span className="text-[11px] bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-2 py-0.5 rounded-md font-bold">🍱 {t.foodMenu.main.name}</span>:<span className="text-[11px] bg-gray-100 dark:bg-slate-600 text-gray-400 px-2 py-0.5 rounded-md">🍱 Пропущено</span>) : <span className="text-[11px] bg-gray-100 dark:bg-slate-600 text-gray-400 px-2 py-0.5 rounded-md">🚫 Без питания</span>}
+                          </div>
+                          <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate font-mono">{t.passengers.join(', ')}</p>
+                        </div>
+                        <button onClick={e=>{e.stopPropagation();const u=trips.filter(x=>x.tripId!==t.tripId);setTrips(u);localStorage.setItem('skygen_trips',JSON.stringify(u));}} className="p-2 opacity-40 group-hover:opacity-100 text-red-400 hover:text-red-600"><IconTrash/></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
