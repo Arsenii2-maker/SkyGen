@@ -24,7 +24,7 @@
 
   <div id="root"></div>
 
-  <script type="text/babel">
+<script type="text/babel">
     
     // === БАЗА ГОРОДОВ (100 МЕГАПОЛИСОВ С УЧЕТОМ ЧАСОВЫХ ПОЯСОВ И ПОГОДЫ) ===
     const CITIES = [
@@ -78,7 +78,7 @@
       { city: "Ханой", country: "Вьетнам", code: "HAN", hotelCount: 4, attractionCount: 5, timezone: "UTC+7", weather: "⛅ +28°C" },
       { city: "Хошимин", country: "Вьетнам", code: "SGN", hotelCount: 4, attractionCount: 5, timezone: "UTC+7", weather: "🌧️ +31°C" },
       { city: "Коломбо", country: "Шри-Ланка", code: "CMB", hotelCount: 3, attractionCount: 4, timezone: "UTC+5.30", weather: "🌧️ +29°C" },
-      // === 25 ГОРОДОВ (БЫЛО 75, СТАЛО 100) ===
+      // === 24 ГОРОДА (БЫЛО 50 + 24 = 74, ПЛЮС 26 НОВЫХ = 100) ===
       { city: "Алматы", country: "Казахстан", code: "ALA", hotelCount: 4, attractionCount: 4, timezone: "UTC+5", weather: "☀️ +26°C" },
       { city: "Калининград", country: "Россия", code: "KGD", hotelCount: 3, attractionCount: 4, timezone: "UTC+2", weather: "⛅ +18°C" },
       { city: "Иркутск", country: "Россия", code: "IKT", hotelCount: 3, attractionCount: 3, timezone: "UTC+8", weather: "☀️ +21°C" },
@@ -99,12 +99,11 @@
       { city: "Ханчжоу", country: "Китай", code: "HGH", hotelCount: 4, attractionCount: 5, timezone: "UTC+8", weather: "🌧️ +25°C" },
       { city: "Чунцин", country: "Китай", code: "CKG", hotelCount: 5, attractionCount: 5, timezone: "UTC+8", weather: "🌫️ +28°C" },
       { city: "Чиангмай", country: "Таиланд", code: "CNX", hotelCount: 3, attractionCount: 4, timezone: "UTC+7", weather: "🌧️ +29°C" },
-      { city: "Лангкави", country: "Малайзия", code: "LGK", hotelCount: 3, attractionCount: 3, timezone: "UTC+7", weather: "⛅ +30°C" },
       { city: "Пенанг", country: "Малайзия", code: "PEN", hotelCount: 4, attractionCount: 4, timezone: "UTC+8", weather: "🌧️ +31°C" },
       { city: "Маврикий", country: "Маврикий", code: "MRU", hotelCount: 3, attractionCount: 3, timezone: "UTC+4", weather: "☀️ +26°C" },
       { city: "Сейшелы", country: "Сейшельские о-ва", code: "SEZ", hotelCount: 2, attractionCount: 2, timezone: "UTC+4", weather: "☀️ +28°C" },
       { city: "Манчестер", country: "Великобритания", code: "MAN", hotelCount: 3, attractionCount: 4, timezone: "UTC+1", weather: "🌧️ +15°C" },
-      // === 26 НОВЫХ ГОРОДОВ (ИТОГО 100) ===
+      // === 26 НОВЫХ ГОРОДОВ (ИТОГО 50 + 24 + 26 = 100) ===
       { city: "Вашингтон", country: "США", code: "IAD", hotelCount: 5, attractionCount: 7, timezone: "UTC-4", weather: "⛅ +24°C" },
       { city: "Даллас", country: "США", code: "DFW", hotelCount: 4, attractionCount: 5, timezone: "UTC-5", weather: "☀️ +34°C" },
       { city: "Хьюстон", country: "США", code: "IAH", hotelCount: 4, attractionCount: 5, timezone: "UTC-5", weather: "☀️ +33°C" },
@@ -129,7 +128,7 @@
       { city: "Найроби", country: "Кения", code: "NBO", hotelCount: 4, attractionCount: 5, timezone: "UTC+3", weather: "🌧️ +22°C" },
       { city: "Марракеш", country: "Марокко", code: "RAK", hotelCount: 4, attractionCount: 5, timezone: "UTC+1", weather: "☀️ +32°C" },
       { city: "Окленд", country: "Новая Зеландия", code: "AKL", hotelCount: 4, attractionCount: 5, timezone: "UTC+12", weather: "🌧️ +14°C" },
-      { city: "Ченнаи", country: "Индия", code: "MAA", hotelCount: 4, attractionCount: 5, timezone: "UTC+5:30", weather: "☀️ +34°C" },
+      { city: "Лангкави", country: "Малайзия", code: "LGK", hotelCount: 3, attractionCount: 3, timezone: "UTC+7", weather: "⛅ +30°C" },
       { city: "Карачи", country: "Пакистан", code: "KHI", hotelCount: 4, attractionCount: 4, timezone: "UTC+5", weather: "☀️ +35°C" }
     ];
 
@@ -159,8 +158,8 @@
 
     // === ПУЛ ДОСТОПРИМЕЧАТЕЛЬНОСТЕЙ ===
     const ATTRACTIONS_POOL = [
-      { name: "Главный исторический музей", description: "Богатейшая коллекция артефактов и произведений искусства, охватывающая тысячелетия.", img: "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=600&q=80", duration: "2–3 часа", rating: 4.8, district: "Исторический центр" },
-      { name: "Центральный городской парк", description: "Огромный зелёный оазис с озёрами, аллеями и смотровыми площадками.", img: "https://images.unsplash.com/photo-1563291078-84406d56bc2f?auto=format&fit=crop&w=600&q=80", duration: "1.5–2 часа", rating: 4.6, district: "Район у главного парка" },
+      { name: "Главный исторический музей", description: "Богатейшая коллекция артефактов и произведений искусства, охватывающая тысячелетия.", img: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=600&q=80", duration: "2–3 часа", rating: 4.8, district: "Исторический центр" },
+      { name: "Центральный городской парк", description: "Огромный зелёный оазис с озёрами, аллеями и смотровыми площадками.", img: "https://images.unsplash.com/photo-1571008887538-b36bb32f4571?auto=format&fit=crop&w=600&q=80", duration: "1.5–2 часа", rating: 4.6, district: "Район у главного парка" },
       { name: "Смотровая башня «Небесное око»", description: "Панорамный вид на весь мегаполис с высоты 300 метров.", img: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=600&q=80", duration: "1 час", rating: 4.7, district: "Деловой квартал (Сити)" },
       { name: "Набережная закатов", description: "Идеальное место для вечерних прогулок с видом на закат и море.", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80", duration: "1–1.5 часа", rating: 4.5, district: "Живописная набережная" },
       { name: "Старинный кафедральный собор", description: "Величественный памятник архитектуры XIV века с уникальными фресками.", img: "https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=600&q=80", duration: "1.5 часа", rating: 4.9, district: "Исторический центр" },
@@ -188,7 +187,7 @@
       ],
       desserts: [
         { id: "de1", name: "Французский круассан", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=300&q=80" },
-        { id: "de2", name: "Шоколадный мини-чизкейк", img: "https://images.unsplash.com/photo-1524351199678-941a58a3df50?auto=format&fit=crop&w=300&q=80" }
+        { id: "de2", name: "Шоколадный мини-чизкейк", img: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=300&q=80" }
       ]
     };
 
