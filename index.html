@@ -26,84 +26,111 @@
 
   <script type="text/babel">
     
-    // === БАЗА ГОРОДОВ (75 МЕГАПОЛИСОВ С УЧЕТОМ ЧАСОВЫХ ПОЯСОВ И ПОГОДЫ) ===
+    // === БАЗА ГОРОДОВ (100 МЕГАПОЛИСОВ С УЧЕТОМ ЧАСОВЫХ ПОЯСОВ И ПОГОДЫ) ===
     const CITIES = [
-      { city: "Москва", country: "Россия", code: "SVO", hotelCount: 7, timezone: "UTC+3", weather: "☀️ +23°C" }, 
-      { city: "Владивосток", country: "Россия", code: "VVO", hotelCount: 2, timezone: "UTC+10", weather: "⛅ +17°C" },
-      { city: "Шанхай", country: "Китай", code: "PVG", hotelCount: 7, timezone: "UTC+8", weather: "🌧️ +26°C" }, 
-      { city: "Сочи", country: "Россия", code: "AER", hotelCount: 3, timezone: "UTC+3", weather: "☀️ +27°C" },
-      { city: "Санкт-Петербург", country: "Россия", code: "LED", hotelCount: 6, timezone: "UTC+3", weather: "☁️ +19°C" }, 
-      { city: "Новосибирск", country: "Россия", code: "OVB", hotelCount: 3, timezone: "UTC+7", weather: "☀️ +22°C" },
-      { city: "Екатеринбург", country: "Россия", code: "SVX", hotelCount: 3, timezone: "UTC+5", weather: "⛅ +20°C" }, 
-      { city: "Казань", country: "Россия", code: "KZN", hotelCount: 3, timezone: "UTC+3", weather: "☀️ +21°C" },
-      { city: "Ташкент", country: "Узбекистан", code: "TAS", hotelCount: 2, timezone: "UTC+5", weather: "☀️ +33°C" }, 
-      { city: "Астана", country: "Казахстан", code: "NQZ", hotelCount: 2, timezone: "UTC+5", weather: "⛅ +24°C" },
-      { city: "Дубай", country: "ОАЭ", code: "DXB", hotelCount: 7, timezone: "UTC+4", weather: "☀️ +39°C" }, 
-      { city: "Нью-Йорк", country: "США", code: "JFK", hotelCount: 7, timezone: "UTC-4", weather: "⛅ +25°C" }, 
-      { city: "Лондон", country: "Великобритания", code: "LHR", hotelCount: 7, timezone: "UTC+1", weather: "🌧️ +16°C" }, 
-      { city: "Токио", country: "Япония", code: "HND", hotelCount: 7, timezone: "UTC+9", weather: "☀️ +28°C" }, 
-      { city: "Париж", country: "Франция", code: "CDG", hotelCount: 6, timezone: "UTC+2", weather: "⛅ +22°C" }, 
-      { city: "Стамбул", country: "Турция", code: "IST", hotelCount: 6, timezone: "UTC+3", weather: "☀️ +26°C" }, 
-      { city: "Бангкок", country: "Таиланд", code: "BKK", hotelCount: 4, timezone: "UTC+7", weather: "🌧️ +32°C" }, 
-      { city: "Пхукет", country: "Таиланд", code: "HKT", hotelCount: 2, timezone: "UTC+7", weather: "⛅ +31°C" },
-      { city: "Сеул", country: "Южная Корея", code: "ICN", hotelCount: 6, timezone: "UTC+9", weather: "☀️ +25°C" }, 
-      { city: "Сингапур", country: "Сингапур", code: "SIN", hotelCount: 6, timezone: "UTC+8", weather: "🌧️ +30°C" }, 
-      { city: "Лос-Анджелес", country: "США", code: "LAX", hotelCount: 6, timezone: "UTC-7", weather: "☀️ +26°C" }, 
-      { city: "Рим", country: "Италия", code: "FCO", hotelCount: 5, timezone: "UTC+2", weather: "☀️ +29°C" }, 
-      { city: "Барселона", country: "Испания", code: "BCN", hotelCount: 5, timezone: "UTC+2", weather: "☀️ +27°C" }, 
-      { city: "Берлин", country: "Германия", code: "BER", hotelCount: 5, timezone: "UTC+2", weather: "⛅ +21°C" }, 
-      { city: "Сидней", country: "Австралия", code: "SYD", hotelCount: 5, timezone: "UTC+10", weather: "☀️ +18°C" }, 
-      { city: "Пекин", country: "Китай", code: "PEK", hotelCount: 7, timezone: "UTC+8", weather: "☀️ +29°C" }, 
-      { city: "Каир", country: "Египет", code: "CAI", hotelCount: 3, timezone: "UTC+3", weather: "☀️ +35°C" }, 
-      { city: "Рио-де-Жанейро", country: "Бразилия", code: "GIG", hotelCount: 3, timezone: "UTC-3", weather: "⛅ +24°C" }, 
-      { city: "Дели", country: "Индия", code: "DEL", hotelCount: 6, timezone: "UTC+5.30", weather: "☀️ +38°C" }, 
-      { city: "Мальдивы", country: "Мальдивы", code: "MLE", hotelCount: 1, timezone: "UTC+5", weather: "☀️ +30°C" }, 
-      { city: "Амстердам", country: "Нидерланды", code: "AMS", hotelCount: 4, timezone: "UTC+2", weather: "🌧️ +17°C" }, 
-      { city: "Мадрид", country: "Испания", code: "MAD", hotelCount: 4, timezone: "UTC+2", weather: "☀️ +31°C" }, 
-      { city: "Торонто", country: "Канада", code: "YYZ", hotelCount: 4, timezone: "UTC-4", weather: "⛅ +22°C" }, 
-      { city: "Майами", country: "США", code: "MIA", hotelCount: 3, timezone: "UTC-4", weather: "☀️ +30°C" }, 
-      { city: "Доха", country: "Катар", code: "DOH", hotelCount: 4, timezone: "UTC+3", weather: "☀️ +37°C" }, 
-      { city: "Мюнхен", country: "Германия", code: "MUC", hotelCount: 4, timezone: "UTC+2", weather: "☁️ +19°C" }, 
-      { city: "Вена", country: "Австрия", code: "VIE", hotelCount: 4, timezone: "UTC+2", weather: "☀️ +23°C" }, 
-      { city: "Гонконг", country: "Гонконг", code: "HKG", hotelCount: 6, timezone: "UTC+8", weather: "🌧️ +27°C" }, 
-      { city: "Милан", country: "Италия", code: "MXP", hotelCount: 5, timezone: "UTC+2", weather: "⛅ +25°C" }, 
-      { city: "Анталья", country: "Турция", code: "AYT", hotelCount: 2, timezone: "UTC+3", weather: "☀️ +32°C" },
-      { city: "Куала-Лумпур", country: "Малайзия", code: "KUL", hotelCount: 6, timezone: "UTC+8", weather: "🌧️ +31°C" },
-      { city: "Гуанчжоу", country: "Китай", code: "CAN", hotelCount: 5, timezone: "UTC+8", weather: "🌧️ +29°C" },
-      { city: "Шэньчжэнь", country: "Китай", code: "SZX", hotelCount: 5, timezone: "UTC+8", weather: "⛅ +30°C" },
-      { city: "Чэнду", country: "Китай", code: "CTU", hotelCount: 4, timezone: "UTC+8", weather: "☁️ +26°C" },
-      { city: "Бали", country: "Индонезия", code: "DPS", hotelCount: 5, timezone: "UTC+8", weather: "☀️ +29°C" },
-      { city: "Манила", country: "Филиппины", code: "MNL", hotelCount: 4, timezone: "UTC+8", weather: "🌧️ +32°C" },
-      { city: "Джакарта", country: "Индонезия", code: "CGK", hotelCount: 4, timezone: "UTC+7", weather: "🌧️ +30°C" },
-      { city: "Ханой", country: "Вьетнам", code: "HAN", hotelCount: 4, timezone: "UTC+7", weather: "⛅ +28°C" },
-      { city: "Хошимин", country: "Вьетнам", code: "SGN", hotelCount: 4, timezone: "UTC+7", weather: "🌧️ +31°C" },
-      { city: "Коломбо", country: "Шри-Ланка", code: "CMB", hotelCount: 3, timezone: "UTC+5.30", weather: "🌧️ +29°C" },
-      // === 25 НОВЫХ ГОРОДОВ И МЕГАПОЛИСОВ ===
-      { city: "Алматы", country: "Казахстан", code: "ALA", hotelCount: 4, timezone: "UTC+5", weather: "☀️ +26°C" },
-      { city: "Калининград", country: "Россия", code: "KGD", hotelCount: 3, timezone: "UTC+2", weather: "⛅ +18°C" },
-      { city: "Иркутск", country: "Россия", code: "IKT", hotelCount: 3, timezone: "UTC+8", weather: "☀️ +21°C" },
-      { city: "Нижний Новгород", country: "Россия", code: "GOJ", hotelCount: 3, timezone: "UTC+3", weather: "⛅ +20°C" },
-      { city: "Абу-Даби", country: "ОАЭ", code: "AUH", hotelCount: 5, timezone: "UTC+4", weather: "☀️ +38°C" },
-      { city: "Эр-Рияд", country: "Саудовская Аравия", code: "RUH", hotelCount: 4, timezone: "UTC+3", weather: "☀️ +41°C" },
-      { city: "Ницца", country: "Франция", code: "NCE", hotelCount: 4, timezone: "UTC+2", weather: "☀️ +26°C" },
-      { city: "Венеция", country: "Италия", code: "VCE", hotelCount: 4, timezone: "UTC+2", weather: "⛅ +24°C" },
-      { city: "Валенсия", country: "Испания", code: "VLC", hotelCount: 3, timezone: "UTC+2", weather: "☀️ +28°C" },
-      { city: "Афины", country: "Греция", code: "ATH", hotelCount: 5, timezone: "UTC+3", weather: "☀️ +32°C" },
-      { city: "Шарм-эль-Шейх", country: "Египет", code: "SSH", hotelCount: 4, timezone: "UTC+3", weather: "☀️ +36°C" },
-      { city: "Осака", country: "Япония", code: "KIX", hotelCount: 5, timezone: "UTC+9", weather: "🌧️ +26°C" },
-      { city: "Пусан", country: "Южная Корея", code: "PUS", hotelCount: 4, timezone: "UTC+9", weather: "⛅ +24°C" },
-      { city: "Сан-Франциско", country: "США", code: "SFO", hotelCount: 5, timezone: "UTC-7", weather: "🌫️ +16°C" },
-      { city: "Чикаго", country: "США", code: "ORD", hotelCount: 4, timezone: "UTC-5", weather: "⛅ +23°C" },
-      { city: "Франкфурт", country: "Германия", code: "FRA", hotelCount: 5, timezone: "UTC+2", weather: "☁️ +19°C" },
-      { city: "Мельбурн", country: "Австралия", code: "MEL", hotelCount: 5, timezone: "UTC+10", weather: "🌧️ +14°C" },
-      { city: "Ханчжоу", country: "Китай", code: "HGH", hotelCount: 4, timezone: "UTC+8", weather: "🌧️ +25°C" },
-      { city: "Чунцин", country: "Китай", code: "CKG", hotelCount: 5, timezone: "UTC+8", weather: "🌫️ +28°C" },
-      { city: "Чиангмай", country: "Таиланд", code: "CNX", hotelCount: 3, timezone: "UTC+7", weather: "🌧️ +29°C" },
-      { city: "Лангкави", country: "Малайзия", code: "LGK", hotelCount: 3, timezone: "UTC+7", weather: "⛅ +30°C" },
-      { city: "Пенанг", country: "Малайзия", code: "PEN", hotelCount: 4, timezone: "UTC+8", weather: "🌧️ +31°C" },
-      { city: "Маврикий", country: "Маврикий", code: "MRU", hotelCount: 3, timezone: "UTC+4", weather: "☀️ +26°C" },
-      { city: "Сейшелы", country: "Сейшельские о-ва", code: "SEZ", hotelCount: 2, timezone: "UTC+4", weather: "☀️ +28°C" },
-      { city: "Манчестер", country: "Великобритания", code: "MAN", hotelCount: 3, timezone: "UTC+1", weather: "🌧️ +15°C" }
+      { city: "Москва", country: "Россия", code: "SVO", hotelCount: 7, attractionCount: 8, timezone: "UTC+3", weather: "☀️ +23°C" }, 
+      { city: "Владивосток", country: "Россия", code: "VVO", hotelCount: 2, attractionCount: 4, timezone: "UTC+10", weather: "⛅ +17°C" },
+      { city: "Шанхай", country: "Китай", code: "PVG", hotelCount: 7, attractionCount: 9, timezone: "UTC+8", weather: "🌧️ +26°C" }, 
+      { city: "Сочи", country: "Россия", code: "AER", hotelCount: 3, attractionCount: 5, timezone: "UTC+3", weather: "☀️ +27°C" },
+      { city: "Санкт-Петербург", country: "Россия", code: "LED", hotelCount: 6, attractionCount: 10, timezone: "UTC+3", weather: "☁️ +19°C" }, 
+      { city: "Новосибирск", country: "Россия", code: "OVB", hotelCount: 3, attractionCount: 4, timezone: "UTC+7", weather: "☀️ +22°C" },
+      { city: "Екатеринбург", country: "Россия", code: "SVX", hotelCount: 3, attractionCount: 4, timezone: "UTC+5", weather: "⛅ +20°C" }, 
+      { city: "Казань", country: "Россия", code: "KZN", hotelCount: 3, attractionCount: 5, timezone: "UTC+3", weather: "☀️ +21°C" },
+      { city: "Ташкент", country: "Узбекистан", code: "TAS", hotelCount: 2, attractionCount: 4, timezone: "UTC+5", weather: "☀️ +33°C" }, 
+      { city: "Астана", country: "Казахстан", code: "NQZ", hotelCount: 2, attractionCount: 3, timezone: "UTC+5", weather: "⛅ +24°C" },
+      { city: "Дубай", country: "ОАЭ", code: "DXB", hotelCount: 7, attractionCount: 8, timezone: "UTC+4", weather: "☀️ +39°C" }, 
+      { city: "Нью-Йорк", country: "США", code: "JFK", hotelCount: 7, attractionCount: 10, timezone: "UTC-4", weather: "⛅ +25°C" }, 
+      { city: "Лондон", country: "Великобритания", code: "LHR", hotelCount: 7, attractionCount: 10, timezone: "UTC+1", weather: "🌧️ +16°C" }, 
+      { city: "Токио", country: "Япония", code: "HND", hotelCount: 7, attractionCount: 9, timezone: "UTC+9", weather: "☀️ +28°C" }, 
+      { city: "Париж", country: "Франция", code: "CDG", hotelCount: 6, attractionCount: 10, timezone: "UTC+2", weather: "⛅ +22°C" }, 
+      { city: "Стамбул", country: "Турция", code: "IST", hotelCount: 6, attractionCount: 8, timezone: "UTC+3", weather: "☀️ +26°C" }, 
+      { city: "Бангкок", country: "Таиланд", code: "BKK", hotelCount: 4, attractionCount: 7, timezone: "UTC+7", weather: "🌧️ +32°C" }, 
+      { city: "Пхукет", country: "Таиланд", code: "HKT", hotelCount: 2, attractionCount: 3, timezone: "UTC+7", weather: "⛅ +31°C" },
+      { city: "Сеул", country: "Южная Корея", code: "ICN", hotelCount: 6, attractionCount: 7, timezone: "UTC+9", weather: "☀️ +25°C" }, 
+      { city: "Сингапур", country: "Сингапур", code: "SIN", hotelCount: 6, attractionCount: 7, timezone: "UTC+8", weather: "🌧️ +30°C" }, 
+      { city: "Лос-Анджелес", country: "США", code: "LAX", hotelCount: 6, attractionCount: 8, timezone: "UTC-7", weather: "☀️ +26°C" }, 
+      { city: "Рим", country: "Италия", code: "FCO", hotelCount: 5, attractionCount: 9, timezone: "UTC+2", weather: "☀️ +29°C" }, 
+      { city: "Барселона", country: "Испания", code: "BCN", hotelCount: 5, attractionCount: 8, timezone: "UTC+2", weather: "☀️ +27°C" }, 
+      { city: "Берлин", country: "Германия", code: "BER", hotelCount: 5, attractionCount: 7, timezone: "UTC+2", weather: "⛅ +21°C" }, 
+      { city: "Сидней", country: "Австралия", code: "SYD", hotelCount: 5, attractionCount: 7, timezone: "UTC+10", weather: "☀️ +18°C" }, 
+      { city: "Пекин", country: "Китай", code: "PEK", hotelCount: 7, attractionCount: 9, timezone: "UTC+8", weather: "☀️ +29°C" }, 
+      { city: "Каир", country: "Египет", code: "CAI", hotelCount: 3, attractionCount: 6, timezone: "UTC+3", weather: "☀️ +35°C" }, 
+      { city: "Рио-де-Жанейро", country: "Бразилия", code: "GIG", hotelCount: 3, attractionCount: 5, timezone: "UTC-3", weather: "⛅ +24°C" }, 
+      { city: "Дели", country: "Индия", code: "DEL", hotelCount: 6, attractionCount: 7, timezone: "UTC+5.30", weather: "☀️ +38°C" }, 
+      { city: "Мальдивы", country: "Мальдивы", code: "MLE", hotelCount: 1, attractionCount: 2, timezone: "UTC+5", weather: "☀️ +30°C" }, 
+      { city: "Амстердам", country: "Нидерланды", code: "AMS", hotelCount: 4, attractionCount: 6, timezone: "UTC+2", weather: "🌧️ +17°C" }, 
+      { city: "Мадрид", country: "Испания", code: "MAD", hotelCount: 4, attractionCount: 7, timezone: "UTC+2", weather: "☀️ +31°C" }, 
+      { city: "Торонто", country: "Канада", code: "YYZ", hotelCount: 4, attractionCount: 6, timezone: "UTC-4", weather: "⛅ +22°C" }, 
+      { city: "Майами", country: "США", code: "MIA", hotelCount: 3, attractionCount: 5, timezone: "UTC-4", weather: "☀️ +30°C" }, 
+      { city: "Доха", country: "Катар", code: "DOH", hotelCount: 4, attractionCount: 4, timezone: "UTC+3", weather: "☀️ +37°C" }, 
+      { city: "Мюнхен", country: "Германия", code: "MUC", hotelCount: 4, attractionCount: 6, timezone: "UTC+2", weather: "☁️ +19°C" }, 
+      { city: "Вена", country: "Австрия", code: "VIE", hotelCount: 4, attractionCount: 7, timezone: "UTC+2", weather: "☀️ +23°C" }, 
+      { city: "Гонконг", country: "Гонконг", code: "HKG", hotelCount: 6, attractionCount: 7, timezone: "UTC+8", weather: "🌧️ +27°C" }, 
+      { city: "Милан", country: "Италия", code: "MXP", hotelCount: 5, attractionCount: 7, timezone: "UTC+2", weather: "⛅ +25°C" }, 
+      { city: "Анталья", country: "Турция", code: "AYT", hotelCount: 2, attractionCount: 3, timezone: "UTC+3", weather: "☀️ +32°C" },
+      { city: "Куала-Лумпур", country: "Малайзия", code: "KUL", hotelCount: 6, attractionCount: 6, timezone: "UTC+8", weather: "🌧️ +31°C" },
+      { city: "Гуанчжоу", country: "Китай", code: "CAN", hotelCount: 5, attractionCount: 6, timezone: "UTC+8", weather: "🌧️ +29°C" },
+      { city: "Шэньчжэнь", country: "Китай", code: "SZX", hotelCount: 5, attractionCount: 5, timezone: "UTC+8", weather: "⛅ +30°C" },
+      { city: "Чэнду", country: "Китай", code: "CTU", hotelCount: 4, attractionCount: 5, timezone: "UTC+8", weather: "☁️ +26°C" },
+      { city: "Бали", country: "Индонезия", code: "DPS", hotelCount: 5, attractionCount: 6, timezone: "UTC+8", weather: "☀️ +29°C" },
+      { city: "Манила", country: "Филиппины", code: "MNL", hotelCount: 4, attractionCount: 5, timezone: "UTC+8", weather: "🌧️ +32°C" },
+      { city: "Джакарта", country: "Индонезия", code: "CGK", hotelCount: 4, attractionCount: 5, timezone: "UTC+7", weather: "🌧️ +30°C" },
+      { city: "Ханой", country: "Вьетнам", code: "HAN", hotelCount: 4, attractionCount: 5, timezone: "UTC+7", weather: "⛅ +28°C" },
+      { city: "Хошимин", country: "Вьетнам", code: "SGN", hotelCount: 4, attractionCount: 5, timezone: "UTC+7", weather: "🌧️ +31°C" },
+      { city: "Коломбо", country: "Шри-Ланка", code: "CMB", hotelCount: 3, attractionCount: 4, timezone: "UTC+5.30", weather: "🌧️ +29°C" },
+      // === 25 ГОРОДОВ (БЫЛО 75, СТАЛО 100) ===
+      { city: "Алматы", country: "Казахстан", code: "ALA", hotelCount: 4, attractionCount: 4, timezone: "UTC+5", weather: "☀️ +26°C" },
+      { city: "Калининград", country: "Россия", code: "KGD", hotelCount: 3, attractionCount: 4, timezone: "UTC+2", weather: "⛅ +18°C" },
+      { city: "Иркутск", country: "Россия", code: "IKT", hotelCount: 3, attractionCount: 3, timezone: "UTC+8", weather: "☀️ +21°C" },
+      { city: "Нижний Новгород", country: "Россия", code: "GOJ", hotelCount: 3, attractionCount: 4, timezone: "UTC+3", weather: "⛅ +20°C" },
+      { city: "Абу-Даби", country: "ОАЭ", code: "AUH", hotelCount: 5, attractionCount: 5, timezone: "UTC+4", weather: "☀️ +38°C" },
+      { city: "Эр-Рияд", country: "Саудовская Аравия", code: "RUH", hotelCount: 4, attractionCount: 4, timezone: "UTC+3", weather: "☀️ +41°C" },
+      { city: "Ницца", country: "Франция", code: "NCE", hotelCount: 4, attractionCount: 5, timezone: "UTC+2", weather: "☀️ +26°C" },
+      { city: "Венеция", country: "Италия", code: "VCE", hotelCount: 4, attractionCount: 6, timezone: "UTC+2", weather: "⛅ +24°C" },
+      { city: "Валенсия", country: "Испания", code: "VLC", hotelCount: 3, attractionCount: 5, timezone: "UTC+2", weather: "☀️ +28°C" },
+      { city: "Афины", country: "Греция", code: "ATH", hotelCount: 5, attractionCount: 7, timezone: "UTC+3", weather: "☀️ +32°C" },
+      { city: "Шарм-эль-Шейх", country: "Египет", code: "SSH", hotelCount: 4, attractionCount: 3, timezone: "UTC+3", weather: "☀️ +36°C" },
+      { city: "Осака", country: "Япония", code: "KIX", hotelCount: 5, attractionCount: 7, timezone: "UTC+9", weather: "🌧️ +26°C" },
+      { city: "Пусан", country: "Южная Корея", code: "PUS", hotelCount: 4, attractionCount: 5, timezone: "UTC+9", weather: "⛅ +24°C" },
+      { city: "Сан-Франциско", country: "США", code: "SFO", hotelCount: 5, attractionCount: 7, timezone: "UTC-7", weather: "🌫️ +16°C" },
+      { city: "Чикаго", country: "США", code: "ORD", hotelCount: 4, attractionCount: 6, timezone: "UTC-5", weather: "⛅ +23°C" },
+      { city: "Франкфурт", country: "Германия", code: "FRA", hotelCount: 5, attractionCount: 6, timezone: "UTC+2", weather: "☁️ +19°C" },
+      { city: "Мельбурн", country: "Австралия", code: "MEL", hotelCount: 5, attractionCount: 6, timezone: "UTC+10", weather: "🌧️ +14°C" },
+      { city: "Ханчжоу", country: "Китай", code: "HGH", hotelCount: 4, attractionCount: 5, timezone: "UTC+8", weather: "🌧️ +25°C" },
+      { city: "Чунцин", country: "Китай", code: "CKG", hotelCount: 5, attractionCount: 5, timezone: "UTC+8", weather: "🌫️ +28°C" },
+      { city: "Чиангмай", country: "Таиланд", code: "CNX", hotelCount: 3, attractionCount: 4, timezone: "UTC+7", weather: "🌧️ +29°C" },
+      { city: "Лангкави", country: "Малайзия", code: "LGK", hotelCount: 3, attractionCount: 3, timezone: "UTC+7", weather: "⛅ +30°C" },
+      { city: "Пенанг", country: "Малайзия", code: "PEN", hotelCount: 4, attractionCount: 4, timezone: "UTC+8", weather: "🌧️ +31°C" },
+      { city: "Маврикий", country: "Маврикий", code: "MRU", hotelCount: 3, attractionCount: 3, timezone: "UTC+4", weather: "☀️ +26°C" },
+      { city: "Сейшелы", country: "Сейшельские о-ва", code: "SEZ", hotelCount: 2, attractionCount: 2, timezone: "UTC+4", weather: "☀️ +28°C" },
+      { city: "Манчестер", country: "Великобритания", code: "MAN", hotelCount: 3, attractionCount: 4, timezone: "UTC+1", weather: "🌧️ +15°C" },
+      // === 26 НОВЫХ ГОРОДОВ (ИТОГО 100) ===
+      { city: "Вашингтон", country: "США", code: "IAD", hotelCount: 5, attractionCount: 7, timezone: "UTC-4", weather: "⛅ +24°C" },
+      { city: "Даллас", country: "США", code: "DFW", hotelCount: 4, attractionCount: 5, timezone: "UTC-5", weather: "☀️ +34°C" },
+      { city: "Хьюстон", country: "США", code: "IAH", hotelCount: 4, attractionCount: 5, timezone: "UTC-5", weather: "☀️ +33°C" },
+      { city: "Нанкин", country: "Китай", code: "NKG", hotelCount: 4, attractionCount: 5, timezone: "UTC+8", weather: "🌧️ +28°C" },
+      { city: "Сиань", country: "Китай", code: "XIY", hotelCount: 4, attractionCount: 6, timezone: "UTC+8", weather: "☀️ +31°C" },
+      { city: "Тяньцзинь", country: "Китай", code: "TSN", hotelCount: 4, attractionCount: 4, timezone: "UTC+8", weather: "☀️ +30°C" },
+      { city: "Ухань", country: "Китай", code: "WUH", hotelCount: 4, attractionCount: 5, timezone: "UTC+8", weather: "🌧️ +29°C" },
+      { city: "Дунгуань", country: "Китай", code: "DGM", hotelCount: 4, attractionCount: 4, timezone: "UTC+8", weather: "🌧️ +30°C" },
+      { city: "Красноярск", country: "Россия", code: "KJA", hotelCount: 2, attractionCount: 3, timezone: "UTC+7", weather: "☀️ +20°C" },
+      { city: "Самара", country: "Россия", code: "KUF", hotelCount: 2, attractionCount: 3, timezone: "UTC+4", weather: "⛅ +22°C" },
+      { city: "Ростов-на-Дону", country: "Россия", code: "ROV", hotelCount: 2, attractionCount: 3, timezone: "UTC+3", weather: "☀️ +25°C" },
+      { city: "Прага", country: "Чехия", code: "PRG", hotelCount: 5, attractionCount: 7, timezone: "UTC+2", weather: "☀️ +24°C" },
+      { city: "Будапешт", country: "Венгрия", code: "BUD", hotelCount: 5, attractionCount: 7, timezone: "UTC+2", weather: "☀️ +26°C" },
+      { city: "Варшава", country: "Польша", code: "WAW", hotelCount: 4, attractionCount: 6, timezone: "UTC+2", weather: "☀️ +23°C" },
+      { city: "Лиссабон", country: "Португалия", code: "LIS", hotelCount: 5, attractionCount: 7, timezone: "UTC+1", weather: "☀️ +27°C" },
+      { city: "Дублин", country: "Ирландия", code: "DUB", hotelCount: 4, attractionCount: 5, timezone: "UTC+1", weather: "🌧️ +16°C" },
+      { city: "Буэнос-Айрес", country: "Аргентина", code: "EZE", hotelCount: 5, attractionCount: 7, timezone: "UTC-3", weather: "☁️ +16°C" },
+      { city: "Сан-Паулу", country: "Бразилия", code: "GRU", hotelCount: 6, attractionCount: 7, timezone: "UTC-3", weather: "🌧️ +21°C" },
+      { city: "Сантьяго", country: "Чили", code: "SCL", hotelCount: 4, attractionCount: 5, timezone: "UTC-4", weather: "☁️ +15°C" },
+      { city: "Богота", country: "Колумбия", code: "BOG", hotelCount: 4, attractionCount: 5, timezone: "UTC-5", weather: "☁️ +15°C" },
+      { city: "Кейптаун", country: "ЮАР", code: "CPT", hotelCount: 5, attractionCount: 6, timezone: "UTC+2", weather: "☀️ +18°C" },
+      { city: "Найроби", country: "Кения", code: "NBO", hotelCount: 4, attractionCount: 5, timezone: "UTC+3", weather: "🌧️ +22°C" },
+      { city: "Марракеш", country: "Марокко", code: "RAK", hotelCount: 4, attractionCount: 5, timezone: "UTC+1", weather: "☀️ +32°C" },
+      { city: "Окленд", country: "Новая Зеландия", code: "AKL", hotelCount: 4, attractionCount: 5, timezone: "UTC+12", weather: "🌧️ +14°C" },
+      { city: "Ченнаи", country: "Индия", code: "MAA", hotelCount: 4, attractionCount: 5, timezone: "UTC+5:30", weather: "☀️ +34°C" },
+      { city: "Карачи", country: "Пакистан", code: "KHI", hotelCount: 4, attractionCount: 4, timezone: "UTC+5", weather: "☀️ +35°C" }
     ];
 
     const HOTEL_NAMES_POOL = [
@@ -118,7 +145,7 @@
       { name: "Urban Eco Green Hub", stars: "⭐⭐⭐", price: 4500, img: "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=600&q=80" },
       { name: "Astoria Historic Palace", stars: "⭐⭐⭐⭐⭐", price: 12800, img: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80" },
       { name: "Parkside Comfort Hotel", stars: "⭐⭐⭐⭐", price: 6900, img: "https://images.unsplash.com/photo-1606046604972-77cc76aee944?auto=format&fit=crop&w=600&q=80" },
-      { name: "Vibe Select Design Suites", stars: "⭐⭐⭐⭐", price: 8300, img: "https://images.unsplash.com/photo-1517840901100-8179e982ca41?auto=format&fit=crop&w=600&q=80" },
+      { name: "Vibe Select Design Suites", stars: "⭐⭐⭐⭐", price: 8300, img: "https://images.unsplash.com/photo-1591088398332-8a7791972843?auto=format&fit=crop&w=600&q=80" },
       { name: "Golden Gates Resort & SPA", stars: "⭐⭐⭐⭐⭐", price: 16200, img: "https://images.unsplash.com/photo-1498503182468-3b51cbb6cb24?auto=format&fit=crop&w=600&q=80" },
       { name: "Holiday Life Cozy Inn", stars: "⭐⭐⭐", price: 4200, img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80" },
       { name: "Sunset Beach View Villa", stars: "⭐⭐⭐⭐⭐", price: 17500, img: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=600&q=80" }
@@ -128,6 +155,20 @@
       "Исторический центр города", "Прибрежная курортная зона", "Деловой квартал (Сити)", 
       "Живописная набережная", "Тихий спальный район", "Культурно-туристический центр", 
       "Район у главного парка", "Премиальный загородный комплекс"
+    ];
+
+    // === ПУЛ ДОСТОПРИМЕЧАТЕЛЬНОСТЕЙ ===
+    const ATTRACTIONS_POOL = [
+      { name: "Главный исторический музей", description: "Богатейшая коллекция артефактов и произведений искусства, охватывающая тысячелетия.", img: "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=600&q=80", duration: "2–3 часа", rating: 4.8, district: "Исторический центр" },
+      { name: "Центральный городской парк", description: "Огромный зелёный оазис с озёрами, аллеями и смотровыми площадками.", img: "https://images.unsplash.com/photo-1563291078-84406d56bc2f?auto=format&fit=crop&w=600&q=80", duration: "1.5–2 часа", rating: 4.6, district: "Район у главного парка" },
+      { name: "Смотровая башня «Небесное око»", description: "Панорамный вид на весь мегаполис с высоты 300 метров.", img: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=600&q=80", duration: "1 час", rating: 4.7, district: "Деловой квартал (Сити)" },
+      { name: "Набережная закатов", description: "Идеальное место для вечерних прогулок с видом на закат и море.", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80", duration: "1–1.5 часа", rating: 4.5, district: "Живописная набережная" },
+      { name: "Старинный кафедральный собор", description: "Величественный памятник архитектуры XIV века с уникальными фресками.", img: "https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=600&q=80", duration: "1.5 часа", rating: 4.9, district: "Исторический центр" },
+      { name: "Ботанический сад", description: "Коллекция редких растений со всего мира под открытым небом.", img: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=600&q=80", duration: "2 часа", rating: 4.4, district: "Тихий спальный район" },
+      { name: "Музей современного искусства", description: "Авангардные инсталляции и выставки художников XXI века.", img: "https://images.unsplash.com/photo-1554907984-15263bfd63bd?auto=format&fit=crop&w=600&q=80", duration: "2–2.5 часа", rating: 4.3, district: "Культурно-туристический центр" },
+      { name: "Аквариум морских глубин", description: "Подводный тоннель с акулами, скатами и тысячами тропических рыб.", img: "https://images.unsplash.com/photo-1535591273668-578e31182c4f?auto=format&fit=crop&w=600&q=80", duration: "2 часа", rating: 4.6, district: "Прибрежная курортная зона" },
+      { name: "Королевский дворец", description: "Действующая резиденция с экскурсиями по парадным залам.", img: "https://images.unsplash.com/photo-1599420187287-458c7cb2d5e1?auto=format&fit=crop&w=600&q=80", duration: "2–3 часа", rating: 4.8, district: "Премиальный загородный комплекс" },
+      { name: "Ночной рынок тысячи огней", description: "Гастрономический рай с местной кухней и сувенирами.", img: "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?auto=format&fit=crop&w=600&q=80", duration: "2–3 часа", rating: 4.2, district: "Культурно-туристический центр" }
     ];
 
     const FOOD_MENU_OPTIONS = {
@@ -147,7 +188,7 @@
       ],
       desserts: [
         { id: "de1", name: "Французский круассан", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=300&q=80" },
-        { id: "de2", name: "Шоколадный мини-чизкейк", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=300&q=80" }
+        { id: "de2", name: "Шоколадный мини-чизкейк", img: "https://images.unsplash.com/photo-1524351199678-941a58a3df50?auto=format&fit=crop&w=300&q=80" }
       ]
     };
 
@@ -162,6 +203,7 @@
     const IconHotel = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>;
     const IconCloud = () => <svg className="w-4 h-4 inline text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>;
     const IconClock = () => <svg className="w-4 h-4 inline text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
+    const IconAttraction = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>;
 
     // === ГЕНЕРАТОР РЕЙСОВ ===
     const generateFlights = (fromCode, toCode, dateFrom, dateTo, count = 6) => {
@@ -215,27 +257,27 @@
       const [cityCards, setCityCards] = React.useState([]);
 
       const [params, setParams] = React.useState(() => ({
-  from: localStorage.getItem('skygen_home_city') || 'SVO',
-  to: 'KUL',
-  dateFrom: new Date().toISOString().split('T')[0],
-  dateTo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-  passengers: 1, flightClass: 'Эконом', baggage: true, pet: false
-})); // <-- Теперь всё закрыто корректно
+        from: localStorage.getItem('skygen_home_city') || 'SVO',
+        to: 'KUL',
+        dateFrom: new Date().toISOString().split('T')[0],
+        dateTo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        passengers: 1, flightClass: 'Эконом', baggage: true, pet: false
+      }));
 
-
-// ПРЯМО СЮДА вставляем твою функцию:
-const handleFromCityChange = (e) => {
-  const selectedCode = e.target.value;
-  localStorage.setItem('skygen_home_city', selectedCode); 
-  setParams(prev => ({ ...prev, from: selectedCode }));
-};
-
+      const handleFromCityChange = (e) => {
+        const selectedCode = e.target.value;
+        localStorage.setItem('skygen_home_city', selectedCode); 
+        setParams(prev => ({ ...prev, from: selectedCode }));
+      };
       
       const [flights, setFlights] = React.useState([]);
       const [selectedFlight, setSelectedFlight] = React.useState(null);
       
       const [currentHotelsList, setCurrentHotelsList] = React.useState([]);
       const [selectedHotel, setSelectedHotel] = React.useState(null);
+
+      const [currentAttractionsList, setCurrentAttractionsList] = React.useState([]);
+      const [selectedAttraction, setSelectedAttraction] = React.useState(null);
 
       const [selectedFoodMenu, setSelectedFoodMenu] = React.useState({
         main: FOOD_MENU_OPTIONS.mains[0],
@@ -329,7 +371,6 @@ const handleFromCityChange = (e) => {
         const updatedParams = { ...params, to: targetCode };
         setParams(updatedParams);
         
-        // Автоматический запуск поиска по клику на карточку города
         setTimeout(() => {
           setFlights(generateFlights(params.from, targetCode, params.dateFrom, params.dateTo, 6));
           setStep('results');
@@ -338,7 +379,8 @@ const handleFromCityChange = (e) => {
 
       const goToSeatSelection = (flight) => {
         setSelectedFlight(flight);
-        setSelectedHotel(null); 
+        setSelectedHotel(null);
+        setSelectedAttraction(null);
         setChosenSeats([]); 
         setIsFoodSkipped(false);
         
@@ -383,11 +425,32 @@ const handleFromCityChange = (e) => {
         setStep('hotels');
       };
 
-      const handleNextAfterHotels = (hotelObj = null) => {
+      const handleOpenAttractionsStep = (hotelObj = null) => {
         if (hotelObj) {
           setSelectedHotel({ ...hotelObj, totalTripPrice: hotelObj.price * params.passengers });
         } else {
           setSelectedHotel(null);
+        }
+
+        const targetCityObj = CITIES.find(c => c.code === params.to) || { attractionCount: 3 };
+        const requiredCount = targetCityObj.attractionCount;
+
+        const shuffledAttractions = [...ATTRACTIONS_POOL].sort(() => 0.5 - Math.random());
+
+        const generatedAttractions = Array.from({ length: requiredCount }).map((_, i) => {
+          const attrTemplate = shuffledAttractions[i % shuffledAttractions.length];
+          return { ...attrTemplate };
+        });
+
+        setCurrentAttractionsList(generatedAttractions);
+        setStep('attractions');
+      };
+
+      const handleNextAfterAttractions = (attractionObj = null) => {
+        if (attractionObj) {
+          setSelectedAttraction(attractionObj);
+        } else {
+          setSelectedAttraction(null);
         }
 
         if (selectedFlight.hasFood) {
@@ -438,8 +501,9 @@ const handleFromCityChange = (e) => {
         const newTrip = {
           tripId,
           flight: selectedFlight,
-          hotel: selectedHotel, 
-          foodMenu: isFoodSkipped ? null : selectedFoodMenu,
+          hotel: selectedHotel,
+          attraction: selectedAttraction,
+          foodMenu: (selectedFlight.hasFood && !isFoodSkipped) ? selectedFoodMenu : null,
           seats: chosenSeats,
           passengers: passengerNames,
           class: params.flightClass,
@@ -458,20 +522,37 @@ const handleFromCityChange = (e) => {
         localStorage.setItem('skygen_trips', JSON.stringify(updated));
       };
 
-      const sortedFlights = [...flights].sort((a, b) => sortBy === 'cheap' ? a.price - b.price : b.price - a.price);
+      // Сортировка рейсов: цена + питание
+      const sortedFlights = [...flights].sort((a, b) => {
+        if (sortBy === 'cheap') return a.price - b.price;
+        if (sortBy === 'expensive') return b.price - a.price;
+        if (sortBy === 'foodFirst') return (b.hasFood ? 1 : 0) - (a.hasFood ? 1 : 0);
+        if (sortBy === 'noFoodFirst') return (a.hasFood ? 1 : 0) - (b.hasFood ? 1 : 0);
+        return a.price - b.price;
+      });
+
       const isAllSeatsSelected = chosenSeats.length === Number(params.passengers) && params.passengers > 0;
 
       const getCityInfo = (code) => {
-        return CITIES.find(c => c.code === code) || { city: code, country: "", timezone: "", weather: "" };
+        return CITIES.find(c => c.code === code) || { city: code, country: "", timezone: "", weather: "", hotelCount: 0, attractionCount: 0 };
       };
 
       const getSortedCitiesList = () => {
         return [...CITIES].sort((a, b) => {
           if (citySortType === 'city') {
             return a.city.localeCompare(b.city, 'ru');
-          } else {
+          } else if (citySortType === 'country') {
             return a.country.localeCompare(b.country, 'ru') || a.city.localeCompare(b.city, 'ru');
+          } else if (citySortType === 'hotelsDesc') {
+            return b.hotelCount - a.hotelCount || a.city.localeCompare(b.city, 'ru');
+          } else if (citySortType === 'hotelsAsc') {
+            return a.hotelCount - b.hotelCount || a.city.localeCompare(b.city, 'ru');
+          } else if (citySortType === 'attractionsDesc') {
+            return b.attractionCount - a.attractionCount || a.city.localeCompare(b.city, 'ru');
+          } else if (citySortType === 'attractionsAsc') {
+            return a.attractionCount - b.attractionCount || a.city.localeCompare(b.city, 'ru');
           }
+          return a.city.localeCompare(b.city, 'ru');
         });
       };
 
@@ -482,31 +563,32 @@ const handleFromCityChange = (e) => {
           { key: 'results', label: 'Выбор рейса' },
           { key: 'seats', label: 'Места' },
           { key: 'hotels', label: 'Отель' },
+          { key: 'attractions', label: 'Достоприм.' },
           ...(selectedFlight?.hasFood ? [{ key: 'food', label: 'Питание' }] : []),
           { key: 'ticket', label: 'Билет' }
         ];
 
         return (
-          <div className="bg-white p-4 rounded-xl border mb-6 shadow-sm flex items-center justify-between">
+          <div className="bg-white p-4 rounded-xl border mb-6 shadow-sm flex items-center justify-between overflow-x-auto hide-scrollbar">
             {stepsList.map((s, index) => {
               const isCurrent = step === s.key;
               const isPassed = stepsList.findIndex(x => x.key === step) > index;
               
               return (
-                <div key={s.key} className="flex items-center flex-1 last:flex-none">
+                <div key={s.key} className="flex items-center flex-1 last:flex-none flex-shrink-0">
                   <div className="flex items-center gap-2">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all flex-shrink-0 ${
                       isCurrent ? 'bg-[#0057b8] text-white ring-4 ring-blue-100' : 
                       isPassed ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'
                     }`}>
                       {isPassed ? '✓' : index + 1}
                     </div>
-                    <span className={`text-xs font-bold hidden sm:inline ${isCurrent ? 'text-slate-800' : 'text-gray-400'}`}>
+                    <span className={`text-xs font-bold hidden sm:inline whitespace-nowrap ${isCurrent ? 'text-slate-800' : 'text-gray-400'}`}>
                       {s.label}
                     </span>
                   </div>
                   {index < stepsList.length - 1 && (
-                    <div className={`h-0.5 flex-1 mx-4 rounded ${isPassed ? 'bg-green-300' : 'bg-gray-100'}`}></div>
+                    <div className={`h-0.5 flex-1 mx-2 rounded ${isPassed ? 'bg-green-300' : 'bg-gray-100'}`}></div>
                   )}
                 </div>
               );
@@ -552,16 +634,20 @@ const handleFromCityChange = (e) => {
                     <div className="p-6">
                       <form onSubmit={handleSearch} noValidate className="space-y-4">
                         
-                        <div className="flex justify-end gap-4 text-xs font-bold text-gray-400 border-b pb-2">
+                        <div className="flex justify-end gap-2 flex-wrap text-xs font-bold text-gray-400 border-b pb-2">
                           <span>Сортировка списков:</span>
-                          <button type="button" onClick={() => setCitySortType('city')} className={`hover:text-[#0057b8] ${citySortType === 'city' ? 'text-[#0057b8] underline' : ''}`}>По алфавиту города</button>
-                          <button type="button" onClick={() => setCitySortType('country')} className={`hover:text-[#0057b8] ${citySortType === 'country' ? 'text-[#0057b8] underline' : ''}`}>По алфавиту страны</button>
+                          <button type="button" onClick={() => setCitySortType('city')} className={`hover:text-[#0057b8] px-1 ${citySortType === 'city' ? 'text-[#0057b8] underline' : ''}`}>По городу</button>
+                          <button type="button" onClick={() => setCitySortType('country')} className={`hover:text-[#0057b8] px-1 ${citySortType === 'country' ? 'text-[#0057b8] underline' : ''}`}>По стране</button>
+                          <button type="button" onClick={() => setCitySortType('hotelsDesc')} className={`hover:text-[#0057b8] px-1 ${citySortType === 'hotelsDesc' ? 'text-[#0057b8] underline' : ''}`}>Отели ↓</button>
+                          <button type="button" onClick={() => setCitySortType('hotelsAsc')} className={`hover:text-[#0057b8] px-1 ${citySortType === 'hotelsAsc' ? 'text-[#0057b8] underline' : ''}`}>Отели ↑</button>
+                          <button type="button" onClick={() => setCitySortType('attractionsDesc')} className={`hover:text-[#0057b8] px-1 ${citySortType === 'attractionsDesc' ? 'text-[#0057b8] underline' : ''}`}>Достопр. ↓</button>
+                          <button type="button" onClick={() => setCitySortType('attractionsAsc')} className={`hover:text-[#0057b8] px-1 ${citySortType === 'attractionsAsc' ? 'text-[#0057b8] underline' : ''}`}>Достопр. ↑</button>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Пункт вылета (Откуда)</label>
-                          <select value={params.from} onChange={handleFromCityChange} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8] text-sm font-medium">
+                            <select value={params.from} onChange={handleFromCityChange} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8] text-sm font-medium">
                               {getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country} [{c.timezone}]</option>)}
                             </select>
                             <div className="text-[11px] text-gray-400 mt-1 flex gap-3 px-1">
@@ -643,7 +729,6 @@ const handleFromCityChange = (e) => {
                           <h3 className="text-lg font-black text-slate-800 mt-1 group-hover:text-[#0057b8] transition-colors">{city.city}</h3>
                         </div>
 
-                        {/* Виджеты погоды и часового пояса внутри карточки */}
                         <div className="bg-slate-50 rounded-lg p-2 space-y-1 text-xs font-medium">
                           <div className="flex justify-between text-slate-700">
                             <span>Погода сейчас:</span>
@@ -674,6 +759,8 @@ const handleFromCityChange = (e) => {
                   <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="p-1.5 border rounded-lg bg-white text-xs text-[#0057b8] font-bold outline-none border-blue-200">
                     <option value="cheap">Сортировка: Сначала дешёвые</option>
                     <option value="expensive">Сортировка: Сначала дорогие</option>
+                    <option value="foodFirst">Сортировка: С питанием — сверху</option>
+                    <option value="noFoodFirst">Сортировка: Без питания — сверху</option>
                   </select>
                 </div>
 
@@ -683,7 +770,6 @@ const handleFromCityChange = (e) => {
                     <p className="text-xs text-gray-400 mt-0.5">Дата отправления: {params.dateFrom} | Возврат: {params.dateTo}</p>
                   </div>
                   
-                  {/* Метеопанель в результатах */}
                   <div className="bg-blue-50 rounded-lg p-2.5 text-xs font-semibold text-slate-700 border flex gap-4">
                     <div>📍 Целевой мегаполис: <span className="text-blue-700 font-bold">{getCityInfo(params.to).city}</span></div>
                     <div>Погода: <span className="text-orange-600 font-bold">{getCityInfo(params.to).weather}</span></div>
@@ -806,7 +892,7 @@ const handleFromCityChange = (e) => {
                 <div className="flex justify-between items-center">
                   <button onClick={() => setStep('seats')} className="text-[#0057b8] text-sm font-semibold hover:underline">← Назад к выбору мест</button>
                   <button 
-                    onClick={() => handleNextAfterHotels(null)} 
+                    onClick={() => handleOpenAttractionsStep(null)} 
                     className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors"
                   >
                     Пропустить отель ➔
@@ -822,7 +908,6 @@ const handleFromCityChange = (e) => {
                       Размер мегаполиса открыл для бронирования вариантов: <span className="font-extrabold text-[#0057b8]">{currentHotelsList.length}</span>. Все комнаты рассчитаны на <span className="font-bold text-slate-700">{params.passengers} чел.</span>
                     </p>
                   </div>
-                  {/* Информация о климате в целевом месте */}
                   <div className="text-xs bg-white border px-3 py-1.5 rounded-lg text-slate-600 font-semibold space-y-0.5">
                     <div>Погода там: <span className="text-orange-600 font-bold">{getCityInfo(params.to).weather}</span></div>
                     <div>Время: <span className="text-amber-600 font-mono font-bold">{getCityInfo(params.to).timezone}</span></div>
@@ -849,7 +934,7 @@ const handleFromCityChange = (e) => {
                             <span className="text-[10px] text-gray-400 block font-bold">за ночь ({params.passengers} пасс.)</span>
                           </div>
                           <button 
-                            onClick={() => handleNextAfterHotels(hotel)} 
+                            onClick={() => handleOpenAttractionsStep(hotel)} 
                             className="bg-[#0057b8] text-white font-bold text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm"
                           >
                             Забронировать номер
@@ -862,11 +947,72 @@ const handleFromCityChange = (e) => {
               </div>
             )}
 
-            {/* ЭКРАН 5: КОНСТРУКТОР БОРТОВОГО ПИТАНИЯ */}
-            {step === 'food' && selectedFlight && (
+            {/* ЭКРАН 5: ВЫБОР ДОСТОПРИМЕЧАТЕЛЬНОСТИ */}
+            {step === 'attractions' && selectedFlight && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <button onClick={() => setStep('hotels')} className="text-[#0057b8] text-sm font-semibold hover:underline">← Назад к отелям</button>
+                  <button 
+                    onClick={() => handleNextAfterAttractions(null)} 
+                    className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors"
+                  >
+                    Пропустить достопримечательности ➔
+                  </button>
+                </div>
+
+                <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100 flex justify-between items-center flex-wrap gap-3">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                      <IconAttraction /> Достопримечательности: г. {getCityInfo(params.to).city}
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-1">
+                      В этом городе доступно для посещения: <span className="font-extrabold text-emerald-600">{currentAttractionsList.length}</span> знаковых мест.
+                    </p>
+                  </div>
+                  <div className="text-xs bg-white border px-3 py-1.5 rounded-lg text-slate-600 font-semibold space-y-0.5">
+                    <div>Погода там: <span className="text-orange-600 font-bold">{getCityInfo(params.to).weather}</span></div>
+                    <div>Время: <span className="text-amber-600 font-mono font-bold">{getCityInfo(params.to).timezone}</span></div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {currentAttractionsList.map((attraction, idx) => (
+                    <div key={idx} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-shadow">
+                      <div className="h-48 w-full overflow-hidden relative bg-gray-100">
+                        <img src={attraction.img} alt={attraction.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=600&q=80"; }} />
+                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-slate-800 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm flex items-center gap-1">
+                          ⭐ {attraction.rating}
+                        </div>
+                      </div>
+                      <div className="p-5 flex flex-col flex-1 justify-between gap-4">
+                        <div>
+                          <h3 className="font-black text-lg text-slate-800 leading-tight">{attraction.name}</h3>
+                          <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">{attraction.description}</p>
+                          <div className="flex gap-3 mt-2 text-[10px] font-bold text-gray-400">
+                            <span className="flex items-center gap-1"><IconClock /> {attraction.duration}</span>
+                            <span>📍 {attraction.district}</span>
+                          </div>
+                        </div>
+                        <div className="flex justify-end items-center pt-3 border-t">
+                          <button 
+                            onClick={() => handleNextAfterAttractions(attraction)} 
+                            className="bg-emerald-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm hover:bg-emerald-700"
+                          >
+                            Выбрать для посещения
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ЭКРАН 6: КОНСТРУКТОР БОРТОВОГО ПИТАНИЯ */}
+            {step === 'food' && selectedFlight && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <button onClick={() => setStep('attractions')} className="text-[#0057b8] text-sm font-semibold hover:underline">← Назад к достопримечательностям</button>
                   <button 
                     onClick={() => { setIsFoodSkipped(true); setStep('ticket'); }} 
                     className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors"
@@ -885,7 +1031,6 @@ const handleFromCityChange = (e) => {
                 </div>
 
                 <div className="space-y-6">
-                  {/* Горячее */}
                   <div>
                     <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 1: Основное горячее блюдо</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -905,7 +1050,6 @@ const handleFromCityChange = (e) => {
                     </div>
                   </div>
 
-                  {/* Гарниры */}
                   <div>
                     <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 2: Дополнительный гарнир</h3>
                     <div className="grid grid-cols-2 gap-3">
@@ -922,7 +1066,6 @@ const handleFromCityChange = (e) => {
                     </div>
                   </div>
 
-                  {/* Напитки */}
                   <div>
                     <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 3: Напиток на борту</h3>
                     <div className="grid grid-cols-2 gap-3">
@@ -939,7 +1082,6 @@ const handleFromCityChange = (e) => {
                     </div>
                   </div>
 
-                  {/* Десерты */}
                   <div>
                     <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 4: Авиа-десерт</h3>
                     <div className="grid grid-cols-2 gap-3">
@@ -966,17 +1108,16 @@ const handleFromCityChange = (e) => {
               </div>
             )}
 
-            {/* ЭКРАН 6: ГОТОВЫЙ БИЛЕТ С ВАУЧЕРАМИ И МЕТЕОДАННЫМИ */}
+            {/* ЭКРАН 7: ГОТОВЫЙ БИЛЕТ С ВАУЧЕРАМИ И МЕТЕОДАННЫМИ */}
             {step === 'ticket' && selectedFlight && (
               <div className="flex flex-col items-center">
                 <button 
-                  onClick={() => selectedFlight.hasFood ? setStep('food') : setStep('hotels')} 
+                  onClick={() => selectedFlight.hasFood && !isFoodSkipped ? setStep('food') : setStep('attractions')} 
                   className="text-[#0057b8] text-sm font-semibold mb-4 self-start hover:underline"
                 >
                   ← Вернуться на шаг назад
                 </button>
 
-                {/* БЛОК ИМЁН ПАССАЖИРОВ */}
                 <div className="w-full bg-white p-5 rounded-xl border mb-6 shadow-sm space-y-3">
                   <h3 className="text-sm font-bold text-slate-700 border-b pb-1.5">Данные пассажиров (Латиница):</h3>
                   {passengerNames.map((name, idx) => (
@@ -993,7 +1134,6 @@ const handleFromCityChange = (e) => {
                   ))}
                 </div>
 
-                {/* КАРТОЧКА ДЛЯ СКАЧИВАНИЯ */}
                 <div ref={ticketRef} className="bg-gray-100 p-3 rounded-3xl w-full max-w-md border border-gray-300 space-y-4">
                   
                   {/* ПОСАДОЧНЫЙ ТАЛОН */}
@@ -1044,7 +1184,6 @@ const handleFromCityChange = (e) => {
                         </div>
                       </div>
 
-                      {/* Дополнительный погодный информер на посадочном талоне */}
                       <div className="bg-blue-50/70 text-slate-700 rounded-lg p-2 text-[11px] font-semibold flex justify-between border border-blue-100">
                         <span>🌤️ Погода в месте прибытия: {getCityInfo(selectedFlight.to).weather}</span>
                         <span className="font-mono text-amber-700">{getCityInfo(selectedFlight.to).timezone}</span>
@@ -1073,6 +1212,33 @@ const handleFromCityChange = (e) => {
                           <p className="text-[10px] text-blue-600 font-bold mt-0.5">📍 {selectedHotel.district}</p>
                           <div className="mt-2 text-[11px] bg-green-50 text-green-700 px-2 py-1 rounded font-mono inline-block font-bold">
                             Гостей: {params.passengers} | Номер подтвержден
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ДОСТОПРИМЕЧАТЕЛЬНОСТЬ ВАУЧЕР */}
+                  {selectedAttraction && (
+                    <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-emerald-200 relative">
+                      <div className="bg-emerald-600 text-white p-3 flex justify-between items-center">
+                        <span className="font-bold text-xs tracking-wider flex items-center gap-1">
+                          <IconAttraction /> ВАУЧЕР НА ПОСЕЩЕНИЕ
+                        </span>
+                        <span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">ATTRACTION PASS</span>
+                      </div>
+                      <div className="p-4 flex gap-4">
+                        <img src={selectedAttraction.img} alt="" className="w-16 h-16 rounded-xl object-cover border" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=600&q=80"; }} />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-black text-sm text-slate-800 truncate">{selectedAttraction.name}</h4>
+                          <p className="text-[10px] text-gray-500 mt-0.5 leading-relaxed line-clamp-2">{selectedAttraction.description}</p>
+                          <div className="mt-2 flex gap-2 flex-wrap">
+                            <span className="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded font-mono inline-block font-bold">
+                              ⏱ {selectedAttraction.duration}
+                            </span>
+                            <span className="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded font-mono inline-block font-bold">
+                              ⭐ {selectedAttraction.rating}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -1121,14 +1287,14 @@ const handleFromCityChange = (e) => {
                        <span className="text-[11px] font-mono font-bold truncate">ID: {selectedFlight.id}</span>
                        <span className="text-[10px] text-blue-600 font-bold mt-1">
                          {selectedHotel ? "✓ Авиа + Отель" : "✓ Только авиабилет"}
+                         {selectedAttraction ? " + 🏛 Достопр." : ""}
                          {selectedFlight.hasFood && !isFoodSkipped ? " + 🍱 Питание" : ""}
                        </span>
                     </div>
-                    <QRCodeBlock text={`ID:${selectedFlight.id}|PASSENGERS:${passengerNames.join(',')}|FLIGHT:${selectedFlight.flightNumber}|SEATS:${chosenSeats.join(',')}|HOTEL:${selectedHotel ? selectedHotel.name : 'NONE'}|FOOD:${isFoodSkipped ? 'NONE' : selectedFoodMenu.main.name}`} />
+                    <QRCodeBlock text={`ID:${selectedFlight.id}|PASSENGERS:${passengerNames.join(',')}|FLIGHT:${selectedFlight.flightNumber}|SEATS:${chosenSeats.join(',')}|HOTEL:${selectedHotel ? selectedHotel.name : 'NONE'}|ATTRACTION:${selectedAttraction ? selectedAttraction.name : 'NONE'}|FOOD:${(selectedFlight.hasFood && !isFoodSkipped) ? selectedFoodMenu.main.name : 'NONE'}`} />
                   </div>
                 </div>
 
-                {/* КНОПКИ ДЕЙСТВИЯ */}
                 <div className="grid grid-cols-2 gap-4 w-full max-w-md mt-6">
                   <button onClick={handleDownloadTicket} className="bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm">
                     💾 Скачать в галерею
@@ -1140,7 +1306,7 @@ const handleFromCityChange = (e) => {
               </div>
             )}
 
-            {/* ЭКРАН 7: МОИ ПОЕЗДКИ */}
+            {/* ЭКРАН 8: МОИ ПОЕЗДКИ */}
             {step === 'trips' && (
               <div className="space-y-4">
                 <button onClick={() => setStep('search')} className="text-[#0057b8] text-sm font-semibold mb-2 hover:underline">← На главную форму</button>
@@ -1159,6 +1325,7 @@ const handleFromCityChange = (e) => {
                         onClick={() => {
                           setSelectedFlight(trip.flight);
                           setSelectedHotel(trip.hotel);
+                          setSelectedAttraction(trip.attraction || null);
                           if (trip.foodMenu) {
                             setSelectedFoodMenu(trip.foodMenu);
                             setIsFoodSkipped(false);
@@ -1190,9 +1357,24 @@ const handleFromCityChange = (e) => {
                                 🏨 {trip.hotel.name}
                               </span>
                             )}
-                            {trip.foodMenu && (
-                              <span className="text-[11px] bg-orange-50 text-orange-700 px-2 py-0.5 rounded-md font-bold">
-                                🍱 {trip.foodMenu.main.name}
+                            {trip.attraction && (
+                              <span className="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md font-bold flex items-center gap-0.5">
+                                🏛 {trip.attraction.name}
+                              </span>
+                            )}
+                            {trip.flight.hasFood ? (
+                              trip.foodMenu ? (
+                                <span className="text-[11px] bg-orange-50 text-orange-700 px-2 py-0.5 rounded-md font-bold">
+                                  🍱 {trip.foodMenu.main.name}
+                                </span>
+                              ) : (
+                                <span className="text-[11px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-md font-bold">
+                                  🍱 Питание пропущено
+                                </span>
+                              )
+                            ) : (
+                              <span className="text-[11px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-md font-bold">
+                                🚫 Без питания
                               </span>
                             )}
                           </div>
