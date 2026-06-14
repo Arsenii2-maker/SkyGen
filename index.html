@@ -11,9 +11,7 @@
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: {
-        extend: {}
-      }
+      theme: { extend: {} }
     }
   </script>
   
@@ -160,16 +158,9 @@
       const season = getSeason();
       const base = city.weatherBase[season];
       const temp = Math.floor(Math.random() * (base[1] - base[0] + 1)) + base[0];
-      const weatherEmojis = {
-        summer: ['☀️', '⛅', '🌤️'],
-        winter: ['🌨️', '☁️', '❄️', '⛅'],
-        spring: ['⛅', '🌤️', '🌧️', '☀️'],
-        fall: ['☁️', '🌧️', '⛅', '🌫️']
-      };
-      const emoji = weatherEmojis[season][Math.floor(Math.random() * weatherEmojis[season].length)];
-      return `${emoji} +${temp}°C`;
+      const weatherEmojis = { summer: ['☀️','⛅','🌤️'], winter: ['🌨️','☁️','❄️','⛅'], spring: ['⛅','🌤️','🌧️','☀️'], fall: ['☁️','🌧️','⛅','🌫️'] };
+      return `${weatherEmojis[season][Math.floor(Math.random() * weatherEmojis[season].length)]} +${temp}°C`;
     };
-
     CITIES.forEach(city => { city.weather = getWeatherForCity(city); });
 
     const HOTEL_NAMES_POOL = [
@@ -189,13 +180,7 @@
       { name: "Holiday Life Cozy Inn", stars: "⭐⭐⭐", price: 4200, img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80" },
       { name: "Sunset Beach View Villa", stars: "⭐⭐⭐⭐⭐", price: 17500, img: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=600&q=80" }
     ];
-
-    const HOTEL_DISTRICTS_POOL = [
-      "Исторический центр города", "Прибрежная курортная зона", "Деловой квартал (Сити)", 
-      "Живописная набережная", "Тихий спальный район", "Культурно-туристический центр", 
-      "Район у главного парка", "Премиальный загородный комплекс"
-    ];
-
+    const HOTEL_DISTRICTS_POOL = ["Исторический центр города", "Прибрежная курортная зона", "Деловой квартал (Сити)", "Живописная набережная", "Тихий спальный район", "Культурно-туристический центр", "Район у главного парка", "Премиальный загородный комплекс"];
     const ATTRACTIONS_POOL = [
       { name: "Главный исторический музей", description: "Богатейшая коллекция артефактов и произведений искусства, охватывающая тысячелетия.", img: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=600&q=80", duration: "2–3 часа", rating: 4.8, district: "Исторический центр" },
       { name: "Центральный городской парк", description: "Огромный зелёный оазис с озёрами, аллеями и смотровыми площадками.", img: "https://images.unsplash.com/photo-1571008887538-b36bb32f4571?auto=format&fit=crop&w=600&q=80", duration: "1.5–2 часа", rating: 4.6, district: "Район у главного парка" },
@@ -208,7 +193,6 @@
       { name: "Королевский дворец", description: "Действующая резиденция с экскурсиями по парадным залам.", img: "https://images.unsplash.com/photo-1599420187287-458c7cb2d5e1?auto=format&fit=crop&w=600&q=80", duration: "2–3 часа", rating: 4.8, district: "Премиальный загородный комплекс" },
       { name: "Ночной рынок тысячи огней", description: "Гастрономический рай с местной кухней и сувенирами.", img: "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?auto=format&fit=crop&w=600&q=80", duration: "2–3 часа", rating: 4.2, district: "Культурно-туристический центр" }
     ];
-
     const FOOD_MENU_OPTIONS = {
       mains: [
         { id: "m1", name: "Куриное филе-гриль под соусом", type: "Мясо/Птица", img: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=300&q=80" },
@@ -229,7 +213,6 @@
         { id: "de2", name: "Шоколадный мини-чизкейк", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=300&q=80" }
       ]
     };
-
     const AIRLINES = ["SkyGen Airlines", "Oceanic Air", "Global Jet", "AeroNomad"];
 
     const IconPlane = () => <svg className="w-6 h-6 inline" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16V14L13 9V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21L15 22V20.5L13 19V13.5L21 16Z"/></svg>;
@@ -268,32 +251,24 @@
       const fromCity = getCityByCode(fromCode);
       const toCity = getCityByCode(toCode);
       const tzDiff = Math.abs(fromCity.tzOffset - toCity.tzOffset);
-
       return Array.from({ length: count }).map(() => {
         let stops = 0;
         if (tzDiff > 7) stops = 2;
         else if (tzDiff > 3) stops = 1;
-
         const legs = [];
-        let currentFrom = fromCode;
         let totalDurationMin = 0;
         const excludeForHubs = [fromCode, toCode];
         const selectedHubs = [];
-
         for (let i = 0; i < stops; i++) {
-          const prevCity = getCityByCode(currentFrom);
+          const prevCity = getCityByCode(i === 0 ? fromCode : selectedHubs[i-1]);
           const hub = pickLogicalHub(prevCity.region, toCity.region, [...excludeForHubs, ...selectedHubs]);
           selectedHubs.push(hub);
           excludeForHubs.push(hub);
         }
-
         const allPoints = [fromCode, ...selectedHubs, toCode];
-
         for (let i = 0; i < allPoints.length - 1; i++) {
-          const segFrom = allPoints[i];
-          const segTo = allPoints[i + 1];
-          const segFromCity = getCityByCode(segFrom);
-          const segToCity = getCityByCode(segTo);
+          const segFrom = allPoints[i], segTo = allPoints[i + 1];
+          const segFromCity = getCityByCode(segFrom), segToCity = getCityByCode(segTo);
           const segTzDiff = Math.abs(segFromCity.tzOffset - segToCity.tzOffset);
           const baseHours = 1.5 + segTzDiff * 1.2;
           const variation = (Math.random() - 0.5) * 1.5;
@@ -301,7 +276,6 @@
           const durationMins = Math.floor(Math.random() * 60);
           const durationMinTotal = Math.floor(durationHours * 60) + durationMins;
           totalDurationMin += durationMinTotal;
-
           legs.push({
             from: segFrom, to: segTo, departure: "", arrival: "",
             duration: `${Math.floor(durationMinTotal / 60)}ч ${durationMinTotal % 60}м`,
@@ -311,11 +285,9 @@
             airline: AIRLINES[Math.floor(Math.random() * AIRLINES.length)]
           });
         }
-
         const stopoverDurations = selectedHubs.map(() => Math.floor(Math.random() * 120) + 60);
         const totalStopoverMin = stopoverDurations.reduce((a, b) => a + b, 0);
         totalDurationMin += totalStopoverMin;
-
         let currentMin = Math.floor(Math.random() * 480) + 240;
         for (let i = 0; i < legs.length; i++) {
           const depMin = currentMin % (24 * 60);
@@ -326,24 +298,16 @@
           currentMin = arrMinRaw;
           if (i < stopoverDurations.length) currentMin += stopoverDurations[i];
         }
-
-        const totalDurationHours = Math.floor(totalDurationMin / 60);
-        const totalDurationMins = totalDurationMin % 60;
+        const totalDurationHours = Math.floor(totalDurationMin / 60), totalDurationMins = totalDurationMin % 60;
         const stopoverCities = selectedHubs.map(h => getCityByCode(h)?.city || h);
-
         return {
           id: Math.random().toString(36).substr(2, 8).toUpperCase(),
-          airline: legs[0].airline,
-          flightNumber: legs[0].flightNumber,
-          departure: legs[0].departure,
-          arrival: legs[legs.length - 1].arrival,
+          airline: legs[0].airline, flightNumber: legs[0].flightNumber,
+          departure: legs[0].departure, arrival: legs[legs.length - 1].arrival,
           duration: `${totalDurationHours}ч ${totalDurationMins}м`,
           price: Math.floor(Math.random() * 45000) + 12000 - stops * 3000,
-          from: fromCode, to: toCode, dateFrom, dateTo,
-          gate: legs[0].gate,
-          hasFood: Math.random() > 0.35,
-          stops, legs, stopoverCities, stopoverDurations,
-          isDirect: stops === 0
+          from: fromCode, to: toCode, dateFrom, dateTo, gate: legs[0].gate,
+          hasFood: Math.random() > 0.35, stops, legs, stopoverCities, stopoverDurations, isDirect: stops === 0
         };
       });
     };
@@ -354,26 +318,16 @@
         qrRef.current.innerHTML = ""; 
         new QRCode(qrRef.current, { text, width: 80, height: 80, colorDark: "#1e293b", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.L });
       }, [text]);
-      return <div ref={qrRef} className="p-1.5 bg-white border rounded-lg shadow-sm dark:bg-slate-700 dark:border-slate-600"></div>;
+      return <div ref={qrRef} className="p-1.5 bg-white dark:bg-slate-700 border dark:border-slate-600 rounded-lg shadow-sm"></div>;
     };
 
     const FlightRouteDisplay = ({ flight }) => {
       if (flight.isDirect) {
         return (
           <div className="flex justify-between items-center">
-            <div>
-              <div className="text-2xl font-bold text-slate-800 dark:text-slate-100">{flight.departure}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">{flight.from} ({getCityByCode(flight.from)?.timezone || ''})</div>
-            </div>
-            <div className="text-center flex-1 px-4 text-xs text-gray-400 dark:text-gray-500">
-              <div className="font-semibold text-slate-600 dark:text-slate-300">{flight.duration}</div>
-              <div className="h-px bg-gray-200 dark:bg-slate-600 my-1 relative"></div>
-              <div className="text-[10px] text-green-600 dark:text-green-400 font-bold">Прямой рейс</div>
-            </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-slate-800 dark:text-slate-100">{flight.arrival}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">{flight.to} ({getCityByCode(flight.to)?.timezone || ''})</div>
-            </div>
+            <div><div className="text-2xl font-bold text-slate-800 dark:text-slate-100">{flight.departure}</div><div className="text-xs text-gray-500 dark:text-gray-400 font-mono">{flight.from}</div></div>
+            <div className="text-center flex-1 px-4 text-xs text-gray-400 dark:text-gray-500"><div className="font-semibold text-slate-600 dark:text-slate-300">{flight.duration}</div><div className="h-px bg-gray-200 dark:bg-slate-600 my-1"></div><div className="text-[10px] text-green-600 dark:text-green-400 font-bold">Прямой рейс</div></div>
+            <div className="text-right"><div className="text-2xl font-bold text-slate-800 dark:text-slate-100">{flight.arrival}</div><div className="text-xs text-gray-500 dark:text-gray-400 font-mono">{flight.to}</div></div>
           </div>
         );
       }
@@ -382,24 +336,13 @@
           {flight.legs.map((leg, idx) => (
             <React.Fragment key={idx}>
               <div className="flex justify-between items-center">
-                <div>
-                  <div className="text-lg font-bold text-slate-800 dark:text-slate-100">{leg.departure}</div>
-                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-mono">{leg.from} ({getCityByCode(leg.from)?.timezone || ''})</div>
-                </div>
-                <div className="text-center flex-1 px-3 text-xs text-gray-400 dark:text-gray-500">
-                  <div className="font-semibold text-slate-600 dark:text-slate-300">{leg.duration}</div>
-                  <div className="h-px bg-gray-200 dark:bg-slate-600 my-0.5 relative"></div>
-                  <div className="text-[9px] font-mono">{leg.flightNumber}</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold text-slate-800 dark:text-slate-100">{leg.arrival}</div>
-                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-mono">{leg.to} ({getCityByCode(leg.to)?.timezone || ''})</div>
-                </div>
+                <div><div className="text-lg font-bold text-slate-800 dark:text-slate-100">{leg.departure}</div><div className="text-[10px] text-gray-500 dark:text-gray-400 font-mono">{leg.from}</div></div>
+                <div className="text-center flex-1 px-3 text-xs text-gray-400 dark:text-gray-500"><div className="font-semibold text-slate-600 dark:text-slate-300">{leg.duration}</div><div className="h-px bg-gray-200 dark:bg-slate-600 my-0.5"></div><div className="text-[9px] font-mono">{leg.flightNumber}</div></div>
+                <div className="text-right"><div className="text-lg font-bold text-slate-800 dark:text-slate-100">{leg.arrival}</div><div className="text-[10px] text-gray-500 dark:text-gray-400 font-mono">{leg.to}</div></div>
               </div>
               {idx < flight.legs.length - 1 && (
                 <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-lg px-3 py-2 text-[10px] font-bold text-amber-700 dark:text-amber-400 flex items-center gap-2">
-                  <IconStopover />
-                  <span>Пересадка: {flight.stopoverCities[idx]}, ожидание {Math.floor(flight.stopoverDurations[idx] / 60)}ч {flight.stopoverDurations[idx] % 60}м</span>
+                  <IconStopover /><span>Пересадка: {flight.stopoverCities[idx]}, ожидание {Math.floor(flight.stopoverDurations[idx] / 60)}ч {flight.stopoverDurations[idx] % 60}м</span>
                 </div>
               )}
             </React.Fragment>
@@ -411,16 +354,10 @@
     function App() {
       const [darkMode, setDarkMode] = React.useState(() => {
         const saved = localStorage.getItem('skygen_dark_mode');
-        if (saved !== null) return saved === 'true';
-        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+        return saved !== null ? saved === 'true' : window.matchMedia('(prefers-color-scheme: dark)').matches;
       });
-
       React.useEffect(() => {
-        if (darkMode) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
+        document.documentElement.classList.toggle('dark', darkMode);
         localStorage.setItem('skygen_dark_mode', darkMode);
       }, [darkMode]);
 
@@ -429,22 +366,12 @@
       const [sortBy, setSortBy] = React.useState('cheap'); 
       const [citySortType, setCitySortType] = React.useState('city'); 
       const [cityCards, setCityCards] = React.useState([]);
-
       const [params, setParams] = React.useState(() => ({
-        from: localStorage.getItem('skygen_home_city') || 'SVO',
-        to: 'KUL',
+        from: localStorage.getItem('skygen_home_city') || 'SVO', to: 'KUL',
         dateFrom: new Date().toISOString().split('T')[0],
         dateTo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        passengers: 1, flightClass: 'Эконом', baggage: true, pet: false,
-        priceMin: 0, priceMax: 100000
+        passengers: 1, flightClass: 'Эконом', baggage: true, pet: false, priceMin: 0, priceMax: 100000
       }));
-
-      const handleFromCityChange = (e) => {
-        const selectedCode = e.target.value;
-        localStorage.setItem('skygen_home_city', selectedCode); 
-        setParams(prev => ({ ...prev, from: selectedCode }));
-      };
-      
       const [flights, setFlights] = React.useState([]);
       const [selectedFlight, setSelectedFlight] = React.useState(null);
       const [currentHotelsList, setCurrentHotelsList] = React.useState([]);
@@ -452,8 +379,7 @@
       const [currentAttractionsList, setCurrentAttractionsList] = React.useState([]);
       const [selectedAttractions, setSelectedAttractions] = React.useState([]);
       const [selectedFoodMenu, setSelectedFoodMenu] = React.useState({
-        main: FOOD_MENU_OPTIONS.mains[0], side: FOOD_MENU_OPTIONS.sides[0],
-        drink: FOOD_MENU_OPTIONS.drinks[0], dessert: FOOD_MENU_OPTIONS.desserts[0]
+        main: FOOD_MENU_OPTIONS.mains[0], side: FOOD_MENU_OPTIONS.sides[0], drink: FOOD_MENU_OPTIONS.drinks[0], dessert: FOOD_MENU_OPTIONS.desserts[0]
       });
       const [isFoodSkipped, setIsFoodSkipped] = React.useState(false);
       const [occupiedSeats, setOccupiedSeats] = React.useState([]);
@@ -467,11 +393,7 @@
 
       React.useEffect(() => {
         const selectedForCards = [...CITIES].sort(() => 0.5 - Math.random()).slice(0, 8);
-        const generatedCards = selectedForCards.map(cityObj => {
-          const mockFlight = generateFlights("SVO", cityObj.code, params.dateFrom, params.dateTo, 1)[0];
-          return { ...cityObj, price: mockFlight.price, flight: mockFlight };
-        });
-        setCityCards(generatedCards);
+        setCityCards(selectedForCards.map(cityObj => ({ ...cityObj, price: generateFlights("SVO", cityObj.code, params.dateFrom, params.dateTo, 1)[0].price })));
       }, []);
 
       React.useEffect(() => {
@@ -479,37 +401,10 @@
         if (count < 1) return;
         setPassengerNames(prev => {
           const next = [...prev];
-          if (next.length < count) {
-            for (let i = next.length; i < count; i++) next.push(`PASSENGER ${i + 1}`);
-          } else if (next.length > count) return next.slice(0, count);
-          return next;
+          while (next.length < count) next.push(`PASSENGER ${next.length + 1}`);
+          return next.slice(0, count);
         });
       }, [params.passengers]);
-
-      const handleDateFromChange = (e) => {
-        const newDateFrom = e.target.value;
-        let newDateTo = params.dateTo;
-        if (new Date(newDateFrom) > new Date(newDateTo)) newDateTo = newDateFrom;
-        setParams({ ...params, dateFrom: newDateFrom, dateTo: newDateTo });
-      };
-
-      const handlePassengersChange = (e) => {
-        const valStr = e.target.value;
-        if (valStr === '') { setParams({ ...params, passengers: 0 }); return; }
-        let val = Math.floor(Number(valStr));
-        if (val > 5) val = 5; 
-        setParams({ ...params, passengers: val });
-      };
-
-      const handlePriceMinChange = (e) => {
-        const val = e.target.value === '' ? 0 : Math.max(0, Number(e.target.value));
-        setParams({ ...params, priceMin: val });
-      };
-
-      const handlePriceMaxChange = (e) => {
-        const val = e.target.value === '' ? 999999 : Math.max(0, Number(e.target.value));
-        setParams({ ...params, priceMax: val });
-      };
 
       const handleSearch = (e) => {
         if(e) e.preventDefault();
@@ -520,15 +415,6 @@
         setStep('results');
       };
 
-      const selectCityCard = (targetCode) => {
-        if(params.from === targetCode) { alert("Этот город уже выбран как пункт отправления. Выберите другой город!"); return; }
-        setParams({ ...params, to: targetCode });
-        setTimeout(() => {
-          setFlights(generateFlights(params.from, targetCode, params.dateFrom, params.dateTo, 6));
-          setStep('results');
-        }, 100);
-      };
-
       const goToSeatSelection = (flight) => {
         setSelectedFlight(flight);
         setSelectedHotel(null);
@@ -536,10 +422,8 @@
         setChosenSeats([]); 
         setIsFoodSkipped(false);
         const occupied = [];
-        const rows = 12;
-        const cols = ['A','B','C','D','E','F'];
-        for (let r = 1; r <= rows; r++) {
-          cols.forEach(c => { if (Math.random() < 0.4) occupied.push(`${r}${c}`); });
+        for (let r = 1; r <= 12; r++) {
+          ['A','B','C','D','E','F'].forEach(c => { if (Math.random() < 0.4) occupied.push(`${r}${c}`); });
         }
         setOccupiedSeats(occupied);
         setStep('seats');
@@ -553,96 +437,50 @@
         const targetCityObj = CITIES.find(c => c.code === params.to) || { hotelCount: 3 };
         const shuffledNames = [...HOTEL_NAMES_POOL].sort(() => 0.5 - Math.random());
         const shuffledDistricts = [...HOTEL_DISTRICTS_POOL].sort(() => 0.5 - Math.random());
-        const generatedHotels = Array.from({ length: targetCityObj.hotelCount }).map((_, i) => {
-          const hotelTemplate = shuffledNames[i % shuffledNames.length];
-          return {
-            name: hotelTemplate.name, stars: hotelTemplate.stars,
-            price: Math.max(3000, hotelTemplate.price + Math.floor((Math.random() - 0.5) * 2000)),
-            img: hotelTemplate.img, district: shuffledDistricts[i % shuffledDistricts.length]
-          };
-        });
-        setCurrentHotelsList(generatedHotels);
+        setCurrentHotelsList(Array.from({ length: targetCityObj.hotelCount }).map((_, i) => ({
+          name: shuffledNames[i % shuffledNames.length].name,
+          stars: shuffledNames[i % shuffledNames.length].stars,
+          price: Math.max(3000, shuffledNames[i % shuffledNames.length].price + Math.floor((Math.random() - 0.5) * 2000)),
+          img: shuffledNames[i % shuffledNames.length].img,
+          district: shuffledDistricts[i % shuffledDistricts.length]
+        })));
         setStep('hotels');
       };
 
       const handleOpenAttractionsStep = (hotelObj = null) => {
-        if (hotelObj) setSelectedHotel({ ...hotelObj, totalTripPrice: hotelObj.price * params.passengers });
-        else setSelectedHotel(null);
+        setSelectedHotel(hotelObj ? { ...hotelObj, totalTripPrice: hotelObj.price * params.passengers } : null);
         const targetCityObj = CITIES.find(c => c.code === params.to) || { attractionCount: 3 };
-        const shuffledAttractions = [...ATTRACTIONS_POOL].sort(() => 0.5 - Math.random());
-        const generatedAttractions = Array.from({ length: targetCityObj.attractionCount }).map((_, i) => {
-          return { ...shuffledAttractions[i % shuffledAttractions.length] };
-        });
-        setCurrentAttractionsList(generatedAttractions);
+        const shuffled = [...ATTRACTIONS_POOL].sort(() => 0.5 - Math.random());
+        setCurrentAttractionsList(Array.from({ length: targetCityObj.attractionCount }).map((_, i) => ({ ...shuffled[i % shuffled.length] })));
         setSelectedAttractions([]);
         setStep('attractions');
       };
 
       const toggleAttraction = (attraction) => {
-        setSelectedAttractions(prev => {
-          const exists = prev.find(a => a.name === attraction.name);
-          if (exists) return prev.filter(a => a.name !== attraction.name);
-          return [...prev, attraction];
-        });
+        setSelectedAttractions(prev => prev.find(a => a.name === attraction.name) ? prev.filter(a => a.name !== attraction.name) : [...prev, attraction]);
       };
 
       const handleNextAfterAttractions = () => {
-        if (selectedFlight.hasFood) setStep('food');
+        if (selectedFlight && selectedFlight.hasFood) setStep('food');
         else setStep('ticket');
       };
 
-      const handleSeatClick = (seatId, isBusinessRow) => {
-        if (isBusinessRow && params.flightClass !== 'Бизнес') { alert("Эти места доступны только для Бизнес-класса!"); return; }
-        if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId));
-        else {
-          if (chosenSeats.length >= Number(params.passengers)) {
-            alert(`Вы выбрали максимальное количество мест для ${params.passengers} пасс.`);
-            return;
-          }
-          setChosenSeats([...chosenSeats, seatId]);
-        }
-      };
-
-      const handleNameChange = (index, value) => {
-        const updatedNames = [...passengerNames];
-        updatedNames[index] = value.toUpperCase();
-        setPassengerNames(updatedNames);
-      };
-
-      const handleDownloadTicket = async () => {
-        if (!ticketRef.current) return;
-        const canvas = await html2canvas(ticketRef.current, { scale: 2, backgroundColor: darkMode ? '#1e293b' : '#ffffff' });
-        const link = document.createElement('a');
-        link.download = `SkyGen_Trip_${selectedFlight.flightNumber}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      };
-
       const saveToMyTrips = () => {
+        if (!selectedFlight) { alert("Ошибка: рейс не выбран!"); return; }
         const tripId = selectedFlight.id + chosenSeats.join('-');
-        if (trips.some(t => t.tripId === tripId)) { alert("Этот билет уже сохранён в Мои поездки!"); return; }
+        if (trips.some(t => t.tripId === tripId)) { alert("Этот билет уже сохранён!"); return; }
         const newTrip = {
-          tripId, flight: selectedFlight, hotel: selectedHotel,
-          attractions: selectedAttractions,
+          tripId, flight: selectedFlight, hotel: selectedHotel, attractions: selectedAttractions,
           foodMenu: (selectedFlight.hasFood && !isFoodSkipped) ? selectedFoodMenu : null,
           seats: chosenSeats, passengers: passengerNames, class: params.flightClass,
           options: { baggage: params.baggage, pet: params.pet }
         };
-        const updatedTrips = [newTrip, ...trips];
-        setTrips(updatedTrips);
-        localStorage.setItem('skygen_trips', JSON.stringify(updatedTrips));
+        setTrips([newTrip, ...trips]);
+        localStorage.setItem('skygen_trips', JSON.stringify([newTrip, ...trips]));
         alert("Успешно добавлено в 'Мои поездки'!");
       };
 
-      const deleteTrip = (e, tripId) => {
-        e.stopPropagation();
-        const updated = trips.filter(t => t.tripId !== tripId);
-        setTrips(updated);
-        localStorage.setItem('skygen_trips', JSON.stringify(updated));
-      };
-
       const filteredFlights = flights.filter(f => f.price >= params.priceMin && f.price <= params.priceMax);
-
       const sortedFlights = [...filteredFlights].sort((a, b) => {
         if (sortBy === 'cheap') return a.price - b.price;
         if (sortBy === 'expensive') return b.price - a.price;
@@ -653,49 +491,57 @@
         return a.price - b.price;
       });
 
-      const isAllSeatsSelected = chosenSeats.length === Number(params.passengers) && params.passengers > 0;
+      const getCityInfo = (code) => CITIES.find(c => c.code === code) || { city: code, country: "", timezone: "", weather: "" };
+      const getSortedCitiesList = () => [...CITIES].sort((a, b) => {
+        if (citySortType === 'city') return a.city.localeCompare(b.city, 'ru');
+        if (citySortType === 'country') return a.country.localeCompare(b.country, 'ru') || a.city.localeCompare(b.city, 'ru');
+        if (citySortType === 'hotelsDesc') return b.hotelCount - a.hotelCount || a.city.localeCompare(b.city, 'ru');
+        if (citySortType === 'hotelsAsc') return a.hotelCount - b.hotelCount || a.city.localeCompare(b.city, 'ru');
+        if (citySortType === 'attractionsDesc') return b.attractionCount - a.attractionCount || a.city.localeCompare(b.city, 'ru');
+        if (citySortType === 'attractionsAsc') return a.attractionCount - b.attractionCount || a.city.localeCompare(b.city, 'ru');
+        return a.city.localeCompare(b.city, 'ru');
+      });
 
-      const getCityInfo = (code) => CITIES.find(c => c.code === code) || { city: code, country: "", timezone: "", weather: "", hotelCount: 0, attractionCount: 0 };
+      const totalAttractionTime = selectedAttractions.reduce((acc, a) => {
+        const nums = a.duration.match(/\d+/g);
+        if (!nums) return acc;
+        return acc + (nums.length === 2 ? parseInt(nums[0]) + parseInt(nums[1]) / 60 : parseFloat(nums[0]));
+      }, 0);
 
-      const getSortedCitiesList = () => {
-        return [...CITIES].sort((a, b) => {
-          if (citySortType === 'city') return a.city.localeCompare(b.city, 'ru');
-          if (citySortType === 'country') return a.country.localeCompare(b.country, 'ru') || a.city.localeCompare(b.city, 'ru');
-          if (citySortType === 'hotelsDesc') return b.hotelCount - a.hotelCount || a.city.localeCompare(b.city, 'ru');
-          if (citySortType === 'hotelsAsc') return a.hotelCount - b.hotelCount || a.city.localeCompare(b.city, 'ru');
-          if (citySortType === 'attractionsDesc') return b.attractionCount - a.attractionCount || a.city.localeCompare(b.city, 'ru');
-          if (citySortType === 'attractionsAsc') return a.attractionCount - b.attractionCount || a.city.localeCompare(b.city, 'ru');
-          return a.city.localeCompare(b.city, 'ru');
-        });
+      // Вспомогательная функция для безопасного перехода к билету
+      const goToTicketSafely = (flight, hotel, attractions, foodMenu, foodSkipped, seats, names, cls, bag, pet) => {
+        if (!flight) { alert("Ошибка: данные рейса отсутствуют!"); setStep('search'); return; }
+        setSelectedFlight(flight);
+        setSelectedHotel(hotel || null);
+        setSelectedAttractions(attractions || []);
+        if (foodMenu) { setSelectedFoodMenu(foodMenu); setIsFoodSkipped(false); }
+        else { setIsFoodSkipped(true); }
+        setChosenSeats(seats || []);
+        setPassengerNames(names || ['GUEST']);
+        setParams(prev => ({ ...prev, passengers: (names || ['GUEST']).length, flightClass: cls || 'Эконом', baggage: bag !== undefined ? bag : true, pet: pet !== undefined ? pet : false }));
+        setStep('ticket');
       };
 
       const StepIndicator = () => {
         if (step === 'search' || step === 'trips') return null;
         const stepsList = [
-          { key: 'results', label: 'Выбор рейса' },
-          { key: 'seats', label: 'Места' },
-          { key: 'hotels', label: 'Отель' },
-          { key: 'attractions', label: 'Достоприм.' },
+          { key: 'results', label: 'Рейс' }, { key: 'seats', label: 'Места' }, { key: 'hotels', label: 'Отель' },
+          { key: 'attractions', label: 'Достопр.' },
           ...(selectedFlight?.hasFood ? [{ key: 'food', label: 'Питание' }] : []),
           { key: 'ticket', label: 'Билет' }
         ];
         return (
-          <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border dark:border-slate-700 mb-6 shadow-sm flex items-center justify-between overflow-x-auto hide-scrollbar">
+          <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border dark:border-slate-700 mb-6 shadow-sm flex items-center overflow-x-auto hide-scrollbar">
             {stepsList.map((s, index) => {
               const isCurrent = step === s.key;
               const isPassed = stepsList.findIndex(x => x.key === step) > index;
               return (
                 <div key={s.key} className="flex items-center flex-1 last:flex-none flex-shrink-0">
                   <div className="flex items-center gap-2">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all flex-shrink-0 ${
-                      isCurrent ? 'bg-[#0057b8] text-white ring-4 ring-blue-100 dark:ring-blue-900' : 
-                      isPassed ? 'bg-green-500 text-white' : 'bg-gray-100 dark:bg-slate-600 text-gray-400 dark:text-slate-300'
-                    }`}>{isPassed ? '✓' : index + 1}</div>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${isCurrent ? 'bg-[#0057b8] text-white ring-4 ring-blue-100 dark:ring-blue-900' : isPassed ? 'bg-green-500 text-white' : 'bg-gray-100 dark:bg-slate-600 text-gray-400 dark:text-slate-300'}`}>{isPassed ? '✓' : index + 1}</div>
                     <span className={`text-xs font-bold hidden sm:inline whitespace-nowrap ${isCurrent ? 'text-slate-800 dark:text-slate-100' : 'text-gray-400 dark:text-slate-500'}`}>{s.label}</span>
                   </div>
-                  {index < stepsList.length - 1 && (
-                    <div className={`h-0.5 flex-1 mx-2 rounded ${isPassed ? 'bg-green-300 dark:bg-green-700' : 'bg-gray-100 dark:bg-slate-600'}`}></div>
-                  )}
+                  {index < stepsList.length - 1 && <div className={`h-0.5 flex-1 mx-2 rounded ${isPassed ? 'bg-green-300 dark:bg-green-700' : 'bg-gray-100 dark:bg-slate-600'}`}></div>}
                 </div>
               );
             })}
@@ -703,141 +549,69 @@
         );
       };
 
-      const totalAttractionTime = selectedAttractions.reduce((acc, a) => {
-        const nums = a.duration.match(/\d+/g);
-        if (!nums) return acc;
-        let hours = 0;
-        if (nums.length === 2) hours = parseInt(nums[0]) + parseInt(nums[1]) / 60;
-        else hours = parseFloat(nums[0]);
-        return acc + hours;
-      }, 0);
-
       return (
         <div className="min-h-screen flex flex-col pb-10">
           <header className="bg-[#0057b8] text-white py-4 px-6 shadow-md flex items-center justify-between z-10 sticky top-0">
-            <div className="flex items-center gap-2 text-xl font-bold tracking-wider cursor-pointer" onClick={() => {setStep('search'); setIsSearchOpen(true);}}>
-              <IconPlane />
-              <span>SKYGEN</span>
-            </div>
+            <div className="flex items-center gap-2 text-xl font-bold tracking-wider cursor-pointer" onClick={() => {setStep('search'); setIsSearchOpen(true);}}><IconPlane /><span>SKYGEN</span></div>
             <div className="flex items-center gap-2">
-              <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-lg hover:bg-blue-800 transition-colors" title={darkMode ? 'Светлая тема' : 'Тёмная тема'}>
-                {darkMode ? <IconSun /> : <IconMoon />}
-              </button>
-              <button onClick={() => setStep('trips')} className="flex items-center gap-1.5 bg-blue-800 hover:bg-blue-900 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors">
-                <IconBriefcase />
-                <span className="hidden sm:inline">Мои поездки</span>
-              </button>
+              <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-lg hover:bg-blue-800 transition-colors">{darkMode ? <IconSun /> : <IconMoon />}</button>
+              <button onClick={() => setStep('trips')} className="flex items-center gap-1.5 bg-blue-800 hover:bg-blue-900 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors"><IconBriefcase /><span className="hidden sm:inline">Мои поездки</span></button>
             </div>
           </header>
-
           <main className="max-w-4xl mx-auto w-full py-6 px-4 flex-1">
             <StepIndicator />
 
             {step === 'search' && (
               <div className="space-y-8">
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-700 overflow-hidden transition-all duration-300">
-                  <div className="p-5 flex justify-between items-center bg-[#0057b8] text-white cursor-pointer active:bg-blue-800 transition-colors" onClick={() => setIsSearchOpen(!isSearchOpen)}>
-                    <h1 className="text-xl font-bold flex items-center gap-3"><IconTicket /> Панель бронирования авиабилетов & отелей</h1>
-                    <span className="text-2xl leading-none font-light">{isSearchOpen ? '−' : '+'}</span>
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-700 overflow-hidden">
+                  <div className="p-5 flex justify-between items-center bg-[#0057b8] text-white cursor-pointer" onClick={() => setIsSearchOpen(!isSearchOpen)}>
+                    <h1 className="text-xl font-bold flex items-center gap-3"><IconTicket /> Панель бронирования</h1>
+                    <span className="text-2xl font-light">{isSearchOpen ? '−' : '+'}</span>
                   </div>
                   {isSearchOpen && (
                     <div className="p-6">
-                      <form onSubmit={handleSearch} noValidate className="space-y-4">
+                      <form onSubmit={handleSearch} className="space-y-4">
                         <div className="flex justify-end gap-2 flex-wrap text-xs font-bold text-gray-400 dark:text-gray-500 border-b dark:border-slate-600 pb-2">
-                          <span>Сортировка списков:</span>
+                          <span>Сортировка:</span>
                           {['city','country','hotelsDesc','hotelsAsc','attractionsDesc','attractionsAsc'].map(t => (
                             <button key={t} type="button" onClick={() => setCitySortType(t)} className={`hover:text-[#0057b8] dark:hover:text-blue-400 px-1 ${citySortType === t ? 'text-[#0057b8] dark:text-blue-400 underline' : ''}`}>
-                              {t === 'city' ? 'По городу' : t === 'country' ? 'По стране' : t === 'hotelsDesc' ? 'Отели ↓' : t === 'hotelsAsc' ? 'Отели ↑' : t === 'attractionsDesc' ? 'Достопр. ↓' : 'Достопр. ↑'}
+                              {t==='city'?'По городу':t==='country'?'По стране':t==='hotelsDesc'?'Отели ↓':t==='hotelsAsc'?'Отели ↑':t==='attractionsDesc'?'Достопр. ↓':'Достопр. ↑'}
                             </button>
                           ))}
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Пункт вылета (Откуда)</label>
-                            <select value={params.from} onChange={handleFromCityChange} className="w-full p-3 border dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 outline-none focus:border-[#0057b8] text-sm font-medium dark:text-slate-100">
-                              {getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country} [{c.timezone}]</option>)}
-                            </select>
-                            <div className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 flex gap-3 px-1">
-                              <span><IconCloud /> Погода: {getCityInfo(params.from).weather}</span>
-                              <span><IconClock /> Пояс: {getCityInfo(params.from).timezone}</span>
-                            </div>
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Пункт назначения (Куда)</label>
-                            <select value={params.to} onChange={e => setParams({...params, to: e.target.value})} className="w-full p-3 border dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 outline-none focus:border-[#0057b8] text-sm font-medium dark:text-slate-100">
-                              {getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country} [{c.timezone}]</option>)}
-                            </select>
-                            <div className="text-[11px] text-blue-600 dark:text-blue-400 mt-1 flex gap-3 px-1 font-semibold">
-                              <span><IconCloud /> Погода: {getCityInfo(params.to).weather}</span>
-                              <span><IconClock /> Пояс: {getCityInfo(params.to).timezone}</span>
-                            </div>
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Дата туда</label>
-                            <input type="date" value={params.dateFrom} onChange={handleDateFromChange} className="w-full p-3 border dark:border-slate-600 rounded-xl outline-none focus:border-[#0057b8] font-medium bg-white dark:bg-slate-700 dark:text-slate-100" />
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Дата обратно</label>
-                            <input type="date" value={params.dateTo} onChange={e => setParams({...params, dateTo: e.target.value})} className="w-full p-3 border dark:border-slate-600 rounded-xl outline-none focus:border-[#0057b8] font-medium bg-white dark:bg-slate-700 dark:text-slate-100" />
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Класс обслуживания</label>
-                            <select value={params.flightClass} onChange={e => setParams({...params, flightClass: e.target.value})} className="w-full p-3 border dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 outline-none focus:border-[#0057b8] font-medium dark:text-slate-100">
-                              <option>Эконом</option><option>Бизнес</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Количество пассажиров (1–5)</label>
-                            <input type="number" min="1" max="5" value={params.passengers === 0 ? '' : params.passengers} onChange={handlePassengersChange} className="w-full p-3 border dark:border-slate-600 rounded-xl outline-none focus:border-[#0057b8] font-bold bg-white dark:bg-slate-700 dark:text-slate-100" />
-                          </div>
+                          <div><label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Откуда</label><select value={params.from} onChange={e => { localStorage.setItem('skygen_home_city', e.target.value); setParams({...params, from: e.target.value}); }} className="w-full p-3 border dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 outline-none focus:border-[#0057b8] text-sm dark:text-slate-100">{getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country}</option>)}</select></div>
+                          <div><label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Куда</label><select value={params.to} onChange={e => setParams({...params, to: e.target.value})} className="w-full p-3 border dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 outline-none focus:border-[#0057b8] text-sm dark:text-slate-100">{getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country}</option>)}</select></div>
+                          <div><label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Дата туда</label><input type="date" value={params.dateFrom} onChange={e => { const d = e.target.value; setParams({...params, dateFrom: d, dateTo: new Date(d) > new Date(params.dateTo) ? d : params.dateTo}); }} className="w-full p-3 border dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 outline-none focus:border-[#0057b8] font-medium dark:text-slate-100" /></div>
+                          <div><label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Дата обратно</label><input type="date" value={params.dateTo} onChange={e => setParams({...params, dateTo: e.target.value})} className="w-full p-3 border dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 outline-none focus:border-[#0057b8] font-medium dark:text-slate-100" /></div>
+                          <div><label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Класс</label><select value={params.flightClass} onChange={e => setParams({...params, flightClass: e.target.value})} className="w-full p-3 border dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 outline-none focus:border-[#0057b8] font-medium dark:text-slate-100"><option>Эконом</option><option>Бизнес</option></select></div>
+                          <div><label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Пассажиры (1–5)</label><input type="number" min="1" max="5" value={params.passengers || ''} onChange={e => { const v = e.target.value; setParams({...params, passengers: v === '' ? 0 : Math.min(5, Math.floor(Number(v)))}); }} className="w-full p-3 border dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 outline-none focus:border-[#0057b8] font-bold dark:text-slate-100" /></div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Цена от (₽)</label>
-                            <input type="number" min="0" value={params.priceMin === 0 ? '' : params.priceMin} onChange={handlePriceMinChange} placeholder="0" className="w-full p-3 border dark:border-slate-600 rounded-xl outline-none focus:border-[#0057b8] font-medium bg-white dark:bg-slate-700 dark:text-slate-100" />
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Цена до (₽)</label>
-                            <input type="number" min="0" value={params.priceMax >= 999999 ? '' : params.priceMax} onChange={handlePriceMaxChange} placeholder="100000" className="w-full p-3 border dark:border-slate-600 rounded-xl outline-none focus:border-[#0057b8] font-medium bg-white dark:bg-slate-700 dark:text-slate-100" />
-                          </div>
+                          <div><label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Цена от (₽)</label><input type="number" min="0" value={params.priceMin === 0 ? '' : params.priceMin} onChange={e => setParams({...params, priceMin: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value))})} placeholder="0" className="w-full p-3 border dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 outline-none focus:border-[#0057b8] font-medium dark:text-slate-100" /></div>
+                          <div><label className="text-xs font-bold text-gray-400 dark:text-gray-500 block mb-1">Цена до (₽)</label><input type="number" min="0" value={params.priceMax >= 999999 ? '' : params.priceMax} onChange={e => setParams({...params, priceMax: e.target.value === '' ? 999999 : Math.max(0, Number(e.target.value))})} placeholder="100000" className="w-full p-3 border dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 outline-none focus:border-[#0057b8] font-medium dark:text-slate-100" /></div>
                         </div>
-                        <div className="flex gap-6 pt-2 text-sm font-medium text-slate-600 dark:text-slate-300">
-                          <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={params.baggage} onChange={e => setParams({...params, baggage: e.target.checked})} className="w-4 h-4 accent-[#0057b8]" /><span>Багаж включен</span></label>
-                          <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={params.pet} onChange={e => setParams({...params, pet: e.target.checked})} className="w-4 h-4 accent-[#0057b8]" /><span>Путешествие с питомцем</span></label>
+                        <div className="flex gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
+                          <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={params.baggage} onChange={e => setParams({...params, baggage: e.target.checked})} className="w-4 h-4 accent-[#0057b8]" />Багаж</label>
+                          <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={params.pet} onChange={e => setParams({...params, pet: e.target.checked})} className="w-4 h-4 accent-[#0057b8]" />Питомец</label>
                         </div>
-                        <button type="submit" className="w-full bg-[#0057b8] text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition-all text-sm tracking-wide">НАЙТИ ДОСТУПНЫЕ РЕЙСЫ</button>
+                        <button type="submit" className="w-full bg-[#0057b8] text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition-all">НАЙТИ РЕЙСЫ</button>
                       </form>
                     </div>
                   )}
                 </div>
-
                 <div>
                   <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl border border-blue-100 dark:border-slate-600 mb-4 flex justify-between items-center">
-                    <div>
-                      <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">🌍 Обновленные карточки мегаполисов</h2>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Нажмите на карточку любого города, чтобы мгновенно выбрать его целью своего путешествия</p>
-                    </div>
-                    <span className="text-xs font-bold bg-white dark:bg-slate-700 text-[#0057b8] dark:text-blue-400 px-2 py-1 rounded-lg border dark:border-slate-600 shadow-sm">Всего локаций: {CITIES.length}</span>
+                    <div><h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">🌍 Популярные города</h2><p className="text-xs text-gray-500 dark:text-gray-400">Нажмите на карточку для быстрого поиска</p></div>
+                    <span className="text-xs font-bold bg-white dark:bg-slate-700 text-[#0057b8] dark:text-blue-400 px-2 py-1 rounded-lg border dark:border-slate-600">Локаций: {CITIES.length}</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     {cityCards.map(city => (
-                      <div key={city.code} onClick={() => selectCityCard(city.code)} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col justify-between gap-3 cursor-pointer hover:border-[#0057b8] dark:hover:border-blue-500 hover:shadow-md transition-all group relative overflow-hidden">
-                        <div className="absolute top-0 right-0 bg-orange-500 text-white text-[9px] font-black px-2 py-0.5 rounded-bl">RECOMMENDED</div>
-                        <div>
-                          <div className="flex justify-between items-start">
-                            <span className="text-xs font-bold text-gray-400 dark:text-gray-500 block truncate max-w-[70%]">{city.country}</span>
-                            <span className="text-xs font-mono bg-slate-100 dark:bg-slate-700 font-bold px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300">{city.code}</span>
-                          </div>
-                          <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mt-1 group-hover:text-[#0057b8] dark:group-hover:text-blue-400 transition-colors">{city.city}</h3>
-                        </div>
-                        <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-2 space-y-1 text-xs font-medium">
-                          <div className="flex justify-between text-slate-700 dark:text-slate-300"><span>Погода сейчас:</span><span className="font-bold">{city.weather}</span></div>
-                          <div className="flex justify-between text-slate-500 dark:text-slate-400 text-[11px]"><span>Время (пояс):</span><span className="font-bold font-mono text-amber-600 dark:text-amber-400">{city.timezone}</span></div>
-                        </div>
-                        <div className="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-slate-600 text-xs">
-                          <span className="text-gray-400 dark:text-gray-500 font-bold">Отелей: <span className="text-slate-700 dark:text-slate-300">{city.hotelCount}</span></span>
-                          <span className="font-extrabold text-[#0057b8] dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-md">от {city.price.toLocaleString('ru-RU')} ₽</span>
-                        </div>
+                      <div key={city.code} onClick={() => { if(params.from === city.code) { alert("Выберите другой город!"); return; } setParams({...params, to: city.code}); setTimeout(() => { setFlights(generateFlights(params.from, city.code, params.dateFrom, params.dateTo, 6)); setStep('results'); }, 100); }} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col gap-3 cursor-pointer hover:border-[#0057b8] dark:hover:border-blue-500 hover:shadow-md transition-all group relative overflow-hidden">
+                        <div className="absolute top-0 right-0 bg-orange-500 text-white text-[9px] font-black px-2 py-0.5 rounded-bl">REC</div>
+                        <div><div className="flex justify-between"><span className="text-xs text-gray-400 dark:text-gray-500 truncate">{city.country}</span><span className="text-xs font-mono bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">{city.code}</span></div><h3 className="text-lg font-black mt-1 group-hover:text-[#0057b8] dark:group-hover:text-blue-400">{city.city}</h3></div>
+                        <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-2 text-xs"><div className="flex justify-between"><span>Погода:</span><span className="font-bold">{city.weather}</span></div><div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400"><span>Пояс:</span><span className="font-mono text-amber-600 dark:text-amber-400">{city.timezone}</span></div></div>
+                        <div className="flex justify-between text-xs pt-2 border-t dark:border-slate-600"><span className="text-gray-400 dark:text-gray-500">Отелей: <span className="text-slate-700 dark:text-slate-300">{city.hotelCount}</span></span><span className="font-extrabold text-[#0057b8] dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-md">от {city.price?.toLocaleString('ru-RU')} ₽</span></div>
                       </div>
                     ))}
                   </div>
@@ -847,47 +621,33 @@
 
             {step === 'results' && (
               <div className="space-y-4">
-                <div className="flex justify-between mb-2 items-center flex-wrap gap-2">
-                  <button onClick={() => {setStep('search'); setIsSearchOpen(true);}} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold hover:underline">← Изменить критерии поиска</button>
-                  <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="p-1.5 border dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-xs text-[#0057b8] dark:text-blue-400 font-bold outline-none border-blue-200 dark:border-blue-800">
-                    <option value="cheap">Сначала дешёвые</option>
-                    <option value="expensive">Сначала дорогие</option>
-                    <option value="foodFirst">С питанием — сверху</option>
-                    <option value="noFoodFirst">Без питания — сверху</option>
-                    <option value="directFirst">Прямые рейсы — сверху</option>
-                    <option value="stopsFirst">С пересадками — сверху</option>
+                <div className="flex justify-between flex-wrap gap-2">
+                  <button onClick={() => {setStep('search'); setIsSearchOpen(true);}} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold hover:underline">← Изменить поиск</button>
+                  <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="p-1.5 border dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-xs text-[#0057b8] dark:text-blue-400 font-bold">
+                    <option value="cheap">Сначала дешёвые</option><option value="expensive">Сначала дорогие</option><option value="foodFirst">С питанием сверху</option><option value="noFoodFirst">Без питания сверху</option><option value="directFirst">Прямые сверху</option><option value="stopsFirst">С пересадками сверху</option>
                   </select>
                 </div>
-                <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-sm">
-                  <div>
-                    <h2 className="text-xl font-bold dark:text-slate-100">Рейсы: {getCityInfo(params.from).city} → {getCityInfo(params.to).city}</h2>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Дата: {params.dateFrom} – {params.dateTo} | Цена: {params.priceMin.toLocaleString('ru-RU')} – {params.priceMax.toLocaleString('ru-RU')} ₽</p>
-                  </div>
-                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-2.5 text-xs font-semibold text-slate-700 dark:text-slate-300 border dark:border-slate-600 flex gap-4">
-                    <div>📍 {getCityInfo(params.to).city}</div>
-                    <div>Погода: <span className="text-orange-600 dark:text-orange-400 font-bold">{getCityInfo(params.to).weather}</span></div>
-                    <div>Пояс: <span className="text-amber-600 dark:text-amber-400 font-bold font-mono">{getCityInfo(params.to).timezone}</span></div>
-                  </div>
+                <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border dark:border-slate-700 shadow-sm">
+                  <h2 className="text-xl font-bold dark:text-slate-100">Рейсы: {getCityInfo(params.from).city} → {getCityInfo(params.to).city}</h2>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">Даты: {params.dateFrom} – {params.dateTo} | Цена: {params.priceMin.toLocaleString('ru-RU')} – {params.priceMax.toLocaleString('ru-RU')} ₽</p>
                 </div>
                 {sortedFlights.length === 0 && (
-                  <div className="text-center py-8 bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 text-gray-400 dark:text-gray-500 font-semibold">
-                    Нет рейсов в заданном диапазоне цен. Попробуйте изменить фильтры.
-                  </div>
+                  <div className="text-center py-8 bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 text-gray-400 dark:text-gray-500">Нет рейсов в заданном диапазоне цен.</div>
                 )}
                 {sortedFlights.map(flight => (
-                  <div key={flight.id} className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col gap-4 hover:shadow-md transition-shadow">
-                    <div className="flex justify-between text-xs font-bold text-gray-400 dark:text-gray-500">
+                  <div key={flight.id} className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border dark:border-slate-700 flex flex-col gap-4 hover:shadow-md transition-shadow">
+                    <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500">
                       <span>{flight.airline}</span>
                       <div className="flex gap-2 items-center">
-                        {!flight.isDirect && <span className="text-[10px] px-2 py-0.5 rounded font-bold bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-700">{flight.stops === 1 ? '1 пересадка' : '2 пересадки'}</span>}
+                        {!flight.isDirect && <span className="text-[10px] px-2 py-0.5 rounded font-bold bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-700">{flight.stops} пересад.</span>}
                         <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${flight.hasFood ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-700' : 'bg-gray-100 dark:bg-slate-600 text-gray-400 dark:text-gray-300'}`}>{flight.hasFood ? "🍱 Питание" : "🚫 Без питания"}</span>
                         <span className="font-mono text-slate-600 dark:text-slate-300">{flight.flightNumber}</span>
                       </div>
                     </div>
                     <FlightRouteDisplay flight={flight} />
-                    <div className="flex justify-between items-center pt-3 border-t border-gray-100 dark:border-slate-600">
+                    <div className="flex justify-between items-center pt-3 border-t dark:border-slate-600">
                       <span className="text-xl font-black text-[#0057b8] dark:text-blue-400">{flight.price.toLocaleString('ru-RU')} ₽</span>
-                      <button onClick={() => goToSeatSelection(flight)} className="bg-[#0057b8] text-white px-5 py-2.5 rounded-lg font-bold text-sm active:scale-95 transition-all shadow-sm">Выбрать</button>
+                      <button onClick={() => goToSeatSelection(flight)} className="bg-[#0057b8] text-white px-5 py-2.5 rounded-lg font-bold text-sm active:scale-95 transition-all">Выбрать</button>
                     </div>
                   </div>
                 ))}
@@ -896,59 +656,78 @@
 
             {step === 'seats' && selectedFlight && (
               <div className="flex flex-col items-center">
-                <button onClick={() => setStep('results')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold mb-4 self-start hover:underline">← Вернуться к результатам</button>
-                <div className="w-full max-w-md bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-lg border border-gray-200 dark:border-slate-700">
+                <button onClick={() => setStep('results')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold mb-4 self-start hover:underline">← К результатам</button>
+                <div className="w-full max-w-md bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-lg border dark:border-slate-700">
                   <div className="text-center mb-4">
-                    <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100">Конфигурация мест</h2>
+                    <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100">Выбор мест</h2>
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Пассажиров: <span className="font-bold text-slate-700 dark:text-slate-300">{params.passengers}</span> • Класс: <span className="font-bold text-blue-600 dark:text-blue-400">{params.flightClass}</span></p>
-                    {!selectedFlight.isDirect && <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 font-semibold">Рейс с пересадкой • Места выбираются на все сегменты</p>}
                   </div>
-                  <div className="bg-gray-50 dark:bg-slate-700 rounded-full py-1.5 mb-6 mx-auto w-3/4 text-center text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-widest border border-gray-200 dark:border-slate-600">НОСОВАЯ ЧАСТЬ САМОЛЁТА</div>
-                  <div className="flex flex-col gap-3 items-center">
+                  <div className="bg-gray-50 dark:bg-slate-700 rounded-full py-1.5 mb-6 mx-auto w-3/4 text-center text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-widest border dark:border-slate-600">НОС САМОЛЁТА</div>
+                  <div className="flex flex-col gap-2 items-center">
+                    {/* Индикаторы зон */}
+                    <div className="w-full flex justify-between text-[8px] font-bold text-gray-400 dark:text-gray-500 px-2 mb-1">
+                      <span>👔 Бизнес</span><span>🪽 Крылья</span><span>🚽</span>
+                    </div>
                     {Array.from({ length: 12 }).map((_, rIndex) => {
                       const row = rIndex + 1;
-                      const isBusinessRow = row <= 2; 
+                      const isBusinessRow = row <= 2;
+                      const isWingRow = row >= 4 && row <= 9;
+                      const isToiletRow = row >= 11;
+                      let rowLabel = "";
+                      if (isBusinessRow) rowLabel = "👔";
+                      else if (row === 3) rowLabel = "🪽";
+                      else if (row === 10) rowLabel = "🪽";
+                      else if (isToiletRow) rowLabel = "🚽";
+                      
                       return (
-                        <div key={row} className="flex items-center gap-3">
-                          <div className="flex gap-2">
+                        <div key={row} className={`flex items-center gap-3 ${isWingRow ? 'bg-blue-50/30 dark:bg-blue-900/10 rounded-lg px-1' : ''}`}>
+                          <div className="flex gap-1.5">
                             {['A','B','C'].map(c => {
                               const seatId = `${row}${c}`;
                               const isOccup = occupiedSeats.includes(seatId);
                               const isSelected = chosenSeats.includes(seatId);
-                              let btnClass = "w-10 h-10 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
-                              if (isOccup) btnClass += "bg-gray-200 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-300 dark:border-slate-500 cursor-not-allowed opacity-60";
-                              else if (isSelected) btnClass += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md";
-                              else if (isBusinessRow) btnClass += "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-400 dark:border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-900/50";
-                              else btnClass += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40";
-                              return <div key={seatId} onClick={() => !isOccup && handleSeatClick(seatId, isBusinessRow)} className={btnClass}>{c}</div>
+                              let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
+                              if (isOccup) cls += "bg-gray-200 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-300 dark:border-slate-500 cursor-not-allowed opacity-60";
+                              else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md";
+                              else if (isBusinessRow) cls += "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-400 dark:border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-900/50";
+                              else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40";
+                              return <div key={seatId} onClick={() => !isOccup && (() => { if (isBusinessRow && params.flightClass !== 'Бизнес') { alert("Только для Бизнес-класса!"); return; } if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } })()} className={cls}>{c}</div>
                             })}
                           </div>
-                          <div className="w-6 text-center text-xs font-bold text-gray-300 dark:text-gray-600">{row}</div>
-                          <div className="flex gap-2">
+                          <div className="w-8 text-center">
+                            <div className="text-xs font-bold text-gray-400 dark:text-gray-500">{row}</div>
+                            <div className="text-[8px] leading-tight">{rowLabel}</div>
+                          </div>
+                          <div className="flex gap-1.5">
                             {['D','E','F'].map(c => {
                               const seatId = `${row}${c}`;
                               const isOccup = occupiedSeats.includes(seatId);
                               const isSelected = chosenSeats.includes(seatId);
-                              let btnClass = "w-10 h-10 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
-                              if (isOccup) btnClass += "bg-gray-200 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-300 dark:border-slate-500 cursor-not-allowed opacity-60";
-                              else if (isSelected) btnClass += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md";
-                              else if (isBusinessRow) btnClass += "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-400 dark:border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-900/50";
-                              else btnClass += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40";
-                              return <div key={seatId} onClick={() => !isOccup && handleSeatClick(seatId, isBusinessRow)} className={btnClass}>{c}</div>
+                              let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
+                              if (isOccup) cls += "bg-gray-200 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-300 dark:border-slate-500 cursor-not-allowed opacity-60";
+                              else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md";
+                              else if (isBusinessRow) cls += "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-400 dark:border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-900/50";
+                              else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40";
+                              return <div key={seatId} onClick={() => !isOccup && (() => { if (isBusinessRow && params.flightClass !== 'Бизнес') { alert("Только для Бизнес-класса!"); return; } if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } })()} className={cls}>{c}</div>
                             })}
                           </div>
                         </div>
-                      )
+                      );
                     })}
+                    <div className="w-full flex justify-between text-[8px] font-bold text-gray-400 dark:text-gray-500 px-2 mt-1">
+                      <span>👔 Бизнес</span><span>🪽 Крылья</span><span>🚽</span>
+                    </div>
                   </div>
-                  <div className="flex justify-center gap-4 mt-8 text-xs font-bold text-gray-500 dark:text-gray-400 flex-wrap">
-                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-gray-200 dark:bg-slate-600 rounded border-b-2 border-gray-300 dark:border-slate-500"></div>Занято</div>
-                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-blue-50 dark:bg-blue-900/20 rounded border-b-2 border-blue-200 dark:border-blue-700"></div>Эконом</div>
-                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-yellow-100 dark:bg-yellow-900/30 rounded border-b-2 border-yellow-400 dark:border-yellow-600"></div>Бизнес</div>
-                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-[#0057b8] rounded border-b-2 border-blue-900"></div>Выбрано</div>
+                  <div className="flex justify-center gap-3 mt-6 text-xs font-bold text-gray-500 dark:text-gray-400 flex-wrap">
+                    <span className="flex items-center gap-1"><div className="w-4 h-4 bg-gray-200 dark:bg-slate-600 rounded border-b-2 border-gray-300 dark:border-slate-500"></div>Занято</span>
+                    <span className="flex items-center gap-1"><div className="w-4 h-4 bg-blue-50 dark:bg-blue-900/20 rounded border-b-2 border-blue-200 dark:border-blue-700"></div>Эконом</span>
+                    <span className="flex items-center gap-1"><div className="w-4 h-4 bg-yellow-100 dark:bg-yellow-900/30 rounded border-b-2 border-yellow-400 dark:border-yellow-600"></div>Бизнес</span>
+                    <span className="flex items-center gap-1"><div className="w-4 h-4 bg-[#0057b8] rounded border-b-2 border-blue-900"></div>Выбрано</span>
+                    <span className="flex items-center gap-1"><span>🪽</span> Крыло</span>
+                    <span className="flex items-center gap-1"><span>🚽</span> Туалет</span>
                   </div>
-                  <button onClick={handleOpenHotelsStep} className={`w-full mt-6 py-4 rounded-xl font-bold shadow-md transition-all ${isAllSeatsSelected ? 'bg-[#0057b8] text-white active:scale-95' : 'bg-gray-200 dark:bg-slate-600 text-gray-400 dark:text-gray-300 cursor-not-allowed'}`}>
-                    {isAllSeatsSelected ? `Подтвердить места и перейти к отелям` : `Выбрано мест: ${chosenSeats.length} из ${params.passengers}`}
+                  <button onClick={handleOpenHotelsStep} className={`w-full mt-6 py-4 rounded-xl font-bold shadow-md transition-all ${chosenSeats.length === Number(params.passengers) ? 'bg-[#0057b8] text-white active:scale-95' : 'bg-gray-200 dark:bg-slate-600 text-gray-400 dark:text-gray-300 cursor-not-allowed'}`}>
+                    {chosenSeats.length === Number(params.passengers) ? `Подтвердить места и перейти к отелям` : `Выбрано: ${chosenSeats.length} из ${params.passengers}`}
                   </button>
                 </div>
               </div>
@@ -956,38 +735,26 @@
 
             {step === 'hotels' && selectedFlight && (
               <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <button onClick={() => setStep('seats')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold hover:underline">← Назад к выбору мест</button>
-                  <button onClick={() => handleOpenAttractionsStep(null)} className="text-gray-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-slate-200 text-sm font-bold bg-gray-200 dark:bg-slate-600 px-4 py-2 rounded-xl transition-colors">Пропустить отель ➔</button>
+                <div className="flex justify-between">
+                  <button onClick={() => setStep('seats')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold hover:underline">← К выбору мест</button>
+                  <button onClick={() => handleOpenAttractionsStep(null)} className="text-gray-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-slate-200 text-sm font-bold bg-gray-200 dark:bg-slate-600 px-4 py-2 rounded-xl">Пропустить ➔</button>
                 </div>
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-2xl border border-blue-100 dark:border-blue-800 flex justify-between items-center flex-wrap gap-3">
-                  <div>
-                    <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2"><IconHotel /> Доступные отели: г. {getCityInfo(params.to).city}</h2>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Вариантов: <span className="font-extrabold text-[#0057b8] dark:text-blue-400">{currentHotelsList.length}</span>. Комнаты на <span className="font-bold text-slate-700 dark:text-slate-300">{params.passengers} чел.</span></p>
-                  </div>
-                  <div className="text-xs bg-white dark:bg-slate-700 border dark:border-slate-600 px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 font-semibold space-y-0.5">
-                    <div>Погода: <span className="text-orange-600 dark:text-orange-400 font-bold">{getCityInfo(params.to).weather}</span></div>
-                    <div>Время: <span className="text-amber-600 dark:text-amber-400 font-mono font-bold">{getCityInfo(params.to).timezone}</span></div>
-                  </div>
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-2xl border border-blue-100 dark:border-blue-800">
+                  <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2"><IconHotel /> Отели: г. {getCityInfo(params.to).city}</h2>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Вариантов: <span className="font-extrabold text-[#0057b8] dark:text-blue-400">{currentHotelsList.length}</span> • На {params.passengers} чел.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {currentHotelsList.map((hotel, idx) => (
-                    <div key={idx} className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-shadow">
-                      <div className="h-48 w-full overflow-hidden relative bg-gray-100 dark:bg-slate-700">
-                        <img src={hotel.img} alt={hotel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; }} />
-                        <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-800 dark:text-slate-100 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm">{hotel.stars}</div>
+                    <div key={idx} className="bg-white dark:bg-slate-800 rounded-2xl border dark:border-slate-700 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-shadow">
+                      <div className="h-48 overflow-hidden relative bg-gray-100 dark:bg-slate-700">
+                        <img src={hotel.img} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={e => { e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; }} />
+                        <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-800/90 text-slate-800 dark:text-slate-100 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm">{hotel.stars}</div>
                       </div>
                       <div className="p-5 flex flex-col flex-1 justify-between gap-4">
-                        <div>
-                          <h3 className="font-black text-lg text-slate-800 dark:text-slate-100 leading-tight">{hotel.name}</h3>
-                          <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-1">📍 {hotel.district}</p>
-                        </div>
+                        <div><h3 className="font-black text-lg text-slate-800 dark:text-slate-100">{hotel.name}</h3><p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-1">📍 {hotel.district}</p></div>
                         <div className="flex justify-between items-center pt-3 border-t dark:border-slate-600">
-                          <div>
-                            <span className="text-xl font-black text-slate-800 dark:text-slate-100">{(hotel.price * params.passengers).toLocaleString('ru-RU')} ₽</span>
-                            <span className="text-[10px] text-gray-400 dark:text-gray-500 block font-bold">за ночь ({params.passengers} пасс.)</span>
-                          </div>
-                          <button onClick={() => handleOpenAttractionsStep(hotel)} className="bg-[#0057b8] text-white font-bold text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm">Забронировать</button>
+                          <div><span className="text-xl font-black text-slate-800 dark:text-slate-100">{(hotel.price * params.passengers).toLocaleString('ru-RU')} ₽</span><span className="text-[10px] text-gray-400 dark:text-gray-500 block">за ночь</span></div>
+                          <button onClick={() => handleOpenAttractionsStep(hotel)} className="bg-[#0057b8] text-white font-bold text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all">Забронировать</button>
                         </div>
                       </div>
                     </div>
@@ -998,50 +765,35 @@
 
             {step === 'attractions' && selectedFlight && (
               <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <button onClick={() => setStep('hotels')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold hover:underline">← Назад к отелям</button>
-                  <button onClick={() => { setSelectedAttractions([]); handleNextAfterAttractions(); }} className="text-gray-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-slate-200 text-sm font-bold bg-gray-200 dark:bg-slate-600 px-4 py-2 rounded-xl transition-colors">Пропустить ➔</button>
+                <div className="flex justify-between">
+                  <button onClick={() => setStep('hotels')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold hover:underline">← К отелям</button>
+                  <button onClick={() => { setSelectedAttractions([]); handleNextAfterAttractions(); }} className="text-gray-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-slate-200 text-sm font-bold bg-gray-200 dark:bg-slate-600 px-4 py-2 rounded-xl">Пропустить ➔</button>
                 </div>
-                <div className="bg-emerald-50 dark:bg-emerald-900/20 p-5 rounded-2xl border border-emerald-100 dark:border-emerald-800 flex justify-between items-center flex-wrap gap-3">
-                  <div>
-                    <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2"><IconAttraction /> Достопримечательности: г. {getCityInfo(params.to).city}</h2>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Выберите экскурсии для посещения: <span className="font-extrabold text-emerald-600 dark:text-emerald-400">{selectedAttractions.length}</span> выбрано из {currentAttractionsList.length}</p>
-                  </div>
-                  <div className="text-xs bg-white dark:bg-slate-700 border dark:border-slate-600 px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 font-semibold space-y-0.5">
-                    <div>Погода: <span className="text-orange-600 dark:text-orange-400 font-bold">{getCityInfo(params.to).weather}</span></div>
-                    <div>Время: <span className="text-amber-600 dark:text-amber-400 font-mono font-bold">{getCityInfo(params.to).timezone}</span></div>
-                  </div>
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 p-5 rounded-2xl border border-emerald-100 dark:border-emerald-800">
+                  <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2"><IconAttraction /> Достопримечательности: г. {getCityInfo(params.to).city}</h2>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Выбрано: <span className="font-extrabold text-emerald-600 dark:text-emerald-400">{selectedAttractions.length}</span> из {currentAttractionsList.length}</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {currentAttractionsList.map((attraction, idx) => {
-                    const isSelected = selectedAttractions.some(a => a.name === attraction.name);
+                  {currentAttractionsList.map((attr, idx) => {
+                    const isSelected = selectedAttractions.some(a => a.name === attr.name);
                     return (
                       <div key={idx} className={`bg-white dark:bg-slate-800 rounded-2xl border-2 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all ${isSelected ? 'border-emerald-500 dark:border-emerald-400' : 'border-gray-200 dark:border-slate-700'}`}>
-                        <div className="h-48 w-full overflow-hidden relative bg-gray-100 dark:bg-slate-700">
-                          <img src={attraction.img} alt={attraction.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=600&q=80"; }} />
-                          <div className="absolute top-3 right-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-800 dark:text-slate-100 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm flex items-center gap-1">⭐ {attraction.rating}</div>
-                          {isSelected && <div className="absolute top-3 left-3 bg-emerald-500 text-white px-2.5 py-1 rounded-lg text-xs font-black shadow-sm">✓ Выбрано</div>}
+                        <div className="h-48 overflow-hidden relative bg-gray-100 dark:bg-slate-700">
+                          <img src={attr.img} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={e => { e.target.src = "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=600&q=80"; }} />
+                          <div className="absolute top-3 right-3 bg-white/90 dark:bg-slate-800/90 text-slate-800 dark:text-slate-100 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm">⭐ {attr.rating}</div>
+                          {isSelected && <div className="absolute top-3 left-3 bg-emerald-500 text-white px-2.5 py-1 rounded-lg text-xs font-black">✓</div>}
                         </div>
                         <div className="p-5 flex flex-col flex-1 justify-between gap-4">
-                          <div>
-                            <h3 className="font-black text-lg text-slate-800 dark:text-slate-100 leading-tight">{attraction.name}</h3>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed">{attraction.description}</p>
-                            <div className="flex gap-3 mt-2 text-[10px] font-bold text-gray-400 dark:text-gray-500">
-                              <span className="flex items-center gap-1"><IconClock /> {attraction.duration}</span>
-                              <span>📍 {attraction.district}</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-end items-center pt-3 border-t dark:border-slate-600">
-                            <button onClick={() => toggleAttraction(attraction)} className={`font-bold text-xs px-5 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm ${isSelected ? 'bg-gray-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-500' : 'bg-emerald-600 text-white hover:bg-emerald-700'}`}>
-                              {isSelected ? 'Убрать' : 'Добавить экскурсию'}
-                            </button>
+                          <div><h3 className="font-black text-lg text-slate-800 dark:text-slate-100">{attr.name}</h3><p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">{attr.description}</p><div className="flex gap-3 mt-2 text-[10px] text-gray-400 dark:text-gray-500"><span className="flex items-center gap-1"><IconClock /> {attr.duration}</span><span>📍 {attr.district}</span></div></div>
+                          <div className="flex justify-end pt-3 border-t dark:border-slate-600">
+                            <button onClick={() => toggleAttraction(attr)} className={`font-bold text-xs px-5 py-2.5 rounded-xl active:scale-95 transition-all ${isSelected ? 'bg-gray-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300' : 'bg-emerald-600 text-white hover:bg-emerald-700'}`}>{isSelected ? 'Убрать' : 'Добавить'}</button>
                           </div>
                         </div>
                       </div>
                     );
                   })}
                 </div>
-                <button onClick={handleNextAfterAttractions} className="w-full bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition-all text-sm">
+                <button onClick={handleNextAfterAttractions} className="w-full bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition-all">
                   {selectedAttractions.length > 0 ? `✓ Продолжить с ${selectedAttractions.length} экскурсиями (≈${Math.round(totalAttractionTime)}ч)` : 'Продолжить без экскурсий'}
                 </button>
               </div>
@@ -1049,242 +801,153 @@
 
             {step === 'food' && selectedFlight && (
               <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <button onClick={() => setStep('attractions')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold hover:underline">← Назад к достопримечательностям</button>
-                  <button onClick={() => { setIsFoodSkipped(true); setStep('ticket'); }} className="text-gray-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-slate-200 text-sm font-bold bg-gray-200 dark:bg-slate-600 px-4 py-2 rounded-xl transition-colors">Отказаться от питания ➔</button>
+                <div className="flex justify-between">
+                  <button onClick={() => setStep('attractions')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold hover:underline">← К достоприм.</button>
+                  <button onClick={() => { setIsFoodSkipped(true); setStep('ticket'); }} className="text-gray-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-slate-200 text-sm font-bold bg-gray-200 dark:bg-slate-600 px-4 py-2 rounded-xl">Отказаться ➔</button>
                 </div>
                 <div className="bg-orange-50 dark:bg-orange-900/20 p-5 rounded-2xl border border-orange-100 dark:border-orange-800">
-                  <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">🍱 Шеф-меню на борту рейса {selectedFlight.flightNumber}</h2>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Соберите идеальный бесплатный ланч-сет премиум-класса для комфортного полёта.</p>
+                  <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">🍱 Шеф-меню рейса {selectedFlight.flightNumber}</h2>
                 </div>
-                <div className="space-y-6">
-                  {['mains','sides','drinks','desserts'].map(category => (
-                    <div key={category}>
-                      <h3 className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
-                        {category === 'mains' ? 'Шаг 1: Основное горячее блюдо' : category === 'sides' ? 'Шаг 2: Дополнительный гарнир' : category === 'drinks' ? 'Шаг 3: Напиток на борту' : 'Шаг 4: Авиа-десерт'}
-                      </h3>
-                      <div className={`grid gap-3 ${category === 'mains' ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2'}`}>
-                        {FOOD_MENU_OPTIONS[category].map(item => (
-                          <div key={item.id} onClick={() => setSelectedFoodMenu({...selectedFoodMenu, [category === 'mains' ? 'main' : category === 'sides' ? 'side' : category === 'drinks' ? 'drink' : 'dessert']: item})} className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white dark:bg-slate-700 shadow-sm transition-all ${category === 'mains' ? 'text-center' : 'flex items-center p-2 gap-3'} ${(category === 'mains' ? selectedFoodMenu.main.id : category === 'sides' ? selectedFoodMenu.side.id : category === 'drinks' ? selectedFoodMenu.drink.id : selectedFoodMenu.dessert.id) === item.id ? 'border-orange-500 bg-orange-50/30 dark:bg-orange-900/20 scale-[1.02]' : 'border-gray-200 dark:border-slate-600'}`}>
-                            <img src={item.img} alt="" className={category === 'mains' ? 'w-full h-24 object-cover' : 'w-14 h-14 rounded-lg object-cover'} />
-                            <div className={category === 'mains' ? 'p-2' : ''}>
-                              {category === 'mains' && <div className="text-[10px] font-bold text-orange-600 dark:text-orange-400">{item.type}</div>}
-                              <div className="text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight mt-0.5">{item.name}</div>
+                {['mains','sides','drinks','desserts'].map(cat => (
+                  <div key={cat}>
+                    <h3 className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase mb-3">{cat==='mains'?'Шаг 1: Горячее блюдо':cat==='sides'?'Шаг 2: Гарнир':cat==='drinks'?'Шаг 3: Напиток':'Шаг 4: Десерт'}</h3>
+                    <div className={`grid gap-3 ${cat==='mains'?'grid-cols-2 sm:grid-cols-4':'grid-cols-2'}`}>
+                      {FOOD_MENU_OPTIONS[cat].map(item => {
+                        const selKey = cat==='mains'?'main':cat==='sides'?'side':cat==='drinks'?'drink':'dessert';
+                        const isSel = selectedFoodMenu[selKey].id === item.id;
+                        return (
+                          <div key={item.id} onClick={() => setSelectedFoodMenu({...selectedFoodMenu, [selKey]: item})} className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white dark:bg-slate-700 shadow-sm transition-all ${cat==='mains'?'text-center':'flex items-center p-2 gap-3'} ${isSel ? 'border-orange-500 bg-orange-50/30 dark:bg-orange-900/20 scale-[1.02]' : 'border-gray-200 dark:border-slate-600'}`}>
+                            <img src={item.img} alt="" className={cat==='mains'?'w-full h-24 object-cover':'w-14 h-14 rounded-lg object-cover'} />
+                            <div className={cat==='mains'?'p-2':''}>
+                              {cat==='mains' && <div className="text-[10px] font-bold text-orange-600 dark:text-orange-400">{item.type}</div>}
+                              <div className="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">{item.name}</div>
                             </div>
                           </div>
-                        ))}
-                      </div>
+                        );
+                      })}
                     </div>
-                  ))}
-                </div>
-                <button onClick={() => { setIsFoodSkipped(false); setStep('ticket'); }} className="w-full bg-orange-500 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition-all text-sm mt-4">✓ Подтвердить выбранный рацион и перейти к билетам</button>
+                  </div>
+                ))}
+                <button onClick={() => { setIsFoodSkipped(false); setStep('ticket'); }} className="w-full bg-orange-500 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition-all">✓ Подтвердить и перейти к билетам</button>
               </div>
             )}
 
             {step === 'ticket' && selectedFlight && (
               <div className="flex flex-col items-center">
-                <button onClick={() => selectedFlight.hasFood && !isFoodSkipped ? setStep('food') : setStep('attractions')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold mb-4 self-start hover:underline">← Вернуться на шаг назад</button>
+                <button onClick={() => selectedFlight.hasFood && !isFoodSkipped ? setStep('food') : setStep('attractions')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold mb-4 self-start hover:underline">← Назад</button>
                 <div className="w-full bg-white dark:bg-slate-800 p-5 rounded-xl border dark:border-slate-700 mb-6 shadow-sm space-y-3">
-                  <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200 border-b dark:border-slate-600 pb-1.5">Данные пассажиров (Латиница):</h3>
+                  <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200 border-b dark:border-slate-600 pb-1.5">Пассажиры:</h3>
                   {passengerNames.map((name, idx) => (
-                    <div key={idx}>
-                      <label className="text-[10px] font-bold text-gray-400 dark:text-gray-500 block mb-0.5">Пассажир {idx + 1} (Место: {chosenSeats[idx] || '?'})</label>
-                      <input type="text" value={name} onChange={(e) => handleNameChange(idx, e.target.value)} className="w-full p-2.5 border dark:border-slate-600 rounded-xl font-mono uppercase text-sm outline-none focus:border-[#0057b8] bg-white dark:bg-slate-700 dark:text-slate-100" placeholder="IVAN IVANOV" />
-                    </div>
+                    <div key={idx}><label className="text-[10px] text-gray-400 dark:text-gray-500 block mb-0.5">Пассажир {idx+1} (Место: {chosenSeats[idx] || '?'})</label><input type="text" value={name} onChange={e => { const n = [...passengerNames]; n[idx] = e.target.value.toUpperCase(); setPassengerNames(n); }} className="w-full p-2.5 border dark:border-slate-600 rounded-xl font-mono uppercase text-sm bg-white dark:bg-slate-700 dark:text-slate-100" /></div>
                   ))}
                 </div>
                 <div ref={ticketRef} className="bg-gray-100 dark:bg-slate-700 p-3 rounded-3xl w-full max-w-md border border-gray-300 dark:border-slate-600 space-y-4">
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden relative border border-gray-200 dark:border-slate-700">
-                    <div className="bg-[#0057b8] text-white p-4 flex justify-between items-center">
-                      <span className="font-bold tracking-wider">{selectedFlight.airline}</span>
-                      <span className="text-xs border px-2 py-0.5 rounded font-mono bg-white/20">BOARDING PASS</span>
-                    </div>
+                  <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden border dark:border-slate-700">
+                    <div className="bg-[#0057b8] text-white p-4 flex justify-between"><span className="font-bold">{selectedFlight.airline}</span><span className="text-xs border px-2 py-0.5 rounded font-mono bg-white/20">BOARDING PASS</span></div>
                     <div className="p-5 space-y-4">
                       <div className="flex justify-between border-b dark:border-slate-600 pb-3">
-                        <div className="flex-1 mr-2">
-                          <div className="text-[10px] uppercase text-gray-400 dark:text-gray-500 font-bold">Passengers</div>
-                          <div className="font-mono font-bold text-xs max-h-24 overflow-y-auto leading-relaxed whitespace-pre-line dark:text-slate-200">
-                            {passengerNames.map((n, i) => `${i+1}. ${n || 'GUEST'} [${chosenSeats[i] || ''}]`).join('\n')}
-                          </div>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <div className="text-[10px] uppercase text-gray-400 dark:text-gray-500 font-bold">Flight</div>
-                          <div className="font-mono font-bold text-lg text-blue-600 dark:text-blue-400">{selectedFlight.flightNumber}</div>
-                        </div>
+                        <div><div className="text-[10px] uppercase text-gray-400 dark:text-gray-500 font-bold">Passengers</div><div className="font-mono font-bold text-xs dark:text-slate-200">{passengerNames.map((n,i) => `${i+1}. ${n||'GUEST'} [${chosenSeats[i]||''}]`).join('\n')}</div></div>
+                        <div className="text-right"><div className="text-[10px] uppercase text-gray-400 dark:text-gray-500 font-bold">Flight</div><div className="font-mono font-bold text-lg text-blue-600 dark:text-blue-400">{selectedFlight.flightNumber}</div></div>
                       </div>
                       {selectedFlight.isDirect ? (
-                        <div className="flex justify-between items-center py-2">
-                          <div>
-                            <div className="text-4xl font-black text-slate-800 dark:text-slate-100">{selectedFlight.from}</div>
-                            <div className="text-[10px] text-gray-400 dark:text-gray-500 font-bold">Вылет {selectedFlight.departure} ({getCityInfo(selectedFlight.from).timezone})</div>
-                          </div>
-                          <div className="text-gray-300 dark:text-gray-600 text-xl">➔</div>
-                          <div className="text-right">
-                            <div className="text-4xl font-black text-slate-800 dark:text-slate-100">{selectedFlight.to}</div>
-                            <div className="text-[10px] text-gray-400 dark:text-gray-500 font-bold">Прилет {selectedFlight.arrival} ({getCityInfo(selectedFlight.to).timezone})</div>
-                          </div>
-                        </div>
+                        <div className="flex justify-between py-2"><div><div className="text-4xl font-black dark:text-slate-100">{selectedFlight.from}</div><div className="text-[10px] text-gray-400 dark:text-gray-500">Вылет {selectedFlight.departure}</div></div><div className="text-gray-300 dark:text-gray-600 text-xl">➔</div><div className="text-right"><div className="text-4xl font-black dark:text-slate-100">{selectedFlight.to}</div><div className="text-[10px] text-gray-400 dark:text-gray-500">Прилет {selectedFlight.arrival}</div></div></div>
                       ) : (
                         <div className="space-y-2 py-2">
                           {selectedFlight.legs.map((leg, idx) => (
                             <React.Fragment key={idx}>
-                              <div className="flex justify-between items-center">
-                                <div><div className="text-2xl font-black text-slate-800 dark:text-slate-100">{leg.from}</div><div className="text-[9px] text-gray-400 dark:text-gray-500 font-bold">Вылет {leg.departure}</div></div>
-                                <div className="text-gray-300 dark:text-gray-600 text-lg">➔</div>
-                                <div className="text-right"><div className="text-2xl font-black text-slate-800 dark:text-slate-100">{leg.to}</div><div className="text-[9px] text-gray-400 dark:text-gray-500 font-bold">Прилет {leg.arrival}</div></div>
-                              </div>
-                              {idx < selectedFlight.legs.length - 1 && (
-                                <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-lg px-3 py-1.5 text-[9px] font-bold text-amber-700 dark:text-amber-400 text-center">
-                                  Пересадка: {selectedFlight.stopoverCities[idx]}, {Math.floor(selectedFlight.stopoverDurations[idx] / 60)}ч {selectedFlight.stopoverDurations[idx] % 60}м
-                                </div>
-                              )}
+                              <div className="flex justify-between"><div><div className="text-2xl font-black dark:text-slate-100">{leg.from}</div><div className="text-[9px] text-gray-400 dark:text-gray-500">Вылет {leg.departure}</div></div><div className="text-gray-300 dark:text-gray-600 text-lg">➔</div><div className="text-right"><div className="text-2xl font-black dark:text-slate-100">{leg.to}</div><div className="text-[9px] text-gray-400 dark:text-gray-500">Прилет {leg.arrival}</div></div></div>
+                              {idx < selectedFlight.legs.length - 1 && <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-lg px-3 py-1.5 text-[9px] font-bold text-amber-700 dark:text-amber-400 text-center">Пересадка: {selectedFlight.stopoverCities[idx]}, {Math.floor(selectedFlight.stopoverDurations[idx]/60)}ч {selectedFlight.stopoverDurations[idx]%60}м</div>}
                             </React.Fragment>
                           ))}
                         </div>
                       )}
-                      <div className="grid grid-cols-3 gap-2 bg-gray-50 dark:bg-slate-700 p-3 rounded-xl text-center text-sm border dark:border-slate-600">
-                        <div><div className="text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase">Дата вылета</div><div className="font-bold text-[11px] leading-tight mt-1 text-slate-700 dark:text-slate-300">{selectedFlight.dateFrom}</div></div>
-                        <div><div className="text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase">Выход</div><div className="font-bold text-lg text-slate-800 dark:text-slate-100">{selectedFlight.gate}</div></div>
-                        <div><div className="text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase">Все Места</div><div className="font-bold font-mono text-xs text-[#0057b8] dark:text-blue-400 break-words max-w-full leading-tight pt-1">{chosenSeats.join(', ')}</div></div>
+                      <div className="grid grid-cols-3 gap-2 bg-gray-50 dark:bg-slate-700 p-3 rounded-xl text-center border dark:border-slate-600">
+                        <div><div className="text-[9px] text-gray-400 dark:text-gray-500 uppercase">Дата</div><div className="font-bold text-[11px] mt-1 dark:text-slate-300">{selectedFlight.dateFrom}</div></div>
+                        <div><div className="text-[9px] text-gray-400 dark:text-gray-500 uppercase">Выход</div><div className="font-bold text-lg dark:text-slate-100">{selectedFlight.gate}</div></div>
+                        <div><div className="text-[9px] text-gray-400 dark:text-gray-500 uppercase">Места</div><div className="font-bold font-mono text-xs text-[#0057b8] dark:text-blue-400">{chosenSeats.join(', ')}</div></div>
                       </div>
-                      <div className="bg-blue-50/70 dark:bg-blue-900/20 text-slate-700 dark:text-slate-300 rounded-lg p-2 text-[11px] font-semibold flex justify-between border border-blue-100 dark:border-blue-800">
-                        <span>🌤️ Погода в месте прибытия: {getCityInfo(selectedFlight.to).weather}</span>
-                        <span className="font-mono text-amber-700 dark:text-amber-400">{getCityInfo(selectedFlight.to).timezone}</span>
-                      </div>
-                      <div className="flex justify-between items-center pt-1 text-[10px] font-bold text-gray-400 dark:text-gray-500">
-                        <div>КЛАСС: {params.flightClass.toUpperCase()}</div>
-                        <div>{params.baggage ? '✓ БАГАЖ' : ''} {params.pet ? '• ПИТОМЕЦ' : ''}</div>
-                      </div>
+                      <div className="bg-blue-50/70 dark:bg-blue-900/20 text-slate-700 dark:text-slate-300 rounded-lg p-2 text-[11px] font-semibold flex justify-between border border-blue-100 dark:border-blue-800"><span>🌤️ Погода: {getCityInfo(selectedFlight.to).weather}</span><span className="font-mono text-amber-700 dark:text-amber-400">{getCityInfo(selectedFlight.to).timezone}</span></div>
+                      <div className="flex justify-between text-[10px] font-bold text-gray-400 dark:text-gray-500"><div>КЛАСС: {params.flightClass.toUpperCase()}</div><div>{params.baggage?'✓ БАГАЖ':''} {params.pet?'• ПИТОМЕЦ':''}</div></div>
                     </div>
                   </div>
                   {selectedHotel && (
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden border border-green-200 dark:border-green-700 relative">
-                      <div className="bg-green-600 text-white p-3 flex justify-between items-center">
-                        <span className="font-bold text-xs tracking-wider flex items-center gap-1"><IconHotel /> ВАУЧЕР НА ПРОЖИВАНИЕ</span>
-                        <span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">HOTEL BOOKING</span>
-                      </div>
-                      <div className="p-4 flex gap-4">
-                        <img src={selectedHotel.img} alt="" className="w-16 h-16 rounded-xl object-cover border dark:border-slate-600" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; }} />
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-black text-sm text-slate-800 dark:text-slate-100 truncate">{selectedHotel.name}</h4>
-                          <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold mt-0.5">📍 {selectedHotel.district}</p>
-                          <div className="mt-2 text-[11px] bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-1 rounded font-mono inline-block font-bold">Гостей: {params.passengers} | Номер подтвержден</div>
-                        </div>
-                      </div>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden border border-green-200 dark:border-green-700">
+                      <div className="bg-green-600 text-white p-3 flex justify-between"><span className="font-bold text-xs"><IconHotel /> ВАУЧЕР НА ПРОЖИВАНИЕ</span><span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">HOTEL</span></div>
+                      <div className="p-4 flex gap-4"><img src={selectedHotel.img} alt="" className="w-16 h-16 rounded-xl object-cover border dark:border-slate-600" /><div><h4 className="font-black text-sm dark:text-slate-100">{selectedHotel.name}</h4><p className="text-[10px] text-blue-600 dark:text-blue-400">📍 {selectedHotel.district}</p><div className="mt-2 text-[11px] bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-1 rounded font-mono font-bold">Гостей: {params.passengers}</div></div></div>
                     </div>
                   )}
                   {selectedAttractions.length > 0 && (
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden border border-emerald-200 dark:border-emerald-700 relative">
-                      <div className="bg-emerald-600 text-white p-3 flex justify-between items-center">
-                        <span className="font-bold text-xs tracking-wider flex items-center gap-1"><IconAttraction /> ЭКСКУРСИОННАЯ ПРОГРАММА</span>
-                        <span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">{selectedAttractions.length} мест</span>
-                      </div>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden border border-emerald-200 dark:border-emerald-700">
+                      <div className="bg-emerald-600 text-white p-3 flex justify-between"><span className="font-bold text-xs"><IconAttraction /> ЭКСКУРСИИ</span><span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">{selectedAttractions.length} мест</span></div>
                       <div className="p-4 space-y-3">
                         {selectedAttractions.map((attr, idx) => (
-                          <div key={idx} className="flex gap-3 items-start border-b dark:border-slate-600 pb-2 last:border-b-0 last:pb-0">
-                            <img src={attr.img} alt="" className="w-12 h-12 rounded-lg object-cover border dark:border-slate-600 flex-shrink-0" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=600&q=80"; }} />
-                            <div className="flex-1 min-w-0">
-                              <div className="flex justify-between items-start gap-2">
-                                <h4 className="font-black text-xs text-slate-800 dark:text-slate-100 truncate">{attr.name}</h4>
-                                <span className="text-[9px] bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded font-bold flex-shrink-0">⭐{attr.rating}</span>
-                              </div>
-                              <div className="text-[9px] text-gray-400 dark:text-gray-500 mt-0.5 flex gap-2">
-                                <span>⏱ {attr.duration}</span>
-                                <span>📍 {attr.district}</span>
-                              </div>
-                            </div>
+                          <div key={idx} className="flex gap-3 items-start border-b dark:border-slate-600 pb-2 last:border-0">
+                            <img src={attr.img} alt="" className="w-12 h-12 rounded-lg object-cover border dark:border-slate-600 flex-shrink-0" />
+                            <div className="flex-1"><div className="flex justify-between"><h4 className="font-black text-xs dark:text-slate-100">{attr.name}</h4><span className="text-[9px] bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded font-bold">⭐{attr.rating}</span></div><div className="text-[9px] text-gray-400 dark:text-gray-500 mt-0.5">⏱ {attr.duration} • 📍 {attr.district}</div></div>
                           </div>
                         ))}
-                        <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 pt-1">
-                          Общее время: ≈{Math.round(totalAttractionTime)} часов
-                        </div>
+                        <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 pt-1">Общее время: ≈{Math.round(totalAttractionTime)}ч</div>
                       </div>
                     </div>
                   )}
                   {selectedFlight.hasFood && !isFoodSkipped && (
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden border border-orange-200 dark:border-orange-700 relative">
-                      <div className="bg-orange-500 text-white p-3 flex justify-between items-center">
-                        <span className="font-bold text-xs tracking-wider flex items-center gap-1">🍱 БОРТОВОЕ ПИТАНИЕ</span>
-                        <span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">IN-FLIGHT MEAL</span>
-                      </div>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden border border-orange-200 dark:border-orange-700">
+                      <div className="bg-orange-500 text-white p-3 flex justify-between"><span className="font-bold text-xs">🍱 БОРТОВОЕ ПИТАНИЕ</span><span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">MEAL</span></div>
                       <div className="p-4 space-y-3">
-                        <div className="flex items-center gap-3 border-b dark:border-slate-600 pb-2">
-                          <img src={selectedFoodMenu.main.img} alt="" className="w-10 h-10 rounded-lg object-cover border dark:border-slate-600" />
-                          <div><div className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase">Горячее блюдо</div><div className="text-xs font-black text-slate-800 dark:text-slate-100">{selectedFoodMenu.main.name}</div></div>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 pt-1 text-center">
-                          {['side','drink','dessert'].map(key => (
-                            <div key={key} className="bg-orange-50/50 dark:bg-orange-900/20 p-1.5 rounded-lg border border-orange-100 dark:border-orange-800">
-                              <div className="text-[8px] text-gray-400 dark:text-gray-500 font-bold uppercase">{key === 'side' ? 'Гарнир' : key === 'drink' ? 'Напиток' : 'Десерт'}</div>
-                              <div className="text-[10px] font-bold text-slate-700 dark:text-slate-300 mt-0.5 truncate">{selectedFoodMenu[key].name}</div>
-                            </div>
+                        <div className="flex items-center gap-3 border-b dark:border-slate-600 pb-2"><img src={selectedFoodMenu.main.img} alt="" className="w-10 h-10 rounded-lg object-cover border dark:border-slate-600" /><div><div className="text-[9px] text-gray-400 dark:text-gray-500 uppercase">Горячее</div><div className="text-xs font-black dark:text-slate-100">{selectedFoodMenu.main.name}</div></div></div>
+                        <div className="grid grid-cols-3 gap-2 text-center">
+                          {['side','drink','dessert'].map(k => (
+                            <div key={k} className="bg-orange-50/50 dark:bg-orange-900/20 p-1.5 rounded-lg border border-orange-100 dark:border-orange-800"><div className="text-[8px] text-gray-400 dark:text-gray-500 uppercase">{k==='side'?'Гарнир':k==='drink'?'Напиток':'Десерт'}</div><div className="text-[10px] font-bold text-slate-700 dark:text-slate-300 mt-0.5 truncate">{selectedFoodMenu[k].name}</div></div>
                           ))}
                         </div>
                       </div>
                     </div>
                   )}
-                  <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                  <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border dark:border-slate-700 flex justify-between items-center">
                     <div className="flex flex-col max-w-[70%]">
-                       <span className="text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase mb-1">РЕГИСТРАЦИОННЫЙ QR-КОД</span>
-                       <span className="text-[11px] font-mono font-bold truncate dark:text-slate-200">ID: {selectedFlight.id}</span>
-                       <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold mt-1">
-                         {selectedHotel ? "✓ Авиа + Отель" : "✓ Только авиабилет"}
-                         {selectedAttractions.length > 0 ? ` + ${selectedAttractions.length} экск.` : ""}
-                         {selectedFlight.hasFood && !isFoodSkipped ? " + 🍱 Питание" : ""}
-                         {!selectedFlight.isDirect ? ` • ${selectedFlight.stops} пересад.` : " • Прямой"}
-                       </span>
+                      <span className="text-[9px] text-gray-400 dark:text-gray-500 uppercase mb-1">QR-КОД</span>
+                      <span className="text-[11px] font-mono font-bold truncate dark:text-slate-200">ID: {selectedFlight.id}</span>
+                      <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold mt-1">
+                        {selectedHotel?"✓ Авиа + Отель":"✓ Авиабилет"}
+                        {selectedAttractions.length>0?` + ${selectedAttractions.length} экск.`:""}
+                        {selectedFlight.hasFood && !isFoodSkipped?" + 🍱":""}
+                        {!selectedFlight.isDirect?` • ${selectedFlight.stops} пересад.`:" • Прямой"}
+                      </span>
                     </div>
-                    <QRCodeBlock text={`ID:${selectedFlight.id}|PASS:${passengerNames.join(',')}|FL:${selectedFlight.flightNumber}|SEATS:${chosenSeats.join(',')}|HOTEL:${selectedHotel ? selectedHotel.name : 'NONE'}|ATTR:${selectedAttractions.map(a=>a.name).join(';') || 'NONE'}|FOOD:${(selectedFlight.hasFood && !isFoodSkipped) ? selectedFoodMenu.main.name : 'NONE'}`} />
+                    <QRCodeBlock text={`ID:${selectedFlight.id}|PASS:${passengerNames.join(',')}|FL:${selectedFlight.flightNumber}|SEATS:${chosenSeats.join(',')}|HOTEL:${selectedHotel?selectedHotel.name:'NONE'}|ATTR:${selectedAttractions.map(a=>a.name).join(';')||'NONE'}|FOOD:${(selectedFlight.hasFood&&!isFoodSkipped)?selectedFoodMenu.main.name:'NONE'}`} />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 w-full max-w-md mt-6">
-                  <button onClick={handleDownloadTicket} className="bg-slate-800 dark:bg-slate-600 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm">💾 Скачать в галерею</button>
-                  <button onClick={saveToMyTrips} className="bg-[#0057b8] text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm">⭐ В Мои поездки</button>
+                  <button onClick={async () => { if(!ticketRef.current) return; const c = await html2canvas(ticketRef.current, {scale:2,backgroundColor:darkMode?'#1e293b':'#ffffff'}); const a=document.createElement('a'); a.download=`SkyGen_${selectedFlight.flightNumber}.png`; a.href=c.toDataURL('image/png'); a.click(); }} className="bg-slate-800 dark:bg-slate-600 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all">💾 Скачать</button>
+                  <button onClick={saveToMyTrips} className="bg-[#0057b8] text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all">⭐ В Мои поездки</button>
                 </div>
               </div>
             )}
 
             {step === 'trips' && (
               <div className="space-y-4">
-                <button onClick={() => setStep('search')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold mb-2 hover:underline">← На главную форму</button>
-                <h2 className="text-2xl font-bold dark:text-slate-100 flex items-center gap-2"><IconBriefcase /> Ваши сохраненные маршруты</h2>
+                <button onClick={() => setStep('search')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold mb-2 hover:underline">← На главную</button>
+                <h2 className="text-2xl font-bold dark:text-slate-100 flex items-center gap-2"><IconBriefcase /> Мои поездки</h2>
                 {trips.length === 0 ? (
-                  <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-xl border border-dashed border-gray-300 dark:border-slate-600">
-                    <p className="text-gray-400 dark:text-gray-500 font-semibold mb-2">Вы еще не сохранили ни одного билета.</p>
-                    <button onClick={() => setStep('search')} className="text-xs bg-[#0057b8] text-white px-4 py-2 rounded-lg font-bold mt-2 shadow-sm">Найти первое путешествие</button>
-                  </div>
+                  <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-xl border border-dashed dark:border-slate-600"><p className="text-gray-400 dark:text-gray-500 mb-2">Нет сохранённых билетов.</p><button onClick={() => setStep('search')} className="text-xs bg-[#0057b8] text-white px-4 py-2 rounded-lg font-bold">Найти билеты</button></div>
                 ) : (
                   <div className="grid gap-4">
                     {trips.map(trip => (
-                      <div key={trip.tripId} onClick={() => {
-                        setSelectedFlight(trip.flight);
-                        setSelectedHotel(trip.hotel);
-                        setSelectedAttractions(trip.attractions || []);
-                        if (trip.foodMenu) { setSelectedFoodMenu(trip.foodMenu); setIsFoodSkipped(false); }
-                        else { setIsFoodSkipped(true); }
-                        setChosenSeats(trip.seats);
-                        setPassengerNames(trip.passengers);
-                        setParams({...params, passengers: trip.passengers.length, flightClass: trip.class, baggage: trip.options.baggage, pet: trip.options.pet});
-                        setStep('ticket');
-                      }} className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex justify-between items-center cursor-pointer hover:shadow-md transition-all group relative overflow-hidden">
+                      <div key={trip.tripId} onClick={() => goToTicketSafely(trip.flight, trip.hotel, trip.attractions, trip.foodMenu, !trip.foodMenu, trip.seats, trip.passengers, trip.class, trip.options?.baggage, trip.options?.pet)} className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border dark:border-slate-700 flex justify-between items-center cursor-pointer hover:shadow-md transition-all group relative overflow-hidden">
                         {trip.hotel && <div className="absolute top-0 left-0 bg-green-500 w-1.5 h-full"></div>}
                         <div className="flex flex-col max-w-[85%] space-y-1">
-                          <span className="text-xs text-gray-400 dark:text-gray-500 font-bold">{trip.flight.dateFrom} • Рейс {trip.flight.flightNumber}</span>
-                          <span className="text-lg font-black text-slate-800 dark:text-slate-100">{getCityInfo(trip.flight.from).city} ➔ {getCityInfo(trip.flight.to).city}</span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500">{trip.flight.dateFrom} • {trip.flight.flightNumber}</span>
+                          <span className="text-lg font-black dark:text-slate-100">{getCityInfo(trip.flight.from).city} ➔ {getCityInfo(trip.flight.to).city}</span>
                           <div className="flex flex-wrap gap-2 pt-1">
                             <span className="text-[11px] bg-blue-50 dark:bg-blue-900/30 text-[#0057b8] dark:text-blue-400 px-2 py-0.5 rounded-md font-mono font-bold">Места: {trip.seats.join(', ')}</span>
                             {!trip.flight.isDirect && <span className="text-[11px] bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-md font-bold">{trip.flight.stops} пересад.</span>}
-                            <span className="text-[11px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-md font-medium">{getCityInfo(trip.flight.to).weather}</span>
                             {trip.hotel && <span className="text-[11px] bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-0.5 rounded-md font-bold">🏨 {trip.hotel.name}</span>}
-                            {trip.attractions && trip.attractions.length > 0 && <span className="text-[11px] bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-md font-bold">🏛 {trip.attractions.length} экск.</span>}
-                            {trip.flight.hasFood ? (
-                              trip.foodMenu ? <span className="text-[11px] bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-2 py-0.5 rounded-md font-bold">🍱 {trip.foodMenu.main.name}</span>
-                              : <span className="text-[11px] bg-gray-100 dark:bg-slate-600 text-gray-400 dark:text-gray-400 px-2 py-0.5 rounded-md font-bold">🍱 Питание пропущено</span>
-                            ) : <span className="text-[11px] bg-gray-100 dark:bg-slate-600 text-gray-400 dark:text-gray-400 px-2 py-0.5 rounded-md font-bold">🚫 Без питания</span>}
+                            {trip.attractions?.length > 0 && <span className="text-[11px] bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-md font-bold">🏛 {trip.attractions.length} экск.</span>}
+                            {trip.flight.hasFood ? (trip.foodMenu ? <span className="text-[11px] bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-2 py-0.5 rounded-md font-bold">🍱 {trip.foodMenu.main.name}</span> : <span className="text-[11px] bg-gray-100 dark:bg-slate-600 text-gray-400 px-2 py-0.5 rounded-md">🍱 Пропущено</span>) : <span className="text-[11px] bg-gray-100 dark:bg-slate-600 text-gray-400 px-2 py-0.5 rounded-md">🚫 Без питания</span>}
                           </div>
-                          <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate pt-1 font-semibold font-mono">Пассажиры: {trip.passengers.join(', ')}</p>
+                          <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate font-mono">{trip.passengers.join(', ')}</p>
                         </div>
-                        <button onClick={(e) => deleteTrip(e, trip.tripId)} className="p-2 opacity-40 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-all"><IconTrash /></button>
+                        <button onClick={e => { e.stopPropagation(); const u = trips.filter(t => t.tripId !== trip.tripId); setTrips(u); localStorage.setItem('skygen_trips', JSON.stringify(u)); }} className="p-2 opacity-40 group-hover:opacity-100 text-red-400 hover:text-red-600"><IconTrash /></button>
                       </div>
                     ))}
                   </div>
