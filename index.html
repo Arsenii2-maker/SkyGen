@@ -633,13 +633,11 @@
         ⬆ НОС САМОЛЁТА ⬆
       </div>
 
-      <div className="flex flex-col gap-1.5 items-center">
-        {/* Ряды 1-2: Бизнес-класс */}
-        {[1, 2].map(row => {
-          const isBusinessRow = true;
-          return (
-            <div key={row} className="flex items-center gap-2">
-              {/* Левое крыло (3 места) */}
+      <div className="flex justify-center">
+        <div className="flex flex-col gap-1.5">
+          {/* Ряды 1-2: Бизнес-класс */}
+          {[1, 2].map(row => (
+            <div key={row} className="flex items-center justify-center gap-2">
               <div className="flex gap-1.5">
                 {['A','B','C'].map(c => {
                   const seatId = `${row}${c}`;
@@ -649,53 +647,7 @@
                   if (isOccup) cls += "bg-gray-300 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-400 dark:border-slate-500 cursor-not-allowed opacity-60";
                   else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md cursor-pointer";
                   else cls += "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-400 dark:border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 cursor-pointer";
-                  return <div key={seatId} onClick={() => { if (isBusinessRow && params.flightClass !== 'Бизнес') { alert("Только для Бизнес-класса!"); return; } if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{c}</div>
-                })}
-              </div>
-              <div className="w-7 text-center text-xs font-bold text-gray-500 dark:text-gray-400">{row}</div>
-              {/* Правое крыло (3 места) */}
-              <div className="flex gap-1.5">
-                {['D','E','F'].map(c => {
-                  const seatId = `${row}${c}`;
-                  const isOccup = occupiedSeats.includes(seatId);
-                  const isSelected = chosenSeats.includes(seatId);
-                  let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center transition-all border-b-4 ";
-                  if (isOccup) cls += "bg-gray-300 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-400 dark:border-slate-500 cursor-not-allowed opacity-60";
-                  else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md cursor-pointer";
-                  else cls += "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-400 dark:border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 cursor-pointer";
-                  return <div key={seatId} onClick={() => { if (isBusinessRow && params.flightClass !== 'Бизнес') { alert("Только для Бизнес-класса!"); return; } if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{c}</div>
-                })}
-              </div>
-              <div className="w-20 text-left text-[9px] font-bold text-yellow-600 dark:text-yellow-400 flex-shrink-0">{row === 1 ? 'БИЗНЕС' : ''}</div>
-            </div>
-          );
-        })}
-
-        {/* Туалеты после бизнес-класса */}
-        <div className="flex items-center gap-2">
-          <div className="w-[106px] h-12 bg-gray-100 dark:bg-slate-700 rounded-xl border-2 border-gray-300 dark:border-slate-600 flex items-center justify-center text-lg">🚻</div>
-          <div className="w-7"></div>
-          <div className="w-[106px] h-12 bg-gray-100 dark:bg-slate-700 rounded-xl border-2 border-gray-300 dark:border-slate-600 flex items-center justify-center text-lg">🚻</div>
-          <div className="w-20 text-left text-[9px] font-bold text-gray-400 dark:text-gray-500 flex-shrink-0">🚻 ТУАЛЕТ</div>
-        </div>
-
-        {/* Ряды 3-10: Эконом */}
-        {[3,4,5,6,7,8,9,10].map(row => {
-          const isWingRow = row >= 4 && row <= 9;
-          const showWingLabelLeft = row === 4;
-          const showWingLabelRight = row === 9;
-          return (
-            <div key={row} className={`flex items-center gap-2 ${isWingRow ? 'bg-blue-50/30 dark:bg-blue-900/10 rounded-lg px-1 -mx-1' : ''}`}>
-              <div className="flex gap-1.5">
-                {['A','B','C'].map(c => {
-                  const seatId = `${row}${c}`;
-                  const isOccup = occupiedSeats.includes(seatId);
-                  const isSelected = chosenSeats.includes(seatId);
-                  let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center transition-all border-b-4 ";
-                  if (isOccup) cls += "bg-gray-300 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-400 dark:border-slate-500 cursor-not-allowed opacity-60";
-                  else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md cursor-pointer";
-                  else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40 cursor-pointer";
-                  return <div key={seatId} onClick={() => { if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{c}</div>
+                  return <div key={seatId} onClick={() => { if (params.flightClass !== 'Бизнес') { alert("Только для Бизнес-класса!"); return; } if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{c}</div>
                 })}
               </div>
               <div className="w-7 text-center text-xs font-bold text-gray-500 dark:text-gray-400">{row}</div>
@@ -707,61 +659,117 @@
                   let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center transition-all border-b-4 ";
                   if (isOccup) cls += "bg-gray-300 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-400 dark:border-slate-500 cursor-not-allowed opacity-60";
                   else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md cursor-pointer";
-                  else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40 cursor-pointer";
-                  return <div key={seatId} onClick={() => { if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{c}</div>
+                  else cls += "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-400 dark:border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 cursor-pointer";
+                  return <div key={seatId} onClick={() => { if (params.flightClass !== 'Бизнес') { alert("Только для Бизнес-класса!"); return; } if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{c}</div>
                 })}
               </div>
-              <div className="w-20 text-left text-[9px] font-bold text-gray-400 dark:text-gray-500 flex-shrink-0">
-                {showWingLabelLeft && '🛫 КРЫЛО'}
-                {showWingLabelRight && '🛬 КРЫЛО'}
-              </div>
             </div>
-          );
-        })}
+          ))}
 
-        {/* Ряды 11-12 */}
-        {[11, 12].map(row => (
-          <div key={row} className="flex items-center gap-2">
-            <div className="flex gap-1.5">
-              {['A','B','C'].map(c => {
-                const seatId = `${row}${c}`;
-                const isOccup = occupiedSeats.includes(seatId);
-                const isSelected = chosenSeats.includes(seatId);
-                let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center transition-all border-b-4 ";
-                if (isOccup) cls += "bg-gray-300 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-400 dark:border-slate-500 cursor-not-allowed opacity-60";
-                else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md cursor-pointer";
-                else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40 cursor-pointer";
-                return <div key={seatId} onClick={() => { if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{c}</div>
-              })}
-            </div>
-            <div className="w-7 text-center text-xs font-bold text-gray-500 dark:text-gray-400">{row}</div>
-            <div className="flex gap-1.5">
-              {['D','E','F'].map(c => {
-                const seatId = `${row}${c}`;
-                const isOccup = occupiedSeats.includes(seatId);
-                const isSelected = chosenSeats.includes(seatId);
-                let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center transition-all border-b-4 ";
-                if (isOccup) cls += "bg-gray-300 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-400 dark:border-slate-500 cursor-not-allowed opacity-60";
-                else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md cursor-pointer";
-                else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40 cursor-pointer";
-                return <div key={seatId} onClick={() => { if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{c}</div>
-              })}
-            </div>
-            <div className="w-20"></div>
+          {/* Метка бизнес-класса */}
+          <div className="text-center text-[9px] font-bold text-yellow-600 dark:text-yellow-400">БИЗНЕС-КЛАСС</div>
+
+          {/* Туалеты после бизнеса */}
+          <div className="flex items-center justify-center gap-2">
+            <div className="w-[106px] h-[54px] bg-gray-100 dark:bg-slate-700 rounded-xl border-2 border-gray-300 dark:border-slate-600 flex items-center justify-center text-xl">🚻</div>
+            <div className="w-7 flex items-center justify-center text-[9px] font-bold text-gray-400 dark:text-gray-500">WC</div>
+            <div className="w-[106px] h-[54px] bg-gray-100 dark:bg-slate-700 rounded-xl border-2 border-gray-300 dark:border-slate-600 flex items-center justify-center text-xl">🚻</div>
           </div>
-        ))}
 
-        {/* Туалеты в хвосте */}
-        <div className="flex items-center gap-2">
-          <div className="w-[106px] h-12 bg-gray-100 dark:bg-slate-700 rounded-xl border-2 border-gray-300 dark:border-slate-600 flex items-center justify-center text-lg">🚻</div>
-          <div className="w-7"></div>
-          <div className="w-[106px] h-12 bg-gray-100 dark:bg-slate-700 rounded-xl border-2 border-gray-300 dark:border-slate-600 flex items-center justify-center text-lg">🚻</div>
-          <div className="w-20 text-left text-[9px] font-bold text-gray-400 dark:text-gray-500 flex-shrink-0">🚻 ТУАЛЕТ</div>
+          {/* Ряды 3-10: Эконом */}
+          {[3,4,5,6,7,8,9,10].map(row => {
+            const wingStart = row === 4;
+            const wingEnd = row === 9;
+            const inWing = row >= 4 && row <= 9;
+            return (
+              <React.Fragment key={row}>
+                {wingStart && (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-[106px] text-center text-[8px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">🛫 Крыло</div>
+                    <div className="w-7"></div>
+                    <div className="w-[106px] text-center text-[8px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">🛫 Крыло</div>
+                  </div>
+                )}
+                <div className={`flex items-center justify-center gap-2 ${inWing ? 'bg-blue-50/30 dark:bg-blue-900/10 rounded-lg' : ''}`}>
+                  <div className="flex gap-1.5">
+                    {['A','B','C'].map(c => {
+                      const seatId = `${row}${c}`;
+                      const isOccup = occupiedSeats.includes(seatId);
+                      const isSelected = chosenSeats.includes(seatId);
+                      let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center transition-all border-b-4 ";
+                      if (isOccup) cls += "bg-gray-300 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-400 dark:border-slate-500 cursor-not-allowed opacity-60";
+                      else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md cursor-pointer";
+                      else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40 cursor-pointer";
+                      return <div key={seatId} onClick={() => { if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{c}</div>
+                    })}
+                  </div>
+                  <div className="w-7 text-center text-xs font-bold text-gray-500 dark:text-gray-400">{row}</div>
+                  <div className="flex gap-1.5">
+                    {['D','E','F'].map(c => {
+                      const seatId = `${row}${c}`;
+                      const isOccup = occupiedSeats.includes(seatId);
+                      const isSelected = chosenSeats.includes(seatId);
+                      let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center transition-all border-b-4 ";
+                      if (isOccup) cls += "bg-gray-300 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-400 dark:border-slate-500 cursor-not-allowed opacity-60";
+                      else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md cursor-pointer";
+                      else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40 cursor-pointer";
+                      return <div key={seatId} onClick={() => { if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{c}</div>
+                    })}
+                  </div>
+                </div>
+                {wingEnd && (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-[106px] text-center text-[8px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">🛬 Крыло</div>
+                    <div className="w-7"></div>
+                    <div className="w-[106px] text-center text-[8px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">🛬 Крыло</div>
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
+
+          {/* Ряды 11-12 */}
+          {[11, 12].map(row => (
+            <div key={row} className="flex items-center justify-center gap-2">
+              <div className="flex gap-1.5">
+                {['A','B','C'].map(c => {
+                  const seatId = `${row}${c}`;
+                  const isOccup = occupiedSeats.includes(seatId);
+                  const isSelected = chosenSeats.includes(seatId);
+                  let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center transition-all border-b-4 ";
+                  if (isOccup) cls += "bg-gray-300 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-400 dark:border-slate-500 cursor-not-allowed opacity-60";
+                  else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md cursor-pointer";
+                  else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40 cursor-pointer";
+                  return <div key={seatId} onClick={() => { if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{c}</div>
+                })}
+              </div>
+              <div className="w-7 text-center text-xs font-bold text-gray-500 dark:text-gray-400">{row}</div>
+              <div className="flex gap-1.5">
+                {['D','E','F'].map(c => {
+                  const seatId = `${row}${c}`;
+                  const isOccup = occupiedSeats.includes(seatId);
+                  const isSelected = chosenSeats.includes(seatId);
+                  let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center transition-all border-b-4 ";
+                  if (isOccup) cls += "bg-gray-300 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-400 dark:border-slate-500 cursor-not-allowed opacity-60";
+                  else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md cursor-pointer";
+                  else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40 cursor-pointer";
+                  return <div key={seatId} onClick={() => { if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{c}</div>
+                })}
+              </div>
+            </div>
+          ))}
+
+          {/* Туалеты в хвосте */}
+          <div className="flex items-center justify-center gap-2">
+            <div className="w-[106px] h-[54px] bg-gray-100 dark:bg-slate-700 rounded-xl border-2 border-gray-300 dark:border-slate-600 flex items-center justify-center text-xl">🚻</div>
+            <div className="w-7 flex items-center justify-center text-[9px] font-bold text-gray-400 dark:text-gray-500">WC</div>
+            <div className="w-[106px] h-[54px] bg-gray-100 dark:bg-slate-700 rounded-xl border-2 border-gray-300 dark:border-slate-600 flex items-center justify-center text-xl">🚻</div>
+          </div>
         </div>
       </div>
 
       {/* Хвост */}
-      <div className="bg-gray-50 dark:bg-slate-700 rounded-full py-2 mt-2 mx-auto w-3/4 text-center text-[10px] font-bold text-gray-500 dark:text-gray-400 tracking-widest border dark:border-slate-600">
+      <div className="bg-gray-50 dark:bg-slate-700 rounded-full py-2 mt-3 mx-auto w-3/4 text-center text-[10px] font-bold text-gray-500 dark:text-gray-400 tracking-widest border dark:border-slate-600">
         ⬇ ХВОСТ САМОЛЁТА ⬇
       </div>
 
