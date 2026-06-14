@@ -449,17 +449,15 @@
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     {cityCards.map(city=>(
                       <div key={city.code} onClick={()=>{
-                        if(params.from===city.code){alert("Выберите другой город!");return;}
-                        setParams({...params,to:city.code});
-                        setTimeout(()=>{
-                          const newFlights = generateFlights(params.from, city.code, params.dateFrom, params.dateTo, 5);
-                          newFlights.unshift(city._flight);
-                          const minPrice = Math.min(...newFlights.map(f => f.price));
-                          setCityCards(prev => prev.map(c => c.code === city.code ? {...c, price: minPrice} : c));
-                          setFlights(newFlights);
-                          setStep('results');
-                        },100);
-                      }} className="bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 shadow-sm p-4 flex flex-col gap-3 cursor-pointer hover:border-[#0057b8] dark:hover:border-blue-500 hover:shadow-md transition-all group relative overflow-hidden">
+  if(params.from===city.code){alert("Выберите другой город!");return;}
+  setParams({...params,to:city.code});
+  const newFlights = generateFlights(params.from, city.code, params.dateFrom, params.dateTo, 6);
+  const minPrice = Math.min(...newFlights.map(f => f.price));
+  // Обновляем цену на карточке
+  setCityCards(prev => prev.map(c => c.code === city.code ? {...c, price: minPrice} : c));
+  setFlights(newFlights);
+  setStep('results');
+}} className="bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 shadow-sm p-4 flex flex-col gap-3 cursor-pointer hover:border-[#0057b8] dark:hover:border-blue-500 hover:shadow-md transition-all group relative overflow-hidden">
                         <div className="absolute top-0 right-0 bg-orange-500 text-white text-[9px] font-black px-2 py-0.5 rounded-bl">REC</div>
                         <div><div className="flex justify-between"><span className="text-xs text-gray-400 dark:text-gray-500 truncate">{city.country}</span><span className="text-xs font-mono bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">{city.code}</span></div><h3 className="text-lg font-black mt-1 group-hover:text-[#0057b8] dark:group-hover:text-blue-400">{city.city}</h3></div>
                         <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-2 text-xs"><div className="flex justify-between"><span>Погода:</span><span className="font-bold">{city.weather}</span></div><div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400"><span>Пояс:</span><span className="font-mono text-amber-600 dark:text-amber-400">{city.timezone}</span></div></div>
@@ -674,7 +672,13 @@
         </div>
       );
     }
-
+// Полная блокировка зума
+document.addEventListener('gesturestart', e => e.preventDefault());
+document.addEventListener('gesturechange', e => e.preventDefault());
+document.addEventListener('gestureend', e => e.preventDefault());
+document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+document.addEventListener('wheel', e => { if (e.ctrlKey || e.metaKey) e.preventDefault(); }, { passive: false });
+document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0')) e.preventDefault(); });
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
