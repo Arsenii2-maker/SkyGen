@@ -186,13 +186,15 @@
       const ticketRef = React.useRef(null);
 
       // Генерация карточек с сохранением рейса для точной цены
-      React.useEffect(() => { 
-        const cards = [...CITIES].sort(()=>0.5-Math.random()).slice(0,8).map(c => {
-          const flight = generateFlights("SVO", c.code, params.dateFrom, params.dateTo, 1)[0];
-          return { ...c, price: flight.price, _cachedFlight: flight };
-        });
-        setCityCards(cards);
-      }, []);
+     React.useEffect(() => { 
+  const cards = [...CITIES].sort(()=>0.5-Math.random()).slice(0,8).map(c => {
+    // Генерируем несколько рейсов и берём самый дешёвый
+    const flights = generateFlights("SVO", c.code, params.dateFrom, params.dateTo, 3);
+    const cheapestFlight = flights.reduce((min, f) => f.price < min.price ? f : min, flights[0]);
+    return { ...c, price: cheapestFlight.price, _cachedFlight: cheapestFlight };
+  });
+  setCityCards(cards);
+}, []);
 
       React.useEffect(() => { const cnt = Number(params.passengers); if (cnt < 1) return; setPassengerNames(p => { const n = [...p]; while (n.length < cnt) n.push(`PASSENGER ${n.length+1}`); return n.slice(0, cnt); }); setPassengerAges(p => { const n = [...p]; while (n.length < cnt) n.push(25); return n.slice(0, cnt); }); }, [params.passengers]);
 
