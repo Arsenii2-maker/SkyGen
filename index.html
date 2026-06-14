@@ -24,9 +24,9 @@
 
   <div id="root"></div>
 
-<script type="text/babel">
+  <script type="text/babel">
     
-    // === БАЗА ГОРОДОВ (100 МЕГАПОЛИСОВ С УЧЕТОМ ЧАСОВЫХ ПОЯСОВ И ПОГОДЫ) ===
+    // === БАЗА ГОРОДОВ (100 МЕГАПОЛИСОВ) ===
     const CITIES = [
       { city: "Москва", country: "Россия", code: "SVO", hotelCount: 7, attractionCount: 8, timezone: "UTC+3", weather: "☀️ +23°C" }, 
       { city: "Владивосток", country: "Россия", code: "VVO", hotelCount: 2, attractionCount: 4, timezone: "UTC+10", weather: "⛅ +17°C" },
@@ -78,7 +78,6 @@
       { city: "Ханой", country: "Вьетнам", code: "HAN", hotelCount: 4, attractionCount: 5, timezone: "UTC+7", weather: "⛅ +28°C" },
       { city: "Хошимин", country: "Вьетнам", code: "SGN", hotelCount: 4, attractionCount: 5, timezone: "UTC+7", weather: "🌧️ +31°C" },
       { city: "Коломбо", country: "Шри-Ланка", code: "CMB", hotelCount: 3, attractionCount: 4, timezone: "UTC+5.30", weather: "🌧️ +29°C" },
-      // === 24 ГОРОДА (БЫЛО 50 + 24 = 74, ПЛЮС 26 НОВЫХ = 100) ===
       { city: "Алматы", country: "Казахстан", code: "ALA", hotelCount: 4, attractionCount: 4, timezone: "UTC+5", weather: "☀️ +26°C" },
       { city: "Калининград", country: "Россия", code: "KGD", hotelCount: 3, attractionCount: 4, timezone: "UTC+2", weather: "⛅ +18°C" },
       { city: "Иркутск", country: "Россия", code: "IKT", hotelCount: 3, attractionCount: 3, timezone: "UTC+8", weather: "☀️ +21°C" },
@@ -103,7 +102,6 @@
       { city: "Маврикий", country: "Маврикий", code: "MRU", hotelCount: 3, attractionCount: 3, timezone: "UTC+4", weather: "☀️ +26°C" },
       { city: "Сейшелы", country: "Сейшельские о-ва", code: "SEZ", hotelCount: 2, attractionCount: 2, timezone: "UTC+4", weather: "☀️ +28°C" },
       { city: "Манчестер", country: "Великобритания", code: "MAN", hotelCount: 3, attractionCount: 4, timezone: "UTC+1", weather: "🌧️ +15°C" },
-      // === 26 НОВЫХ ГОРОДОВ (ИТОГО 50 + 24 + 26 = 100) ===
       { city: "Вашингтон", country: "США", code: "IAD", hotelCount: 5, attractionCount: 7, timezone: "UTC-4", weather: "⛅ +24°C" },
       { city: "Даллас", country: "США", code: "DFW", hotelCount: 4, attractionCount: 5, timezone: "UTC-5", weather: "☀️ +34°C" },
       { city: "Хьюстон", country: "США", code: "IAH", hotelCount: 4, attractionCount: 5, timezone: "UTC-5", weather: "☀️ +33°C" },
@@ -132,6 +130,9 @@
       { city: "Карачи", country: "Пакистан", code: "KHI", hotelCount: 4, attractionCount: 4, timezone: "UTC+5", weather: "☀️ +35°C" }
     ];
 
+    // === ХАБЫ ДЛЯ ПЕРЕСАДОК ===
+    const HUBS = ["IST", "DXB", "DOH", "FRA", "CDG", "LHR", "AMS", "SIN", "HKG", "ICN"];
+
     const HOTEL_NAMES_POOL = [
       { name: "Grand Royal Luxury Hotel", stars: "⭐⭐⭐⭐⭐", price: 14500, img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80" },
       { name: "Radisson Blu Premium Resort", stars: "⭐⭐⭐⭐⭐", price: 11200, img: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80" },
@@ -156,7 +157,6 @@
       "Район у главного парка", "Премиальный загородный комплекс"
     ];
 
-    // === ПУЛ ДОСТОПРИМЕЧАТЕЛЬНОСТЕЙ ===
     const ATTRACTIONS_POOL = [
       { name: "Главный исторический музей", description: "Богатейшая коллекция артефактов и произведений искусства, охватывающая тысячелетия.", img: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=600&q=80", duration: "2–3 часа", rating: 4.8, district: "Исторический центр" },
       { name: "Центральный городской парк", description: "Огромный зелёный оазис с озёрами, аллеями и смотровыми площадками.", img: "https://images.unsplash.com/photo-1571008887538-b36bb32f4571?auto=format&fit=crop&w=600&q=80", duration: "1.5–2 часа", rating: 4.6, district: "Район у главного парка" },
@@ -203,29 +203,109 @@
     const IconCloud = () => <svg className="w-4 h-4 inline text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>;
     const IconClock = () => <svg className="w-4 h-4 inline text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
     const IconAttraction = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>;
+    const IconStopover = () => <svg className="w-4 h-4 inline text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
 
-    // === ГЕНЕРАТОР РЕЙСОВ ===
+    // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
+    const getTimezoneOffset = (tzStr) => {
+      const match = tzStr.match(/UTC([+-]\d+)(?:\.(\d+))?/);
+      if (!match) return 0;
+      return parseInt(match[1]) + (match[2] ? parseInt(match[2]) / 60 : 0);
+    };
+
+    const getCityByCode = (code) => CITIES.find(c => c.code === code);
+
+    // === ГЕНЕРАТОР РЕЙСОВ С ПЕРЕСАДКАМИ ===
     const generateFlights = (fromCode, toCode, dateFrom, dateTo, count = 6) => {
+      const fromCity = getCityByCode(fromCode);
+      const toCity = getCityByCode(toCode);
+      const tzDiff = Math.abs(getTimezoneOffset(fromCity.timezone) - getTimezoneOffset(toCity.timezone));
+
       return Array.from({ length: count }).map(() => {
-        const durationHours = Math.floor(Math.random() * 8) + 2;
-        const durationMins = Math.floor(Math.random() * 60);
-        const depHour = Math.floor(Math.random() * 16) + 4;
-        const arrHour = (depHour + durationHours) % 24;
-        
+        let stops = 0;
+        if (tzDiff > 7) stops = 2;
+        else if (tzDiff > 3) stops = 1;
+
+        const legs = [];
+        let currentFrom = fromCode;
+        let totalDurationMin = 0;
+
+        // Выбираем хабы для пересадок (не совпадающие с from и to)
+        const availableHubs = HUBS.filter(h => h !== fromCode && h !== toCode);
+        const selectedHubs = [];
+        for (let i = 0; i < stops; i++) {
+          const hub = availableHubs[Math.floor(Math.random() * availableHubs.length)];
+          selectedHubs.push(hub);
+          // Убираем выбранный хаб, чтобы не повторялся
+          const idx = availableHubs.indexOf(hub);
+          if (idx > -1) availableHubs.splice(idx, 1);
+          if (availableHubs.length === 0) availableHubs.push(...HUBS.filter(h => h !== fromCode && h !== toCode && !selectedHubs.includes(h)));
+        }
+
+        const allPoints = [fromCode, ...selectedHubs, toCode];
+
+        for (let i = 0; i < allPoints.length - 1; i++) {
+          const segFrom = allPoints[i];
+          const segTo = allPoints[i + 1];
+          const durationHours = Math.floor(Math.random() * 6) + 1;
+          const durationMins = Math.floor(Math.random() * 60);
+          const durationMinTotal = durationHours * 60 + durationMins;
+          totalDurationMin += durationMinTotal;
+
+          legs.push({
+            from: segFrom,
+            to: segTo,
+            departure: "", // заполним позже
+            arrival: "",
+            duration: `${durationHours}ч ${durationMins}м`,
+            durationMin: durationMinTotal,
+            flightNumber: `SG-${Math.floor(Math.random() * 9000) + 1000}`,
+            gate: `G${Math.floor(Math.random() * 50) + 1}`,
+            airline: AIRLINES[Math.floor(Math.random() * AIRLINES.length)]
+          });
+        }
+
+        // Добавляем время ожидания в хабах (1–3 часа на каждую пересадку)
+        const stopoverDurations = selectedHubs.map(() => Math.floor(Math.random() * 120) + 60); // 60–180 мин
+        const totalStopoverMin = stopoverDurations.reduce((a, b) => a + b, 0);
+        totalDurationMin += totalStopoverMin;
+
+        // Рассчитываем времена вылета/прилёта
+        let currentMin = Math.floor(Math.random() * 480) + 240; // старт между 04:00 и 12:00
+        for (let i = 0; i < legs.length; i++) {
+          const depMin = currentMin;
+          const arrMin = depMin + legs[i].durationMin;
+          legs[i].departure = `${Math.floor(depMin / 60).toString().padStart(2, '0')}:${(depMin % 60).toString().padStart(2, '0')}`;
+          legs[i].arrival = `${Math.floor(arrMin / 60).toString().padStart(2, '0')}:${(arrMin % 60).toString().padStart(2, '0')}`;
+          currentMin = arrMin;
+          if (i < stopoverDurations.length) {
+            currentMin += stopoverDurations[i];
+          }
+        }
+
+        const totalDurationHours = Math.floor(totalDurationMin / 60);
+        const totalDurationMins = totalDurationMin % 60;
+
+        const stopoverCities = selectedHubs.map(h => getCityByCode(h)?.city || h);
+
         return {
           id: Math.random().toString(36).substr(2, 8).toUpperCase(),
-          airline: AIRLINES[Math.floor(Math.random() * AIRLINES.length)],
-          flightNumber: `SG-${Math.floor(Math.random() * 9000) + 1000}`,
-          departure: `${depHour.toString().padStart(2, '0')}:${durationMins.toString().padStart(2, '0')}`,
-          arrival: `${arrHour.toString().padStart(2, '0')}:45`,
-          duration: `${durationHours}ч ${durationMins}м`,
-          price: Math.floor(Math.random() * 45000) + 12000,
+          airline: legs[0].airline,
+          flightNumber: legs[0].flightNumber,
+          departure: legs[0].departure,
+          arrival: legs[legs.length - 1].arrival,
+          duration: `${totalDurationHours}ч ${totalDurationMins}м`,
+          price: Math.floor(Math.random() * 45000) + 12000 - stops * 3000,
           from: fromCode,
           to: toCode,
           dateFrom: dateFrom,
           dateTo: dateTo,
-          gate: `G${Math.floor(Math.random() * 50) + 1}`,
-          hasFood: Math.random() > 0.35
+          gate: legs[0].gate,
+          hasFood: Math.random() > 0.35,
+          stops: stops,
+          legs: legs,
+          stopoverCities: stopoverCities,
+          stopoverDurations: stopoverDurations,
+          isDirect: stops === 0
         };
       });
     };
@@ -245,6 +325,59 @@
         });
       }, [text]);
       return <div ref={qrRef} className="p-1.5 bg-white border rounded-lg shadow-sm"></div>;
+    };
+
+    // === КОМПОНЕНТ ОТОБРАЖЕНИЯ МАРШРУТА С ПЕРЕСАДКАМИ ===
+    const FlightRouteDisplay = ({ flight, compact = false }) => {
+      if (flight.isDirect) {
+        return (
+          <div className="flex justify-between items-center">
+            <div>
+              <div className="text-2xl font-bold text-slate-800">{flight.departure}</div>
+              <div className="text-xs text-gray-500 font-mono">{flight.from} ({getCityByCode(flight.from)?.timezone || ''})</div>
+            </div>
+            <div className="text-center flex-1 px-4 text-xs text-gray-400">
+              <div className="font-semibold text-slate-600">{flight.duration}</div>
+              <div className="h-px bg-gray-200 my-1 relative"></div>
+              <div className="text-[10px] text-green-600 font-bold">Прямой рейс</div>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-slate-800">{flight.arrival}</div>
+              <div className="text-xs text-gray-500 font-mono">{flight.to} ({getCityByCode(flight.to)?.timezone || ''})</div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="space-y-2">
+          {flight.legs.map((leg, idx) => (
+            <React.Fragment key={idx}>
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="text-lg font-bold text-slate-800">{leg.departure}</div>
+                  <div className="text-[10px] text-gray-500 font-mono">{leg.from} ({getCityByCode(leg.from)?.timezone || ''})</div>
+                </div>
+                <div className="text-center flex-1 px-3 text-xs text-gray-400">
+                  <div className="font-semibold text-slate-600">{leg.duration}</div>
+                  <div className="h-px bg-gray-200 my-0.5 relative"></div>
+                  <div className="text-[9px] font-mono">{leg.flightNumber}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-bold text-slate-800">{leg.arrival}</div>
+                  <div className="text-[10px] text-gray-500 font-mono">{leg.to} ({getCityByCode(leg.to)?.timezone || ''})</div>
+                </div>
+              </div>
+              {idx < flight.legs.length - 1 && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-[10px] font-bold text-amber-700 flex items-center gap-2">
+                  <IconStopover />
+                  <span>Пересадка: {flight.stopoverCities[idx]}, ожидание {Math.floor(flight.stopoverDurations[idx] / 60)}ч {flight.stopoverDurations[idx] % 60}м</span>
+                </div>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      );
     };
 
     // === ГЛАВНЫЙ КОМПОНЕНТ ПРИЛОЖЕНИЯ ===
@@ -298,7 +431,6 @@
 
       const ticketRef = React.useRef(null);
 
-      // Генерация интерактивных карточек популярных городов
       React.useEffect(() => {
         const selectedForCards = [...CITIES].sort(() => 0.5 - Math.random()).slice(0, 8);
         const generatedCards = selectedForCards.map(cityObj => {
@@ -521,12 +653,13 @@
         localStorage.setItem('skygen_trips', JSON.stringify(updated));
       };
 
-      // Сортировка рейсов: цена + питание
       const sortedFlights = [...flights].sort((a, b) => {
         if (sortBy === 'cheap') return a.price - b.price;
         if (sortBy === 'expensive') return b.price - a.price;
         if (sortBy === 'foodFirst') return (b.hasFood ? 1 : 0) - (a.hasFood ? 1 : 0);
         if (sortBy === 'noFoodFirst') return (a.hasFood ? 1 : 0) - (b.hasFood ? 1 : 0);
+        if (sortBy === 'directFirst') return a.stops - b.stops;
+        if (sortBy === 'stopsFirst') return b.stops - a.stops;
         return a.price - b.price;
       });
 
@@ -538,19 +671,12 @@
 
       const getSortedCitiesList = () => {
         return [...CITIES].sort((a, b) => {
-          if (citySortType === 'city') {
-            return a.city.localeCompare(b.city, 'ru');
-          } else if (citySortType === 'country') {
-            return a.country.localeCompare(b.country, 'ru') || a.city.localeCompare(b.city, 'ru');
-          } else if (citySortType === 'hotelsDesc') {
-            return b.hotelCount - a.hotelCount || a.city.localeCompare(b.city, 'ru');
-          } else if (citySortType === 'hotelsAsc') {
-            return a.hotelCount - b.hotelCount || a.city.localeCompare(b.city, 'ru');
-          } else if (citySortType === 'attractionsDesc') {
-            return b.attractionCount - a.attractionCount || a.city.localeCompare(b.city, 'ru');
-          } else if (citySortType === 'attractionsAsc') {
-            return a.attractionCount - b.attractionCount || a.city.localeCompare(b.city, 'ru');
-          }
+          if (citySortType === 'city') return a.city.localeCompare(b.city, 'ru');
+          if (citySortType === 'country') return a.country.localeCompare(b.country, 'ru') || a.city.localeCompare(b.city, 'ru');
+          if (citySortType === 'hotelsDesc') return b.hotelCount - a.hotelCount || a.city.localeCompare(b.city, 'ru');
+          if (citySortType === 'hotelsAsc') return a.hotelCount - b.hotelCount || a.city.localeCompare(b.city, 'ru');
+          if (citySortType === 'attractionsDesc') return b.attractionCount - a.attractionCount || a.city.localeCompare(b.city, 'ru');
+          if (citySortType === 'attractionsAsc') return a.attractionCount - b.attractionCount || a.city.localeCompare(b.city, 'ru');
           return a.city.localeCompare(b.city, 'ru');
         });
       };
@@ -598,7 +724,6 @@
 
       return (
         <div className="min-h-screen flex flex-col pb-10">
-          {/* ШАПКА */}
           <header className="bg-[#0057b8] text-white py-4 px-6 shadow-md flex items-center justify-between z-10 sticky top-0">
             <div className="flex items-center gap-2 text-xl font-bold tracking-wider cursor-pointer" onClick={() => {setStep('search'); setIsSearchOpen(true);}}>
               <IconPlane />
@@ -617,7 +742,7 @@
             
             <StepIndicator />
 
-            {/* ЭКРАН 1: ПОИСК И КАРТОЧКИ ГОРОДОВ */}
+            {/* ЭКРАН 1: ПОИСК */}
             {step === 'search' && (
               <div className="space-y-8">
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300">
@@ -681,14 +806,7 @@
                           </div>
                           <div>
                             <label className="text-xs font-bold text-gray-400 block mb-1">Количество пассажиров (1–5)</label>
-                            <input 
-                              type="number" 
-                              min="1" 
-                              max="5" 
-                              value={params.passengers === 0 ? '' : params.passengers} 
-                              onChange={handlePassengersChange} 
-                              className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8] font-bold" 
-                            />
+                            <input type="number" min="1" max="5" value={params.passengers === 0 ? '' : params.passengers} onChange={handlePassengersChange} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8] font-bold" />
                           </div>
                         </div>
                         <div className="flex gap-6 pt-2 text-sm font-medium text-slate-600">
@@ -701,7 +819,7 @@
                   )}
                 </div>
 
-                {/* ОБНОВЛЕННЫЕ ИНТЕРАКТИВНЫЕ КАРТОЧКИ ГОРОДОВ */}
+                {/* КАРТОЧКИ ГОРОДОВ */}
                 <div>
                   <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 mb-4 flex justify-between items-center">
                     <div>
@@ -713,13 +831,8 @@
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     {cityCards.map(city => (
-                      <div 
-                        key={city.code} 
-                        onClick={() => selectCityCard(city.code)}
-                        className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col justify-between gap-3 cursor-pointer hover:border-[#0057b8] hover:shadow-md transition-all group relative overflow-hidden"
-                      >
+                      <div key={city.code} onClick={() => selectCityCard(city.code)} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col justify-between gap-3 cursor-pointer hover:border-[#0057b8] hover:shadow-md transition-all group relative overflow-hidden">
                         <div className="absolute top-0 right-0 bg-orange-500 text-white text-[9px] font-black px-2 py-0.5 rounded-bl">RECOMMENDED</div>
-                        
                         <div>
                           <div className="flex justify-between items-start">
                             <span className="text-xs font-bold text-gray-400 block truncate max-w-[70%]">{city.country}</span>
@@ -727,18 +840,10 @@
                           </div>
                           <h3 className="text-lg font-black text-slate-800 mt-1 group-hover:text-[#0057b8] transition-colors">{city.city}</h3>
                         </div>
-
                         <div className="bg-slate-50 rounded-lg p-2 space-y-1 text-xs font-medium">
-                          <div className="flex justify-between text-slate-700">
-                            <span>Погода сейчас:</span>
-                            <span className="font-bold">{city.weather}</span>
-                          </div>
-                          <div className="flex justify-between text-slate-500 text-[11px]">
-                            <span>Время (пояс):</span>
-                            <span className="font-bold font-mono text-amber-600">{city.timezone}</span>
-                          </div>
+                          <div className="flex justify-between text-slate-700"><span>Погода сейчас:</span><span className="font-bold">{city.weather}</span></div>
+                          <div className="flex justify-between text-slate-500 text-[11px]"><span>Время (пояс):</span><span className="font-bold font-mono text-amber-600">{city.timezone}</span></div>
                         </div>
-
                         <div className="flex justify-between items-center pt-2 border-t border-gray-100 text-xs">
                           <span className="text-gray-400 font-bold">Отелей: <span className="text-slate-700">{city.hotelCount}</span></span>
                           <span className="font-extrabold text-[#0057b8] bg-blue-50 px-2 py-1 rounded-md">от {city.price.toLocaleString('ru-RU')} ₽</span>
@@ -753,13 +858,15 @@
             {/* ЭКРАН 2: РЕЗУЛЬТАТЫ ПОИСКА */}
             {step === 'results' && (
               <div className="space-y-4">
-                <div className="flex justify-between mb-2 items-center">
+                <div className="flex justify-between mb-2 items-center flex-wrap gap-2">
                   <button onClick={() => {setStep('search'); setIsSearchOpen(true);}} className="text-[#0057b8] text-sm font-semibold hover:underline">← Изменить критерии поиска</button>
                   <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="p-1.5 border rounded-lg bg-white text-xs text-[#0057b8] font-bold outline-none border-blue-200">
                     <option value="cheap">Сортировка: Сначала дешёвые</option>
                     <option value="expensive">Сортировка: Сначала дорогие</option>
                     <option value="foodFirst">Сортировка: С питанием — сверху</option>
                     <option value="noFoodFirst">Сортировка: Без питания — сверху</option>
+                    <option value="directFirst">Сортировка: Прямые рейсы — сверху</option>
+                    <option value="stopsFirst">Сортировка: С пересадками — сверху</option>
                   </select>
                 </div>
 
@@ -768,7 +875,6 @@
                     <h2 className="text-xl font-bold">Рейсы: {getCityInfo(params.from).city} → {getCityInfo(params.to).city}</h2>
                     <p className="text-xs text-gray-400 mt-0.5">Дата отправления: {params.dateFrom} | Возврат: {params.dateTo}</p>
                   </div>
-                  
                   <div className="bg-blue-50 rounded-lg p-2.5 text-xs font-semibold text-slate-700 border flex gap-4">
                     <div>📍 Целевой мегаполис: <span className="text-blue-700 font-bold">{getCityInfo(params.to).city}</span></div>
                     <div>Погода: <span className="text-orange-600 font-bold">{getCityInfo(params.to).weather}</span></div>
@@ -781,27 +887,20 @@
                     <div className="flex justify-between text-xs font-bold text-gray-400">
                       <span>{flight.airline}</span>
                       <div className="flex gap-2 items-center">
+                        {!flight.isDirect && (
+                          <span className="text-[10px] px-2 py-0.5 rounded font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                            {flight.stops === 1 ? '1 пересадка' : '2 пересадки'}
+                          </span>
+                        )}
                         <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${flight.hasFood ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-400'}`}>
                           {flight.hasFood ? "🍱 Питание включено" : "🚫 Без питания"}
                         </span>
                         <span className="font-mono text-slate-600">{flight.flightNumber}</span>
                       </div>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="text-2xl font-bold text-slate-800">{flight.departure}</div>
-                        <div className="text-xs text-gray-500 font-mono">{flight.from} ({getCityInfo(flight.from).timezone})</div>
-                      </div>
-                      <div className="text-center flex-1 px-4 text-xs text-gray-400">
-                        <div className="font-semibold text-slate-600">{flight.duration}</div>
-                        <div className="h-px bg-gray-200 my-1 relative"></div>
-                        <div className="text-[10px] font-mono">{flight.dateFrom}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-slate-800">{flight.arrival}</div>
-                        <div className="text-xs text-gray-500 font-mono">{flight.to} ({getCityInfo(flight.to).timezone})</div>
-                      </div>
-                    </div>
+                    
+                    <FlightRouteDisplay flight={flight} />
+
                     <div className="flex justify-between items-center pt-3 border-t border-gray-100">
                       <span className="text-xl font-black text-[#0057b8]">{flight.price.toLocaleString('ru-RU')} ₽</span>
                       <button onClick={() => goToSeatSelection(flight)} className="bg-[#0057b8] text-white px-5 py-2.5 rounded-lg font-bold text-sm active:scale-95 transition-all shadow-sm">Выбрать этот рейс</button>
@@ -819,6 +918,9 @@
                   <div className="text-center mb-4">
                     <h2 className="text-2xl font-black text-slate-800">Конфигурация мест</h2>
                     <p className="text-xs text-gray-400 mt-0.5">Пассажиров: <span className="font-bold text-slate-700">{params.passengers}</span> • Класс: <span className="font-bold text-blue-600">{params.flightClass}</span></p>
+                    {!selectedFlight.isDirect && (
+                      <p className="text-xs text-amber-600 mt-1 font-semibold">Рейс с пересадкой • Места выбираются на все сегменты</p>
+                    )}
                   </div>
 
                   <div className="bg-gray-50 rounded-full py-1.5 mb-6 mx-auto w-3/4 text-center text-[10px] font-bold text-gray-400 tracking-widest border border-gray-200">
@@ -837,13 +939,11 @@
                               const seatId = `${row}${c}`;
                               const isOccup = occupiedSeats.includes(seatId);
                               const isSelected = chosenSeats.includes(seatId);
-                              
                               let btnClass = "w-10 h-10 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
                               if (isOccup) btnClass += "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed opacity-60";
                               else if (isSelected) btnClass += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md";
                               else if (isBusinessRow) btnClass += "bg-yellow-100 text-yellow-700 border-yellow-400 hover:bg-yellow-200";
                               else btnClass += "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100";
-                              
                               return <div key={seatId} onClick={() => !isOccup && handleSeatClick(seatId, isBusinessRow)} className={btnClass}>{c}</div>
                             })}
                           </div>
@@ -853,13 +953,11 @@
                               const seatId = `${row}${c}`;
                               const isOccup = occupiedSeats.includes(seatId);
                               const isSelected = chosenSeats.includes(seatId);
-                              
                               let btnClass = "w-10 h-10 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
                               if (isOccup) btnClass += "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed opacity-60";
                               else if (isSelected) btnClass += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md";
                               else if (isBusinessRow) btnClass += "bg-yellow-100 text-yellow-700 border-yellow-400 hover:bg-yellow-200";
                               else btnClass += "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100";
-                              
                               return <div key={seatId} onClick={() => !isOccup && handleSeatClick(seatId, isBusinessRow)} className={btnClass}>{c}</div>
                             })}
                           </div>
@@ -875,10 +973,7 @@
                     <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-[#0057b8] rounded border-b-2 border-blue-900"></div>Выбрано</div>
                   </div>
 
-                  <button 
-                    onClick={handleOpenHotelsStep} 
-                    className={`w-full mt-6 py-4 rounded-xl font-bold shadow-md transition-all ${isAllSeatsSelected ? 'bg-[#0057b8] text-white active:scale-95' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
-                  >
+                  <button onClick={handleOpenHotelsStep} className={`w-full mt-6 py-4 rounded-xl font-bold shadow-md transition-all ${isAllSeatsSelected ? 'bg-[#0057b8] text-white active:scale-95' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
                     {isAllSeatsSelected ? `Подтвердить места и перейти к отелям` : `Выбрано мест: ${chosenSeats.length} из ${params.passengers}`}
                   </button>
                 </div>
@@ -890,22 +985,13 @@
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <button onClick={() => setStep('seats')} className="text-[#0057b8] text-sm font-semibold hover:underline">← Назад к выбору мест</button>
-                  <button 
-                    onClick={() => handleOpenAttractionsStep(null)} 
-                    className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors"
-                  >
-                    Пропустить отель ➔
-                  </button>
+                  <button onClick={() => handleOpenAttractionsStep(null)} className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors">Пропустить отель ➔</button>
                 </div>
 
                 <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100 flex justify-between items-center flex-wrap gap-3">
                   <div>
-                    <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                      <IconHotel /> Доступные отели: г. {getCityInfo(params.to).city}
-                    </h2>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Размер мегаполиса открыл для бронирования вариантов: <span className="font-extrabold text-[#0057b8]">{currentHotelsList.length}</span>. Все комнаты рассчитаны на <span className="font-bold text-slate-700">{params.passengers} чел.</span>
-                    </p>
+                    <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2"><IconHotel /> Доступные отели: г. {getCityInfo(params.to).city}</h2>
+                    <p className="text-xs text-gray-500 mt-1">Размер мегаполиса открыл для бронирования вариантов: <span className="font-extrabold text-[#0057b8]">{currentHotelsList.length}</span>. Все комнаты рассчитаны на <span className="font-bold text-slate-700">{params.passengers} чел.</span></p>
                   </div>
                   <div className="text-xs bg-white border px-3 py-1.5 rounded-lg text-slate-600 font-semibold space-y-0.5">
                     <div>Погода там: <span className="text-orange-600 font-bold">{getCityInfo(params.to).weather}</span></div>
@@ -918,9 +1004,7 @@
                     <div key={idx} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-shadow">
                       <div className="h-48 w-full overflow-hidden relative bg-gray-100">
                         <img src={hotel.img} alt={hotel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; }} />
-                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-slate-800 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm">
-                          {hotel.stars}
-                        </div>
+                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-slate-800 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm">{hotel.stars}</div>
                       </div>
                       <div className="p-5 flex flex-col flex-1 justify-between gap-4">
                         <div>
@@ -932,12 +1016,7 @@
                             <span className="text-xl font-black text-slate-800">{(hotel.price * params.passengers).toLocaleString('ru-RU')} ₽</span>
                             <span className="text-[10px] text-gray-400 block font-bold">за ночь ({params.passengers} пасс.)</span>
                           </div>
-                          <button 
-                            onClick={() => handleOpenAttractionsStep(hotel)} 
-                            className="bg-[#0057b8] text-white font-bold text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm"
-                          >
-                            Забронировать номер
-                          </button>
+                          <button onClick={() => handleOpenAttractionsStep(hotel)} className="bg-[#0057b8] text-white font-bold text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm">Забронировать номер</button>
                         </div>
                       </div>
                     </div>
@@ -946,27 +1025,18 @@
               </div>
             )}
 
-            {/* ЭКРАН 5: ВЫБОР ДОСТОПРИМЕЧАТЕЛЬНОСТИ */}
+            {/* ЭКРАН 5: ДОСТОПРИМЕЧАТЕЛЬНОСТИ */}
             {step === 'attractions' && selectedFlight && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <button onClick={() => setStep('hotels')} className="text-[#0057b8] text-sm font-semibold hover:underline">← Назад к отелям</button>
-                  <button 
-                    onClick={() => handleNextAfterAttractions(null)} 
-                    className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors"
-                  >
-                    Пропустить достопримечательности ➔
-                  </button>
+                  <button onClick={() => handleNextAfterAttractions(null)} className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors">Пропустить достопримечательности ➔</button>
                 </div>
 
                 <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100 flex justify-between items-center flex-wrap gap-3">
                   <div>
-                    <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                      <IconAttraction /> Достопримечательности: г. {getCityInfo(params.to).city}
-                    </h2>
-                    <p className="text-xs text-gray-500 mt-1">
-                      В этом городе доступно для посещения: <span className="font-extrabold text-emerald-600">{currentAttractionsList.length}</span> знаковых мест.
-                    </p>
+                    <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2"><IconAttraction /> Достопримечательности: г. {getCityInfo(params.to).city}</h2>
+                    <p className="text-xs text-gray-500 mt-1">В этом городе доступно для посещения: <span className="font-extrabold text-emerald-600">{currentAttractionsList.length}</span> знаковых мест.</p>
                   </div>
                   <div className="text-xs bg-white border px-3 py-1.5 rounded-lg text-slate-600 font-semibold space-y-0.5">
                     <div>Погода там: <span className="text-orange-600 font-bold">{getCityInfo(params.to).weather}</span></div>
@@ -979,9 +1049,7 @@
                     <div key={idx} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-shadow">
                       <div className="h-48 w-full overflow-hidden relative bg-gray-100">
                         <img src={attraction.img} alt={attraction.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=600&q=80"; }} />
-                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-slate-800 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm flex items-center gap-1">
-                          ⭐ {attraction.rating}
-                        </div>
+                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-slate-800 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm flex items-center gap-1">⭐ {attraction.rating}</div>
                       </div>
                       <div className="p-5 flex flex-col flex-1 justify-between gap-4">
                         <div>
@@ -993,12 +1061,7 @@
                           </div>
                         </div>
                         <div className="flex justify-end items-center pt-3 border-t">
-                          <button 
-                            onClick={() => handleNextAfterAttractions(attraction)} 
-                            className="bg-emerald-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm hover:bg-emerald-700"
-                          >
-                            Выбрать для посещения
-                          </button>
+                          <button onClick={() => handleNextAfterAttractions(attraction)} className="bg-emerald-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm hover:bg-emerald-700">Выбрать для посещения</button>
                         </div>
                       </div>
                     </div>
@@ -1007,26 +1070,17 @@
               </div>
             )}
 
-            {/* ЭКРАН 6: КОНСТРУКТОР БОРТОВОГО ПИТАНИЯ */}
+            {/* ЭКРАН 6: ПИТАНИЕ */}
             {step === 'food' && selectedFlight && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <button onClick={() => setStep('attractions')} className="text-[#0057b8] text-sm font-semibold hover:underline">← Назад к достопримечательностям</button>
-                  <button 
-                    onClick={() => { setIsFoodSkipped(true); setStep('ticket'); }} 
-                    className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors"
-                  >
-                    Отказаться от питания ➔
-                  </button>
+                  <button onClick={() => { setIsFoodSkipped(true); setStep('ticket'); }} className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors">Отказаться от питания ➔</button>
                 </div>
 
                 <div className="bg-orange-50 p-5 rounded-2xl border border-orange-100">
-                  <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    🍱 Шеф-меню на борту рейса {selectedFlight.flightNumber}
-                  </h2>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Соберите идеальный бесплатный ланч-сет премиум-класса для комфортного полёта.
-                  </p>
+                  <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">🍱 Шеф-меню на борту рейса {selectedFlight.flightNumber}</h2>
+                  <p className="text-xs text-gray-500 mt-1">Соберите идеальный бесплатный ланч-сет премиум-класса для комфортного полёта.</p>
                 </div>
 
                 <div className="space-y-6">
@@ -1034,11 +1088,7 @@
                     <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 1: Основное горячее блюдо</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {FOOD_MENU_OPTIONS.mains.map(item => (
-                        <div 
-                          key={item.id} 
-                          onClick={() => setSelectedFoodMenu({...selectedFoodMenu, main: item})}
-                          className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm transition-all text-center ${selectedFoodMenu.main.id === item.id ? 'border-orange-500 bg-orange-50/30 scale-[1.02]' : 'border-gray-200'}`}
-                        >
+                        <div key={item.id} onClick={() => setSelectedFoodMenu({...selectedFoodMenu, main: item})} className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm transition-all text-center ${selectedFoodMenu.main.id === item.id ? 'border-orange-500 bg-orange-50/30 scale-[1.02]' : 'border-gray-200'}`}>
                           <img src={item.img} alt="" className="w-full h-24 object-cover" />
                           <div className="p-2">
                             <div className="text-[10px] font-bold text-orange-600">{item.type}</div>
@@ -1048,48 +1098,33 @@
                       ))}
                     </div>
                   </div>
-
                   <div>
                     <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 2: Дополнительный гарнир</h3>
                     <div className="grid grid-cols-2 gap-3">
                       {FOOD_MENU_OPTIONS.sides.map(item => (
-                        <div 
-                          key={item.id} 
-                          onClick={() => setSelectedFoodMenu({...selectedFoodMenu, side: item})}
-                          className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm flex items-center p-2 gap-3 transition-all ${selectedFoodMenu.side.id === item.id ? 'border-orange-500 bg-orange-50/30' : 'border-gray-200'}`}
-                        >
+                        <div key={item.id} onClick={() => setSelectedFoodMenu({...selectedFoodMenu, side: item})} className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm flex items-center p-2 gap-3 transition-all ${selectedFoodMenu.side.id === item.id ? 'border-orange-500 bg-orange-50/30' : 'border-gray-200'}`}>
                           <img src={item.img} alt="" className="w-14 h-14 rounded-lg object-cover" />
                           <div className="text-xs font-bold text-slate-800">{item.name}</div>
                         </div>
                       ))}
                     </div>
                   </div>
-
                   <div>
                     <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 3: Напиток на борту</h3>
                     <div className="grid grid-cols-2 gap-3">
                       {FOOD_MENU_OPTIONS.drinks.map(item => (
-                        <div 
-                          key={item.id} 
-                          onClick={() => setSelectedFoodMenu({...selectedFoodMenu, drink: item})}
-                          className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm flex items-center p-2 gap-3 transition-all ${selectedFoodMenu.drink.id === item.id ? 'border-orange-500 bg-orange-50/30' : 'border-gray-200'}`}
-                        >
+                        <div key={item.id} onClick={() => setSelectedFoodMenu({...selectedFoodMenu, drink: item})} className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm flex items-center p-2 gap-3 transition-all ${selectedFoodMenu.drink.id === item.id ? 'border-orange-500 bg-orange-50/30' : 'border-gray-200'}`}>
                           <img src={item.img} alt="" className="w-14 h-14 rounded-lg object-cover" />
                           <div className="text-xs font-bold text-slate-800">{item.name}</div>
                         </div>
                       ))}
                     </div>
                   </div>
-
                   <div>
                     <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 4: Авиа-десерт</h3>
                     <div className="grid grid-cols-2 gap-3">
                       {FOOD_MENU_OPTIONS.desserts.map(item => (
-                        <div 
-                          key={item.id} 
-                          onClick={() => setSelectedFoodMenu({...selectedFoodMenu, dessert: item})}
-                          className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm flex items-center p-2 gap-3 transition-all ${selectedFoodMenu.dessert.id === item.id ? 'border-orange-500 bg-orange-50/30' : 'border-gray-200'}`}
-                        >
+                        <div key={item.id} onClick={() => setSelectedFoodMenu({...selectedFoodMenu, dessert: item})} className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm flex items-center p-2 gap-3 transition-all ${selectedFoodMenu.dessert.id === item.id ? 'border-orange-500 bg-orange-50/30' : 'border-gray-200'}`}>
                           <img src={item.img} alt="" className="w-14 h-14 rounded-lg object-cover" />
                           <div className="text-xs font-bold text-slate-800">{item.name}</div>
                         </div>
@@ -1098,37 +1133,21 @@
                   </div>
                 </div>
 
-                <button 
-                  onClick={() => { setIsFoodSkipped(false); setStep('ticket'); }} 
-                  className="w-full bg-orange-500 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition-all text-sm mt-4"
-                >
-                  ✓ Подтвердить выбранный рацион и перейти к билетам
-                </button>
+                <button onClick={() => { setIsFoodSkipped(false); setStep('ticket'); }} className="w-full bg-orange-500 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition-all text-sm mt-4">✓ Подтвердить выбранный рацион и перейти к билетам</button>
               </div>
             )}
 
-            {/* ЭКРАН 7: ГОТОВЫЙ БИЛЕТ С ВАУЧЕРАМИ И МЕТЕОДАННЫМИ */}
+            {/* ЭКРАН 7: БИЛЕТ */}
             {step === 'ticket' && selectedFlight && (
               <div className="flex flex-col items-center">
-                <button 
-                  onClick={() => selectedFlight.hasFood && !isFoodSkipped ? setStep('food') : setStep('attractions')} 
-                  className="text-[#0057b8] text-sm font-semibold mb-4 self-start hover:underline"
-                >
-                  ← Вернуться на шаг назад
-                </button>
+                <button onClick={() => selectedFlight.hasFood && !isFoodSkipped ? setStep('food') : setStep('attractions')} className="text-[#0057b8] text-sm font-semibold mb-4 self-start hover:underline">← Вернуться на шаг назад</button>
 
                 <div className="w-full bg-white p-5 rounded-xl border mb-6 shadow-sm space-y-3">
                   <h3 className="text-sm font-bold text-slate-700 border-b pb-1.5">Данные пассажиров (Латиница):</h3>
                   {passengerNames.map((name, idx) => (
                     <div key={idx}>
                       <label className="text-[10px] font-bold text-gray-400 block mb-0.5">Пассажир {idx + 1} (Посадочное место: {chosenSeats[idx] || '?'})</label>
-                      <input 
-                        type="text" 
-                        value={name} 
-                        onChange={(e) => handleNameChange(idx, e.target.value)} 
-                        className="w-full p-2.5 border rounded-xl font-mono uppercase text-sm outline-none focus:border-[#0057b8]" 
-                        placeholder="IVAN IVANOV" 
-                      />
+                      <input type="text" value={name} onChange={(e) => handleNameChange(idx, e.target.value)} className="w-full p-2.5 border rounded-xl font-mono uppercase text-sm outline-none focus:border-[#0057b8]" placeholder="IVAN IVANOV" />
                     </div>
                   ))}
                 </div>
@@ -1156,17 +1175,43 @@
                         </div>
                       </div>
 
-                      <div className="flex justify-between items-center py-2">
-                        <div>
-                          <div className="text-4xl font-black text-slate-800">{selectedFlight.from}</div>
-                          <div className="text-[10px] text-gray-400 font-bold">Вылет {selectedFlight.departure} ({getCityInfo(selectedFlight.from).timezone})</div>
+                      {/* Маршрут с пересадками в билете */}
+                      {selectedFlight.isDirect ? (
+                        <div className="flex justify-between items-center py-2">
+                          <div>
+                            <div className="text-4xl font-black text-slate-800">{selectedFlight.from}</div>
+                            <div className="text-[10px] text-gray-400 font-bold">Вылет {selectedFlight.departure} ({getCityInfo(selectedFlight.from).timezone})</div>
+                          </div>
+                          <div className="text-gray-300 text-xl">➔</div>
+                          <div className="text-right">
+                            <div className="text-4xl font-black text-slate-800">{selectedFlight.to}</div>
+                            <div className="text-[10px] text-gray-400 font-bold">Прилет {selectedFlight.arrival} ({getCityInfo(selectedFlight.to).timezone})</div>
+                          </div>
                         </div>
-                        <div className="text-gray-300 text-xl">➔</div>
-                        <div className="text-right">
-                          <div className="text-4xl font-black text-slate-800">{selectedFlight.to}</div>
-                          <div className="text-[10px] text-gray-400 font-bold">Прилет {selectedFlight.arrival} ({getCityInfo(selectedFlight.to).timezone})</div>
+                      ) : (
+                        <div className="space-y-2 py-2">
+                          {selectedFlight.legs.map((leg, idx) => (
+                            <React.Fragment key={idx}>
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <div className="text-2xl font-black text-slate-800">{leg.from}</div>
+                                  <div className="text-[9px] text-gray-400 font-bold">Вылет {leg.departure}</div>
+                                </div>
+                                <div className="text-gray-300 text-lg">➔</div>
+                                <div className="text-right">
+                                  <div className="text-2xl font-black text-slate-800">{leg.to}</div>
+                                  <div className="text-[9px] text-gray-400 font-bold">Прилет {leg.arrival}</div>
+                                </div>
+                              </div>
+                              {idx < selectedFlight.legs.length - 1 && (
+                                <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5 text-[9px] font-bold text-amber-700 text-center">
+                                  Пересадка: {selectedFlight.stopoverCities[idx]}, {Math.floor(selectedFlight.stopoverDurations[idx] / 60)}ч {selectedFlight.stopoverDurations[idx] % 60}м
+                                </div>
+                              )}
+                            </React.Fragment>
+                          ))}
                         </div>
-                      </div>
+                      )}
 
                       <div className="grid grid-cols-3 gap-2 bg-gray-50 p-3 rounded-xl text-center text-sm border">
                         <div>
@@ -1199,9 +1244,7 @@
                   {selectedHotel && (
                     <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-green-200 relative">
                       <div className="bg-green-600 text-white p-3 flex justify-between items-center">
-                        <span className="font-bold text-xs tracking-wider flex items-center gap-1">
-                          <IconHotel /> ВАУЧЕР НА ПРОЖИВАНИЕ
-                        </span>
+                        <span className="font-bold text-xs tracking-wider flex items-center gap-1"><IconHotel /> ВАУЧЕР НА ПРОЖИВАНИЕ</span>
                         <span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">HOTEL BOOKING</span>
                       </div>
                       <div className="p-4 flex gap-4">
@@ -1209,9 +1252,7 @@
                         <div className="flex-1 min-w-0">
                           <h4 className="font-black text-sm text-slate-800 truncate">{selectedHotel.name}</h4>
                           <p className="text-[10px] text-blue-600 font-bold mt-0.5">📍 {selectedHotel.district}</p>
-                          <div className="mt-2 text-[11px] bg-green-50 text-green-700 px-2 py-1 rounded font-mono inline-block font-bold">
-                            Гостей: {params.passengers} | Номер подтвержден
-                          </div>
+                          <div className="mt-2 text-[11px] bg-green-50 text-green-700 px-2 py-1 rounded font-mono inline-block font-bold">Гостей: {params.passengers} | Номер подтвержден</div>
                         </div>
                       </div>
                     </div>
@@ -1221,9 +1262,7 @@
                   {selectedAttraction && (
                     <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-emerald-200 relative">
                       <div className="bg-emerald-600 text-white p-3 flex justify-between items-center">
-                        <span className="font-bold text-xs tracking-wider flex items-center gap-1">
-                          <IconAttraction /> ВАУЧЕР НА ПОСЕЩЕНИЕ
-                        </span>
+                        <span className="font-bold text-xs tracking-wider flex items-center gap-1"><IconAttraction /> ВАУЧЕР НА ПОСЕЩЕНИЕ</span>
                         <span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">ATTRACTION PASS</span>
                       </div>
                       <div className="p-4 flex gap-4">
@@ -1232,12 +1271,8 @@
                           <h4 className="font-black text-sm text-slate-800 truncate">{selectedAttraction.name}</h4>
                           <p className="text-[10px] text-gray-500 mt-0.5 leading-relaxed line-clamp-2">{selectedAttraction.description}</p>
                           <div className="mt-2 flex gap-2 flex-wrap">
-                            <span className="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded font-mono inline-block font-bold">
-                              ⏱ {selectedAttraction.duration}
-                            </span>
-                            <span className="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded font-mono inline-block font-bold">
-                              ⭐ {selectedAttraction.rating}
-                            </span>
+                            <span className="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded font-mono inline-block font-bold">⏱ {selectedAttraction.duration}</span>
+                            <span className="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded font-mono inline-block font-bold">⭐ {selectedAttraction.rating}</span>
                           </div>
                         </div>
                       </div>
@@ -1248,9 +1283,7 @@
                   {selectedFlight.hasFood && !isFoodSkipped && (
                     <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-orange-200 relative">
                       <div className="bg-orange-500 text-white p-3 flex justify-between items-center">
-                        <span className="font-bold text-xs tracking-wider flex items-center gap-1">
-                          🍱 БОРТОВОЕ ПИТАНИЕ С ЛОГОТИПОМ
-                        </span>
+                        <span className="font-bold text-xs tracking-wider flex items-center gap-1">🍱 БОРТОВОЕ ПИТАНИЕ С ЛОГОТИПОМ</span>
                         <span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">IN-FLIGHT MEAL</span>
                       </div>
                       <div className="p-4 space-y-3">
@@ -1279,7 +1312,7 @@
                     </div>
                   )}
 
-                  {/* ОБЩИЙ QR КОД */}
+                  {/* QR КОД */}
                   <div className="bg-white p-4 rounded-2xl border border-gray-200 flex justify-between items-center">
                     <div className="flex flex-col max-w-[70%]">
                        <span className="text-[9px] text-gray-400 font-bold uppercase mb-1">РЕГИСТРАЦИОННЫЙ QR-КОД</span>
@@ -1288,19 +1321,16 @@
                          {selectedHotel ? "✓ Авиа + Отель" : "✓ Только авиабилет"}
                          {selectedAttraction ? " + 🏛 Достопр." : ""}
                          {selectedFlight.hasFood && !isFoodSkipped ? " + 🍱 Питание" : ""}
+                         {!selectedFlight.isDirect ? ` • ${selectedFlight.stops} пересад.` : " • Прямой"}
                        </span>
                     </div>
-                    <QRCodeBlock text={`ID:${selectedFlight.id}|PASSENGERS:${passengerNames.join(',')}|FLIGHT:${selectedFlight.flightNumber}|SEATS:${chosenSeats.join(',')}|HOTEL:${selectedHotel ? selectedHotel.name : 'NONE'}|ATTRACTION:${selectedAttraction ? selectedAttraction.name : 'NONE'}|FOOD:${(selectedFlight.hasFood && !isFoodSkipped) ? selectedFoodMenu.main.name : 'NONE'}`} />
+                    <QRCodeBlock text={`ID:${selectedFlight.id}|PASSENGERS:${passengerNames.join(',')}|FLIGHT:${selectedFlight.flightNumber}|SEATS:${chosenSeats.join(',')}|HOTEL:${selectedHotel ? selectedHotel.name : 'NONE'}|ATTRACTION:${selectedAttraction ? selectedAttraction.name : 'NONE'}|FOOD:${(selectedFlight.hasFood && !isFoodSkipped) ? selectedFoodMenu.main.name : 'NONE'}|STOPS:${selectedFlight.stops}`} />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 w-full max-w-md mt-6">
-                  <button onClick={handleDownloadTicket} className="bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm">
-                    💾 Скачать в галерею
-                  </button>
-                  <button onClick={saveToMyTrips} className="bg-[#0057b8] text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm">
-                    ⭐ В Мои поездки
-                  </button>
+                  <button onClick={handleDownloadTicket} className="bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm">💾 Скачать в галерею</button>
+                  <button onClick={saveToMyTrips} className="bg-[#0057b8] text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm">⭐ В Мои поездки</button>
                 </div>
               </div>
             )}
@@ -1319,25 +1349,17 @@
                 ) : (
                   <div className="grid gap-4">
                     {trips.map(trip => (
-                      <div 
-                        key={trip.tripId} 
-                        onClick={() => {
-                          setSelectedFlight(trip.flight);
-                          setSelectedHotel(trip.hotel);
-                          setSelectedAttraction(trip.attraction || null);
-                          if (trip.foodMenu) {
-                            setSelectedFoodMenu(trip.foodMenu);
-                            setIsFoodSkipped(false);
-                          } else {
-                            setIsFoodSkipped(true);
-                          }
-                          setChosenSeats(trip.seats);
-                          setPassengerNames(trip.passengers);
-                          setParams({...params, passengers: trip.passengers.length, flightClass: trip.class, baggage: trip.options.baggage, pet: trip.options.pet});
-                          setStep('ticket');
-                        }}
-                        className="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 flex justify-between items-center cursor-pointer hover:shadow-md transition-all group relative overflow-hidden"
-                      >
+                      <div key={trip.tripId} onClick={() => {
+                        setSelectedFlight(trip.flight);
+                        setSelectedHotel(trip.hotel);
+                        setSelectedAttraction(trip.attraction || null);
+                        if (trip.foodMenu) { setSelectedFoodMenu(trip.foodMenu); setIsFoodSkipped(false); }
+                        else { setIsFoodSkipped(true); }
+                        setChosenSeats(trip.seats);
+                        setPassengerNames(trip.passengers);
+                        setParams({...params, passengers: trip.passengers.length, flightClass: trip.class, baggage: trip.options.baggage, pet: trip.options.pet});
+                        setStep('ticket');
+                      }} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 flex justify-between items-center cursor-pointer hover:shadow-md transition-all group relative overflow-hidden">
                         {trip.hotel && <div className="absolute top-0 left-0 bg-green-500 w-1.5 h-full"></div>}
                         
                         <div className="flex flex-col max-w-[85%] space-y-1">
@@ -1345,47 +1367,32 @@
                           <span className="text-lg font-black text-slate-800">{getCityInfo(trip.flight.from).city} ➔ {getCityInfo(trip.flight.to).city}</span>
                           
                           <div className="flex flex-wrap gap-2 pt-1">
-                            <span className="text-[11px] bg-blue-50 text-[#0057b8] px-2 py-0.5 rounded-md font-mono font-bold">
-                              Места: {trip.seats.join(', ')}
-                            </span>
-                            <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">
-                              {getCityInfo(trip.flight.to).weather} | {getCityInfo(trip.flight.to).timezone}
-                            </span>
+                            <span className="text-[11px] bg-blue-50 text-[#0057b8] px-2 py-0.5 rounded-md font-mono font-bold">Места: {trip.seats.join(', ')}</span>
+                            {!trip.flight.isDirect && (
+                              <span className="text-[11px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded-md font-bold">{trip.flight.stops} пересад.</span>
+                            )}
+                            <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">{getCityInfo(trip.flight.to).weather} | {getCityInfo(trip.flight.to).timezone}</span>
                             {trip.hotel && (
-                              <span className="text-[11px] bg-green-50 text-green-700 px-2 py-0.5 rounded-md font-bold flex items-center gap-0.5">
-                                🏨 {trip.hotel.name}
-                              </span>
+                              <span className="text-[11px] bg-green-50 text-green-700 px-2 py-0.5 rounded-md font-bold flex items-center gap-0.5">🏨 {trip.hotel.name}</span>
                             )}
                             {trip.attraction && (
-                              <span className="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md font-bold flex items-center gap-0.5">
-                                🏛 {trip.attraction.name}
-                              </span>
+                              <span className="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md font-bold flex items-center gap-0.5">🏛 {trip.attraction.name}</span>
                             )}
                             {trip.flight.hasFood ? (
                               trip.foodMenu ? (
-                                <span className="text-[11px] bg-orange-50 text-orange-700 px-2 py-0.5 rounded-md font-bold">
-                                  🍱 {trip.foodMenu.main.name}
-                                </span>
+                                <span className="text-[11px] bg-orange-50 text-orange-700 px-2 py-0.5 rounded-md font-bold">🍱 {trip.foodMenu.main.name}</span>
                               ) : (
-                                <span className="text-[11px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-md font-bold">
-                                  🍱 Питание пропущено
-                                </span>
+                                <span className="text-[11px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-md font-bold">🍱 Питание пропущено</span>
                               )
                             ) : (
-                              <span className="text-[11px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-md font-bold">
-                                🚫 Без питания
-                              </span>
+                              <span className="text-[11px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-md font-bold">🚫 Без питания</span>
                             )}
                           </div>
                           
-                          <p className="text-[10px] text-gray-400 truncate pt-1 font-semibold font-mono">
-                            Пассажиры: {trip.passengers.join(', ')}
-                          </p>
+                          <p className="text-[10px] text-gray-400 truncate pt-1 font-semibold font-mono">Пассажиры: {trip.passengers.join(', ')}</p>
                         </div>
 
-                        <button onClick={(e) => deleteTrip(e, trip.tripId)} className="p-2 opacity-40 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-all">
-                          <IconTrash />
-                        </button>
+                        <button onClick={(e) => deleteTrip(e, trip.tripId)} className="p-2 opacity-40 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-all"><IconTrash /></button>
                       </div>
                     ))}
                   </div>
