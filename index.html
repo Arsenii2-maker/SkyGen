@@ -228,7 +228,6 @@
     const IconMoon = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>;
 
     const getCityByCode = (code) => CITIES.find(c => c.code === code);
-
     const pickLogicalHub = (fromRegion, toRegion, excludeCodes = []) => {
       if (fromRegion === toRegion) {
         const hubs = HUBS_BY_REGION[fromRegion] || ALL_HUBS;
@@ -260,7 +259,8 @@
         const excludeForHubs = [fromCode, toCode];
         const selectedHubs = [];
         for (let i = 0; i < stops; i++) {
-          const prevCity = getCityByCode(i === 0 ? fromCode : selectedHubs[i-1]);
+          const prevCode = i === 0 ? fromCode : selectedHubs[i-1];
+          const prevCity = getCityByCode(prevCode);
           const hub = pickLogicalHub(prevCity.region, toCity.region, [...excludeForHubs, ...selectedHubs]);
           selectedHubs.push(hub);
           excludeForHubs.push(hub);
@@ -286,20 +286,16 @@
           });
         }
         const stopoverDurations = selectedHubs.map(() => Math.floor(Math.random() * 120) + 60);
-        const totalStopoverMin = stopoverDurations.reduce((a, b) => a + b, 0);
-        totalDurationMin += totalStopoverMin;
+        totalDurationMin += stopoverDurations.reduce((a, b) => a + b, 0);
         let currentMin = Math.floor(Math.random() * 480) + 240;
         for (let i = 0; i < legs.length; i++) {
           const depMin = currentMin % (24 * 60);
           const arrMinRaw = depMin + legs[i].durationMin;
-          const arrMin = arrMinRaw % (24 * 60);
           legs[i].departure = `${Math.floor(depMin / 60).toString().padStart(2, '0')}:${(depMin % 60).toString().padStart(2, '0')}`;
-          legs[i].arrival = `${Math.floor(arrMin / 60).toString().padStart(2, '0')}:${(arrMin % 60).toString().padStart(2, '0')}`;
-          currentMin = arrMinRaw;
-          if (i < stopoverDurations.length) currentMin += stopoverDurations[i];
+          legs[i].arrival = `${Math.floor((arrMinRaw % (24 * 60)) / 60).toString().padStart(2, '0')}:${(arrMinRaw % 60).toString().padStart(2, '0')}`;
+          currentMin = arrMinRaw + (i < stopoverDurations.length ? stopoverDurations[i] : 0);
         }
         const totalDurationHours = Math.floor(totalDurationMin / 60), totalDurationMins = totalDurationMin % 60;
-        const stopoverCities = selectedHubs.map(h => getCityByCode(h)?.city || h);
         return {
           id: Math.random().toString(36).substr(2, 8).toUpperCase(),
           airline: legs[0].airline, flightNumber: legs[0].flightNumber,
@@ -307,7 +303,9 @@
           duration: `${totalDurationHours}ч ${totalDurationMins}м`,
           price: Math.floor(Math.random() * 45000) + 12000 - stops * 3000,
           from: fromCode, to: toCode, dateFrom, dateTo, gate: legs[0].gate,
-          hasFood: Math.random() > 0.35, stops, legs, stopoverCities, stopoverDurations, isDirect: stops === 0
+          hasFood: Math.random() > 0.35, stops, legs,
+          stopoverCities: selectedHubs.map(h => getCityByCode(h)?.city || h),
+          stopoverDurations, isDirect: stops === 0
         };
       });
     };
@@ -392,18 +390,13 @@
       const ticketRef = React.useRef(null);
 
       React.useEffect(() => {
-        const selectedForCards = [...CITIES].sort(() => 0.5 - Math.random()).slice(0, 8);
-        setCityCards(selectedForCards.map(cityObj => ({ ...cityObj, price: generateFlights("SVO", cityObj.code, params.dateFrom, params.dateTo, 1)[0].price })));
+        setCityCards([...CITIES].sort(() => 0.5 - Math.random()).slice(0, 8).map(c => ({ ...c, price: generateFlights("SVO", c.code, params.dateFrom, params.dateTo, 1)[0].price })));
       }, []);
 
       React.useEffect(() => {
         const count = Number(params.passengers);
         if (count < 1) return;
-        setPassengerNames(prev => {
-          const next = [...prev];
-          while (next.length < count) next.push(`PASSENGER ${next.length + 1}`);
-          return next.slice(0, count);
-        });
+        setPassengerNames(prev => { const next = [...prev]; while (next.length < count) next.push(`PASSENGER ${next.length + 1}`); return next.slice(0, count); });
       }, [params.passengers]);
 
       const handleSearch = (e) => {
@@ -416,68 +409,56 @@
       };
 
       const goToSeatSelection = (flight) => {
-        setSelectedFlight(flight);
-        setSelectedHotel(null);
-        setSelectedAttractions([]);
-        setChosenSeats([]); 
-        setIsFoodSkipped(false);
+        setSelectedFlight(flight); setSelectedHotel(null); setSelectedAttractions([]);
+        setChosenSeats([]); setIsFoodSkipped(false);
         const occupied = [];
-        for (let r = 1; r <= 12; r++) {
-          ['A','B','C','D','E','F'].forEach(c => { if (Math.random() < 0.4) occupied.push(`${r}${c}`); });
-        }
+        for (let r = 1; r <= 12; r++) ['A','B','C','D','E','F'].forEach(c => { if (Math.random() < 0.4) occupied.push(`${r}${c}`); });
         setOccupiedSeats(occupied);
         setStep('seats');
       };
 
       const handleOpenHotelsStep = () => {
-        if (chosenSeats.length !== Number(params.passengers)) {
-          alert(`Выберите ровно столько мест, сколько пассажиров (${params.passengers} шт.)`);
-          return;
-        }
-        const targetCityObj = CITIES.find(c => c.code === params.to) || { hotelCount: 3 };
-        const shuffledNames = [...HOTEL_NAMES_POOL].sort(() => 0.5 - Math.random());
-        const shuffledDistricts = [...HOTEL_DISTRICTS_POOL].sort(() => 0.5 - Math.random());
-        setCurrentHotelsList(Array.from({ length: targetCityObj.hotelCount }).map((_, i) => ({
-          name: shuffledNames[i % shuffledNames.length].name,
-          stars: shuffledNames[i % shuffledNames.length].stars,
-          price: Math.max(3000, shuffledNames[i % shuffledNames.length].price + Math.floor((Math.random() - 0.5) * 2000)),
-          img: shuffledNames[i % shuffledNames.length].img,
-          district: shuffledDistricts[i % shuffledDistricts.length]
+        if (chosenSeats.length !== Number(params.passengers)) { alert(`Выберите ровно ${params.passengers} мест(а)!`); return; }
+        const target = CITIES.find(c => c.code === params.to) || { hotelCount: 3 };
+        const sn = [...HOTEL_NAMES_POOL].sort(() => 0.5 - Math.random());
+        const sd = [...HOTEL_DISTRICTS_POOL].sort(() => 0.5 - Math.random());
+        setCurrentHotelsList(Array.from({ length: target.hotelCount }).map((_, i) => ({
+          name: sn[i % sn.length].name, stars: sn[i % sn.length].stars,
+          price: Math.max(3000, sn[i % sn.length].price + Math.floor((Math.random() - 0.5) * 2000)),
+          img: sn[i % sn.length].img, district: sd[i % sd.length]
         })));
         setStep('hotels');
       };
 
       const handleOpenAttractionsStep = (hotelObj = null) => {
         setSelectedHotel(hotelObj ? { ...hotelObj, totalTripPrice: hotelObj.price * params.passengers } : null);
-        const targetCityObj = CITIES.find(c => c.code === params.to) || { attractionCount: 3 };
-        const shuffled = [...ATTRACTIONS_POOL].sort(() => 0.5 - Math.random());
-        setCurrentAttractionsList(Array.from({ length: targetCityObj.attractionCount }).map((_, i) => ({ ...shuffled[i % shuffled.length] })));
+        const target = CITIES.find(c => c.code === params.to) || { attractionCount: 3 };
+        const sa = [...ATTRACTIONS_POOL].sort(() => 0.5 - Math.random());
+        setCurrentAttractionsList(Array.from({ length: target.attractionCount }).map((_, i) => ({ ...sa[i % sa.length] })));
         setSelectedAttractions([]);
         setStep('attractions');
       };
 
-      const toggleAttraction = (attraction) => {
-        setSelectedAttractions(prev => prev.find(a => a.name === attraction.name) ? prev.filter(a => a.name !== attraction.name) : [...prev, attraction]);
-      };
-
-      const handleNextAfterAttractions = () => {
-        if (selectedFlight && selectedFlight.hasFood) setStep('food');
-        else setStep('ticket');
-      };
+      const toggleAttraction = (attr) => setSelectedAttractions(prev => prev.find(a => a.name === attr.name) ? prev.filter(a => a.name !== attr.name) : [...prev, attr]);
+      const handleNextAfterAttractions = () => setStep(selectedFlight?.hasFood ? 'food' : 'ticket');
 
       const saveToMyTrips = () => {
         if (!selectedFlight) { alert("Ошибка: рейс не выбран!"); return; }
         const tripId = selectedFlight.id + chosenSeats.join('-');
         if (trips.some(t => t.tripId === tripId)) { alert("Этот билет уже сохранён!"); return; }
-        const newTrip = {
-          tripId, flight: selectedFlight, hotel: selectedHotel, attractions: selectedAttractions,
-          foodMenu: (selectedFlight.hasFood && !isFoodSkipped) ? selectedFoodMenu : null,
-          seats: chosenSeats, passengers: passengerNames, class: params.flightClass,
-          options: { baggage: params.baggage, pet: params.pet }
-        };
-        setTrips([newTrip, ...trips]);
-        localStorage.setItem('skygen_trips', JSON.stringify([newTrip, ...trips]));
+        const nt = { tripId, flight: selectedFlight, hotel: selectedHotel, attractions: selectedAttractions, foodMenu: (selectedFlight.hasFood && !isFoodSkipped) ? selectedFoodMenu : null, seats: chosenSeats, passengers: passengerNames, class: params.flightClass, options: { baggage: params.baggage, pet: params.pet } };
+        setTrips([nt, ...trips]);
+        localStorage.setItem('skygen_trips', JSON.stringify([nt, ...trips]));
         alert("Успешно добавлено в 'Мои поездки'!");
+      };
+
+      const goToTicketSafely = (flight, hotel, attractions, foodMenu, foodSkipped, seats, names, cls, bag, pet) => {
+        if (!flight) { alert("Ошибка: данные рейса отсутствуют!"); setStep('search'); return; }
+        setSelectedFlight(flight); setSelectedHotel(hotel || null); setSelectedAttractions(attractions || []);
+        if (foodMenu) { setSelectedFoodMenu(foodMenu); setIsFoodSkipped(false); } else { setIsFoodSkipped(true); }
+        setChosenSeats(seats || []); setPassengerNames(names || ['GUEST']);
+        setParams(prev => ({ ...prev, passengers: (names || ['GUEST']).length, flightClass: cls || 'Эконом', baggage: bag !== undefined ? bag : true, pet: pet !== undefined ? pet : false }));
+        setStep('ticket');
       };
 
       const filteredFlights = flights.filter(f => f.price >= params.priceMin && f.price <= params.priceMax);
@@ -504,37 +485,19 @@
 
       const totalAttractionTime = selectedAttractions.reduce((acc, a) => {
         const nums = a.duration.match(/\d+/g);
-        if (!nums) return acc;
-        return acc + (nums.length === 2 ? parseInt(nums[0]) + parseInt(nums[1]) / 60 : parseFloat(nums[0]));
+        return acc + (nums ? (nums.length === 2 ? parseInt(nums[0]) + parseInt(nums[1]) / 60 : parseFloat(nums[0])) : 0);
       }, 0);
-
-      // Вспомогательная функция для безопасного перехода к билету
-      const goToTicketSafely = (flight, hotel, attractions, foodMenu, foodSkipped, seats, names, cls, bag, pet) => {
-        if (!flight) { alert("Ошибка: данные рейса отсутствуют!"); setStep('search'); return; }
-        setSelectedFlight(flight);
-        setSelectedHotel(hotel || null);
-        setSelectedAttractions(attractions || []);
-        if (foodMenu) { setSelectedFoodMenu(foodMenu); setIsFoodSkipped(false); }
-        else { setIsFoodSkipped(true); }
-        setChosenSeats(seats || []);
-        setPassengerNames(names || ['GUEST']);
-        setParams(prev => ({ ...prev, passengers: (names || ['GUEST']).length, flightClass: cls || 'Эконом', baggage: bag !== undefined ? bag : true, pet: pet !== undefined ? pet : false }));
-        setStep('ticket');
-      };
 
       const StepIndicator = () => {
         if (step === 'search' || step === 'trips') return null;
         const stepsList = [
           { key: 'results', label: 'Рейс' }, { key: 'seats', label: 'Места' }, { key: 'hotels', label: 'Отель' },
-          { key: 'attractions', label: 'Достопр.' },
-          ...(selectedFlight?.hasFood ? [{ key: 'food', label: 'Питание' }] : []),
-          { key: 'ticket', label: 'Билет' }
+          { key: 'attractions', label: 'Достопр.' }, ...(selectedFlight?.hasFood ? [{ key: 'food', label: 'Питание' }] : []), { key: 'ticket', label: 'Билет' }
         ];
         return (
           <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border dark:border-slate-700 mb-6 shadow-sm flex items-center overflow-x-auto hide-scrollbar">
             {stepsList.map((s, index) => {
-              const isCurrent = step === s.key;
-              const isPassed = stepsList.findIndex(x => x.key === step) > index;
+              const isCurrent = step === s.key, isPassed = stepsList.findIndex(x => x.key === step) > index;
               return (
                 <div key={s.key} className="flex items-center flex-1 last:flex-none flex-shrink-0">
                   <div className="flex items-center gap-2">
@@ -548,6 +511,11 @@
           </div>
         );
       };
+
+      // Конфигурация самолёта
+      const TOILET_ROWS = [3, 11, 12]; // Ряды с туалетами: после бизнеса (3) и в хвосте (11, 12)
+      const WING_START_ROW = 4;
+      const WING_END_ROW = 9;
 
       return (
         <div className="min-h-screen flex flex-col pb-10">
@@ -563,10 +531,9 @@
 
             {step === 'search' && (
               <div className="space-y-8">
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-700 overflow-hidden">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border dark:border-slate-700 overflow-hidden">
                   <div className="p-5 flex justify-between items-center bg-[#0057b8] text-white cursor-pointer" onClick={() => setIsSearchOpen(!isSearchOpen)}>
-                    <h1 className="text-xl font-bold flex items-center gap-3"><IconTicket /> Панель бронирования</h1>
-                    <span className="text-2xl font-light">{isSearchOpen ? '−' : '+'}</span>
+                    <h1 className="text-xl font-bold flex items-center gap-3"><IconTicket /> Панель бронирования</h1><span className="text-2xl font-light">{isSearchOpen ? '−' : '+'}</span>
                   </div>
                   {isSearchOpen && (
                     <div className="p-6">
@@ -601,13 +568,13 @@
                   )}
                 </div>
                 <div>
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl border border-blue-100 dark:border-slate-600 mb-4 flex justify-between items-center">
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl border dark:border-slate-600 mb-4 flex justify-between items-center">
                     <div><h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">🌍 Популярные города</h2><p className="text-xs text-gray-500 dark:text-gray-400">Нажмите на карточку для быстрого поиска</p></div>
                     <span className="text-xs font-bold bg-white dark:bg-slate-700 text-[#0057b8] dark:text-blue-400 px-2 py-1 rounded-lg border dark:border-slate-600">Локаций: {CITIES.length}</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     {cityCards.map(city => (
-                      <div key={city.code} onClick={() => { if(params.from === city.code) { alert("Выберите другой город!"); return; } setParams({...params, to: city.code}); setTimeout(() => { setFlights(generateFlights(params.from, city.code, params.dateFrom, params.dateTo, 6)); setStep('results'); }, 100); }} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col gap-3 cursor-pointer hover:border-[#0057b8] dark:hover:border-blue-500 hover:shadow-md transition-all group relative overflow-hidden">
+                      <div key={city.code} onClick={() => { if(params.from === city.code) { alert("Выберите другой город!"); return; } setParams({...params, to: city.code}); setTimeout(() => { setFlights(generateFlights(params.from, city.code, params.dateFrom, params.dateTo, 6)); setStep('results'); }, 100); }} className="bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 shadow-sm p-4 flex flex-col gap-3 cursor-pointer hover:border-[#0057b8] dark:hover:border-blue-500 hover:shadow-md transition-all group relative overflow-hidden">
                         <div className="absolute top-0 right-0 bg-orange-500 text-white text-[9px] font-black px-2 py-0.5 rounded-bl">REC</div>
                         <div><div className="flex justify-between"><span className="text-xs text-gray-400 dark:text-gray-500 truncate">{city.country}</span><span className="text-xs font-mono bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">{city.code}</span></div><h3 className="text-lg font-black mt-1 group-hover:text-[#0057b8] dark:group-hover:text-blue-400">{city.city}</h3></div>
                         <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-2 text-xs"><div className="flex justify-between"><span>Погода:</span><span className="font-bold">{city.weather}</span></div><div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400"><span>Пояс:</span><span className="font-mono text-amber-600 dark:text-amber-400">{city.timezone}</span></div></div>
@@ -631,9 +598,7 @@
                   <h2 className="text-xl font-bold dark:text-slate-100">Рейсы: {getCityInfo(params.from).city} → {getCityInfo(params.to).city}</h2>
                   <p className="text-xs text-gray-400 dark:text-gray-500">Даты: {params.dateFrom} – {params.dateTo} | Цена: {params.priceMin.toLocaleString('ru-RU')} – {params.priceMax.toLocaleString('ru-RU')} ₽</p>
                 </div>
-                {sortedFlights.length === 0 && (
-                  <div className="text-center py-8 bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 text-gray-400 dark:text-gray-500">Нет рейсов в заданном диапазоне цен.</div>
-                )}
+                {sortedFlights.length === 0 && <div className="text-center py-8 bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 text-gray-400 dark:text-gray-500">Нет рейсов в заданном диапазоне цен.</div>}
                 {sortedFlights.map(flight => (
                   <div key={flight.id} className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border dark:border-slate-700 flex flex-col gap-4 hover:shadow-md transition-shadow">
                     <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500">
@@ -657,75 +622,91 @@
             {step === 'seats' && selectedFlight && (
               <div className="flex flex-col items-center">
                 <button onClick={() => setStep('results')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold mb-4 self-start hover:underline">← К результатам</button>
-                <div className="w-full max-w-md bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-lg border dark:border-slate-700">
+                <div className="w-full max-w-lg bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-lg border dark:border-slate-700">
                   <div className="text-center mb-4">
                     <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100">Выбор мест</h2>
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Пассажиров: <span className="font-bold text-slate-700 dark:text-slate-300">{params.passengers}</span> • Класс: <span className="font-bold text-blue-600 dark:text-blue-400">{params.flightClass}</span></p>
                   </div>
-                  <div className="bg-gray-50 dark:bg-slate-700 rounded-full py-1.5 mb-6 mx-auto w-3/4 text-center text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-widest border dark:border-slate-600">НОС САМОЛЁТА</div>
+
+                  {/* Нос самолёта */}
+                  <div className="bg-gray-50 dark:bg-slate-700 rounded-full py-2 mb-4 mx-auto w-3/4 text-center text-[10px] font-bold text-gray-500 dark:text-gray-400 tracking-widest border dark:border-slate-600">
+                    ⬆ НОСОВАЯ ЧАСТЬ САМОЛЁТА ⬆
+                  </div>
+
+                  {/* Схема мест */}
                   <div className="flex flex-col gap-2 items-center">
-                    {/* Индикаторы зон */}
-                    <div className="w-full flex justify-between text-[8px] font-bold text-gray-400 dark:text-gray-500 px-2 mb-1">
-                      <span>👔 Бизнес</span><span>🪽 Крылья</span><span>🚽</span>
-                    </div>
                     {Array.from({ length: 12 }).map((_, rIndex) => {
                       const row = rIndex + 1;
                       const isBusinessRow = row <= 2;
-                      const isWingRow = row >= 4 && row <= 9;
-                      const isToiletRow = row >= 11;
-                      let rowLabel = "";
-                      if (isBusinessRow) rowLabel = "👔";
-                      else if (row === 3) rowLabel = "🪽";
-                      else if (row === 10) rowLabel = "🪽";
-                      else if (isToiletRow) rowLabel = "🚽";
-                      
+                      const isToiletRow = TOILET_ROWS.includes(row);
+                      const isWingRow = row >= WING_START_ROW && row <= WING_END_ROW;
+
                       return (
-                        <div key={row} className={`flex items-center gap-3 ${isWingRow ? 'bg-blue-50/30 dark:bg-blue-900/10 rounded-lg px-1' : ''}`}>
+                        <div key={row} className="flex items-center gap-3">
+                          {/* Левая сторона */}
                           <div className="flex gap-1.5">
                             {['A','B','C'].map(c => {
                               const seatId = `${row}${c}`;
                               const isOccup = occupiedSeats.includes(seatId);
                               const isSelected = chosenSeats.includes(seatId);
-                              let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
-                              if (isOccup) cls += "bg-gray-200 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-300 dark:border-slate-500 cursor-not-allowed opacity-60";
-                              else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md";
-                              else if (isBusinessRow) cls += "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-400 dark:border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-900/50";
-                              else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40";
-                              return <div key={seatId} onClick={() => !isOccup && (() => { if (isBusinessRow && params.flightClass !== 'Бизнес') { alert("Только для Бизнес-класса!"); return; } if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } })()} className={cls}>{c}</div>
+                              let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center transition-all border-b-4 ";
+                              if (isToiletRow) cls += "bg-gray-100 dark:bg-slate-700 text-gray-300 dark:text-slate-600 border-gray-200 dark:border-slate-600 cursor-default";
+                              else if (isOccup) cls += "bg-gray-300 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-400 dark:border-slate-500 cursor-not-allowed opacity-60";
+                              else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md cursor-pointer";
+                              else if (isBusinessRow) cls += "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-400 dark:border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 cursor-pointer";
+                              else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40 cursor-pointer";
+                              return <div key={seatId} onClick={() => { if (isToiletRow) return; if (isBusinessRow && params.flightClass !== 'Бизнес') { alert("Только для Бизнес-класса!"); return; } if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{isToiletRow ? '🚻' : c}</div>
                             })}
                           </div>
-                          <div className="w-8 text-center">
-                            <div className="text-xs font-bold text-gray-400 dark:text-gray-500">{row}</div>
-                            <div className="text-[8px] leading-tight">{rowLabel}</div>
+
+                          {/* Номер ряда */}
+                          <div className="w-8 text-center flex flex-col items-center justify-center">
+                            <div className="text-xs font-bold text-gray-500 dark:text-gray-400">{row}</div>
                           </div>
+
+                          {/* Правая сторона */}
                           <div className="flex gap-1.5">
                             {['D','E','F'].map(c => {
                               const seatId = `${row}${c}`;
                               const isOccup = occupiedSeats.includes(seatId);
                               const isSelected = chosenSeats.includes(seatId);
-                              let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
-                              if (isOccup) cls += "bg-gray-200 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-300 dark:border-slate-500 cursor-not-allowed opacity-60";
-                              else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md";
-                              else if (isBusinessRow) cls += "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-400 dark:border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-900/50";
-                              else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40";
-                              return <div key={seatId} onClick={() => !isOccup && (() => { if (isBusinessRow && params.flightClass !== 'Бизнес') { alert("Только для Бизнес-класса!"); return; } if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } })()} className={cls}>{c}</div>
+                              let cls = "w-9 h-9 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center transition-all border-b-4 ";
+                              if (isToiletRow) cls += "bg-gray-100 dark:bg-slate-700 text-gray-300 dark:text-slate-600 border-gray-200 dark:border-slate-600 cursor-default";
+                              else if (isOccup) cls += "bg-gray-300 dark:bg-slate-600 text-gray-400 dark:text-gray-500 border-gray-400 dark:border-slate-500 cursor-not-allowed opacity-60";
+                              else if (isSelected) cls += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md cursor-pointer";
+                              else if (isBusinessRow) cls += "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-400 dark:border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 cursor-pointer";
+                              else cls += "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/40 cursor-pointer";
+                              return <div key={seatId} onClick={() => { if (isToiletRow) return; if (isBusinessRow && params.flightClass !== 'Бизнес') { alert("Только для Бизнес-класса!"); return; } if (chosenSeats.includes(seatId)) setChosenSeats(chosenSeats.filter(s => s !== seatId)); else { if (chosenSeats.length >= Number(params.passengers)) { alert(`Максимум ${params.passengers} мест!`); return; } setChosenSeats([...chosenSeats, seatId]); } }} className={cls}>{isToiletRow ? '🚻' : c}</div>
                             })}
+                          </div>
+
+                          {/* Метки зон справа */}
+                          <div className="w-24 text-left text-[9px] font-bold text-gray-400 dark:text-gray-500 flex-shrink-0">
+                            {row === 1 && <span className="text-yellow-600 dark:text-yellow-400">БИЗНЕС-КЛАСС</span>}
+                            {row === WING_START_ROW && <span>КРЫЛО САМОЛЁТА</span>}
+                            {row === WING_END_ROW && <span>КРЫЛО САМОЛЁТА</span>}
+                            {row === 3 && <span className="text-slate-400 dark:text-slate-500">🚻 ТУАЛЕТ</span>}
+                            {row === 11 && <span className="text-slate-400 dark:text-slate-500">🚻 ТУАЛЕТ</span>}
                           </div>
                         </div>
                       );
                     })}
-                    <div className="w-full flex justify-between text-[8px] font-bold text-gray-400 dark:text-gray-500 px-2 mt-1">
-                      <span>👔 Бизнес</span><span>🪽 Крылья</span><span>🚽</span>
-                    </div>
                   </div>
-                  <div className="flex justify-center gap-3 mt-6 text-xs font-bold text-gray-500 dark:text-gray-400 flex-wrap">
-                    <span className="flex items-center gap-1"><div className="w-4 h-4 bg-gray-200 dark:bg-slate-600 rounded border-b-2 border-gray-300 dark:border-slate-500"></div>Занято</span>
+
+                  {/* Хвост */}
+                  <div className="bg-gray-50 dark:bg-slate-700 rounded-full py-2 mt-4 mx-auto w-3/4 text-center text-[10px] font-bold text-gray-500 dark:text-gray-400 tracking-widest border dark:border-slate-600">
+                    ⬇ ХВОСТ САМОЛЁТА ⬇
+                  </div>
+
+                  {/* Легенда */}
+                  <div className="flex justify-center gap-3 mt-5 text-xs font-bold text-gray-500 dark:text-gray-400 flex-wrap">
+                    <span className="flex items-center gap-1"><div className="w-4 h-4 bg-gray-300 dark:bg-slate-600 rounded border-b-2 border-gray-400 dark:border-slate-500"></div>Занято</span>
                     <span className="flex items-center gap-1"><div className="w-4 h-4 bg-blue-50 dark:bg-blue-900/20 rounded border-b-2 border-blue-200 dark:border-blue-700"></div>Эконом</span>
                     <span className="flex items-center gap-1"><div className="w-4 h-4 bg-yellow-100 dark:bg-yellow-900/30 rounded border-b-2 border-yellow-400 dark:border-yellow-600"></div>Бизнес</span>
                     <span className="flex items-center gap-1"><div className="w-4 h-4 bg-[#0057b8] rounded border-b-2 border-blue-900"></div>Выбрано</span>
-                    <span className="flex items-center gap-1"><span>🪽</span> Крыло</span>
-                    <span className="flex items-center gap-1"><span>🚽</span> Туалет</span>
+                    <span className="flex items-center gap-1"><div className="w-4 h-4 bg-gray-100 dark:bg-slate-700 rounded border flex items-center justify-center text-[8px]">🚻</div>Туалет</span>
                   </div>
+
                   <button onClick={handleOpenHotelsStep} className={`w-full mt-6 py-4 rounded-xl font-bold shadow-md transition-all ${chosenSeats.length === Number(params.passengers) ? 'bg-[#0057b8] text-white active:scale-95' : 'bg-gray-200 dark:bg-slate-600 text-gray-400 dark:text-gray-300 cursor-not-allowed'}`}>
                     {chosenSeats.length === Number(params.passengers) ? `Подтвердить места и перейти к отелям` : `Выбрано: ${chosenSeats.length} из ${params.passengers}`}
                   </button>
@@ -747,13 +728,13 @@
                   {currentHotelsList.map((hotel, idx) => (
                     <div key={idx} className="bg-white dark:bg-slate-800 rounded-2xl border dark:border-slate-700 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-shadow">
                       <div className="h-48 overflow-hidden relative bg-gray-100 dark:bg-slate-700">
-                        <img src={hotel.img} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={e => { e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; }} />
+                        <img src={hotel.img} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" onError={e => { e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; }} />
                         <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-800/90 text-slate-800 dark:text-slate-100 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm">{hotel.stars}</div>
                       </div>
                       <div className="p-5 flex flex-col flex-1 justify-between gap-4">
                         <div><h3 className="font-black text-lg text-slate-800 dark:text-slate-100">{hotel.name}</h3><p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-1">📍 {hotel.district}</p></div>
                         <div className="flex justify-between items-center pt-3 border-t dark:border-slate-600">
-                          <div><span className="text-xl font-black text-slate-800 dark:text-slate-100">{(hotel.price * params.passengers).toLocaleString('ru-RU')} ₽</span><span className="text-[10px] text-gray-400 dark:text-gray-500 block">за ночь</span></div>
+                          <div><span className="text-xl font-black text-slate-800 dark:text-slate-100">{(hotel.price * params.passengers).toLocaleString('ru-RU')} ₽</span></div>
                           <button onClick={() => handleOpenAttractionsStep(hotel)} className="bg-[#0057b8] text-white font-bold text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all">Забронировать</button>
                         </div>
                       </div>
@@ -779,7 +760,7 @@
                     return (
                       <div key={idx} className={`bg-white dark:bg-slate-800 rounded-2xl border-2 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all ${isSelected ? 'border-emerald-500 dark:border-emerald-400' : 'border-gray-200 dark:border-slate-700'}`}>
                         <div className="h-48 overflow-hidden relative bg-gray-100 dark:bg-slate-700">
-                          <img src={attr.img} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={e => { e.target.src = "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=600&q=80"; }} />
+                          <img src={attr.img} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                           <div className="absolute top-3 right-3 bg-white/90 dark:bg-slate-800/90 text-slate-800 dark:text-slate-100 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm">⭐ {attr.rating}</div>
                           {isSelected && <div className="absolute top-3 left-3 bg-emerald-500 text-white px-2.5 py-1 rounded-lg text-xs font-black">✓</div>}
                         </div>
@@ -911,10 +892,9 @@
                         {selectedHotel?"✓ Авиа + Отель":"✓ Авиабилет"}
                         {selectedAttractions.length>0?` + ${selectedAttractions.length} экск.`:""}
                         {selectedFlight.hasFood && !isFoodSkipped?" + 🍱":""}
-                        {!selectedFlight.isDirect?` • ${selectedFlight.stops} пересад.`:" • Прямой"}
                       </span>
                     </div>
-                    <QRCodeBlock text={`ID:${selectedFlight.id}|PASS:${passengerNames.join(',')}|FL:${selectedFlight.flightNumber}|SEATS:${chosenSeats.join(',')}|HOTEL:${selectedHotel?selectedHotel.name:'NONE'}|ATTR:${selectedAttractions.map(a=>a.name).join(';')||'NONE'}|FOOD:${(selectedFlight.hasFood&&!isFoodSkipped)?selectedFoodMenu.main.name:'NONE'}`} />
+                    <QRCodeBlock text={`ID:${selectedFlight.id}|PASS:${passengerNames.join(',')}|FL:${selectedFlight.flightNumber}|SEATS:${chosenSeats.join(',')}`} />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 w-full max-w-md mt-6">
