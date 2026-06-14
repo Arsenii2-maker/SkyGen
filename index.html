@@ -453,12 +453,15 @@ const CITIES = [
   if(params.from===city.code){alert("Выберите другой город!");return;}
   setParams({...params,to:city.code});
   setTimeout(()=>{
-    // Используем сохранённый рейс как один из вариантов
     const flights = generateFlights(params.from, city.code, params.dateFrom, params.dateTo, 5);
-    flights.unshift(city._flight); // Добавляем сохранённый рейс первым
+    flights.unshift(city._flight);
+    // Обновляем цену на карточке, чтобы она показывала реальную минимальную цену
+    const minPrice = Math.min(...flights.map(f => f.price));
+    setCityCards(prev => prev.map(c => c.code === city.code ? {...c, price: minPrice} : c));
     setFlights(flights);
     setStep('results');
   },100);
+}}
 }} className="bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 shadow-sm p-4 flex flex-col gap-3 cursor-pointer hover:border-[#0057b8] dark:hover:border-blue-500 hover:shadow-md transition-all group relative overflow-hidden"><div className="absolute top-0 right-0 bg-orange-500 text-white text-[9px] font-black px-2 py-0.5 rounded-bl">REC</div><div><div className="flex justify-between"><span className="text-xs text-gray-400 dark:text-gray-500 truncate">{city.country}</span><span className="text-xs font-mono bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">{city.code}</span></div><h3 className="text-lg font-black mt-1 group-hover:text-[#0057b8] dark:group-hover:text-blue-400">{city.city}</h3></div><div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-2 text-xs"><div className="flex justify-between"><span>Погода:</span><span className="font-bold">{city.weather}</span></div><div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400"><span>Пояс:</span><span className="font-mono text-amber-600 dark:text-amber-400">{city.timezone}</span></div></div><div className="flex justify-between text-xs pt-2 border-t dark:border-slate-600"><span className="text-gray-400 dark:text-gray-500">Отелей: <span className="text-slate-700 dark:text-slate-300">{city.hotelCount}</span></span><span className="font-extrabold text-[#0057b8] dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-md">от {city.price?.toLocaleString('ru-RU')} ₽</span></div></div>))}
                   </div>
                 </div>
