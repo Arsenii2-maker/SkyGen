@@ -3,1222 +3,1162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SKYGEN — Панель бронирования & Отели</title>
+  <title>SkyGen — Конструктор Путешествий</title>
+  <!-- Подключаем иконки FontAwesome и шрифты -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
   <style>
-    .hide-scrollbar::-webkit-scrollbar { display: none; }
-    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  </style>
-</head>
-<body class="bg-gray-50 text-slate-800 font-sans antialiased">
-
-  <div id="root"></div>
-
-  <script type="text/babel">
-    
-    // === БАЗА ГОРОДОВ (75 МЕГАПОЛИСОВ С УЧЕТОМ ЧАСОВЫХ ПОЯСОВ И ПОГОДЫ) ===
-    const CITIES = [
-      { city: "Москва", country: "Россия", code: "SVO", hotelCount: 7, timezone: "UTC+3", weather: "☀️ +23°C" }, 
-      { city: "Владивосток", country: "Россия", code: "VVO", hotelCount: 2, timezone: "UTC+10", weather: "⛅ +17°C" },
-      { city: "Шанхай", country: "Китай", code: "PVG", hotelCount: 7, timezone: "UTC+8", weather: "🌧️ +26°C" }, 
-      { city: "Сочи", country: "Россия", code: "AER", hotelCount: 3, timezone: "UTC+3", weather: "☀️ +27°C" },
-      { city: "Санкт-Петербург", country: "Россия", code: "LED", hotelCount: 6, timezone: "UTC+3", weather: "☁️ +19°C" }, 
-      { city: "Новосибирск", country: "Россия", code: "OVB", hotelCount: 3, timezone: "UTC+7", weather: "☀️ +22°C" },
-      { city: "Екатеринбург", country: "Россия", code: "SVX", hotelCount: 3, timezone: "UTC+5", weather: "⛅ +20°C" }, 
-      { city: "Казань", country: "Россия", code: "KZN", hotelCount: 3, timezone: "UTC+3", weather: "☀️ +21°C" },
-      { city: "Ташкент", country: "Узбекистан", code: "TAS", hotelCount: 2, timezone: "UTC+5", weather: "☀️ +33°C" }, 
-      { city: "Астана", country: "Казахстан", code: "NQZ", hotelCount: 2, timezone: "UTC+5", weather: "⛅ +24°C" },
-      { city: "Дубай", country: "ОАЭ", code: "DXB", hotelCount: 7, timezone: "UTC+4", weather: "☀️ +39°C" }, 
-      { city: "Нью-Йорк", country: "США", code: "JFK", hotelCount: 7, timezone: "UTC-4", weather: "⛅ +25°C" }, 
-      { city: "Лондон", country: "Великобритания", code: "LHR", hotelCount: 7, timezone: "UTC+1", weather: "🌧️ +16°C" }, 
-      { city: "Токио", country: "Япония", code: "HND", hotelCount: 7, timezone: "UTC+9", weather: "☀️ +28°C" }, 
-      { city: "Париж", country: "Франция", code: "CDG", hotelCount: 6, timezone: "UTC+2", weather: "⛅ +22°C" }, 
-      { city: "Стамбул", country: "Турция", code: "IST", hotelCount: 6, timezone: "UTC+3", weather: "☀️ +26°C" }, 
-      { city: "Бангкок", country: "Таиланд", code: "BKK", hotelCount: 4, timezone: "UTC+7", weather: "🌧️ +32°C" }, 
-      { city: "Пхукет", country: "Таиланд", code: "HKT", hotelCount: 2, timezone: "UTC+7", weather: "⛅ +31°C" },
-      { city: "Сеул", country: "Южная Корея", code: "ICN", hotelCount: 6, timezone: "UTC+9", weather: "☀️ +25°C" }, 
-      { city: "Сингапур", country: "Сингапур", code: "SIN", hotelCount: 6, timezone: "UTC+8", weather: "🌧️ +30°C" }, 
-      { city: "Лос-Анджелес", country: "США", code: "LAX", hotelCount: 6, timezone: "UTC-7", weather: "☀️ +26°C" }, 
-      { city: "Рим", country: "Италия", code: "FCO", hotelCount: 5, timezone: "UTC+2", weather: "☀️ +29°C" }, 
-      { city: "Барселона", country: "Испания", code: "BCN", hotelCount: 5, timezone: "UTC+2", weather: "☀️ +27°C" }, 
-      { city: "Берлин", country: "Германия", code: "BER", hotelCount: 5, timezone: "UTC+2", weather: "⛅ +21°C" }, 
-      { city: "Сидней", country: "Австралия", code: "SYD", hotelCount: 5, timezone: "UTC+10", weather: "☀️ +18°C" }, 
-      { city: "Пекин", country: "Китай", code: "PEK", hotelCount: 7, timezone: "UTC+8", weather: "☀️ +29°C" }, 
-      { city: "Каир", country: "Египет", code: "CAI", hotelCount: 3, timezone: "UTC+3", weather: "☀️ +35°C" }, 
-      { city: "Рио-де-Жанейро", country: "Бразилия", code: "GIG", hotelCount: 3, timezone: "UTC-3", weather: "⛅ +24°C" }, 
-      { city: "Дели", country: "Индия", code: "DEL", hotelCount: 6, timezone: "UTC+5.30", weather: "☀️ +38°C" }, 
-      { city: "Мальдивы", country: "Мальдивы", code: "MLE", hotelCount: 1, timezone: "UTC+5", weather: "☀️ +30°C" }, 
-      { city: "Амстердам", country: "Нидерланды", code: "AMS", hotelCount: 4, timezone: "UTC+2", weather: "🌧️ +17°C" }, 
-      { city: "Мадрид", country: "Испания", code: "MAD", hotelCount: 4, timezone: "UTC+2", weather: "☀️ +31°C" }, 
-      { city: "Торонто", country: "Канада", code: "YYZ", hotelCount: 4, timezone: "UTC-4", weather: "⛅ +22°C" }, 
-      { city: "Майами", country: "США", code: "MIA", hotelCount: 3, timezone: "UTC-4", weather: "☀️ +30°C" }, 
-      { city: "Доха", country: "Катар", code: "DOH", hotelCount: 4, timezone: "UTC+3", weather: "☀️ +37°C" }, 
-      { city: "Мюнхен", country: "Германия", code: "MUC", hotelCount: 4, timezone: "UTC+2", weather: "☁️ +19°C" }, 
-      { city: "Вена", country: "Австрия", code: "VIE", hotelCount: 4, timezone: "UTC+2", weather: "☀️ +23°C" }, 
-      { city: "Гонконг", country: "Гонконг", code: "HKG", hotelCount: 6, timezone: "UTC+8", weather: "🌧️ +27°C" }, 
-      { city: "Милан", country: "Италия", code: "MXP", hotelCount: 5, timezone: "UTC+2", weather: "⛅ +25°C" }, 
-      { city: "Анталья", country: "Турция", code: "AYT", hotelCount: 2, timezone: "UTC+3", weather: "☀️ +32°C" },
-      { city: "Куала-Лумпур", country: "Малайзия", code: "KUL", hotelCount: 6, timezone: "UTC+8", weather: "🌧️ +31°C" },
-      { city: "Гуанчжоу", country: "Китай", code: "CAN", hotelCount: 5, timezone: "UTC+8", weather: "🌧️ +29°C" },
-      { city: "Шэньчжэнь", country: "Китай", code: "SZX", hotelCount: 5, timezone: "UTC+8", weather: "⛅ +30°C" },
-      { city: "Чэнду", country: "Китай", code: "CTU", hotelCount: 4, timezone: "UTC+8", weather: "☁️ +26°C" },
-      { city: "Бали", country: "Индонезия", code: "DPS", hotelCount: 5, timezone: "UTC+8", weather: "☀️ +29°C" },
-      { city: "Манила", country: "Филиппины", code: "MNL", hotelCount: 4, timezone: "UTC+8", weather: "🌧️ +32°C" },
-      { city: "Джакарта", country: "Индонезия", code: "CGK", hotelCount: 4, timezone: "UTC+7", weather: "🌧️ +30°C" },
-      { city: "Ханой", country: "Вьетнам", code: "HAN", hotelCount: 4, timezone: "UTC+7", weather: "⛅ +28°C" },
-      { city: "Хошимин", country: "Вьетнам", code: "SGN", hotelCount: 4, timezone: "UTC+7", weather: "🌧️ +31°C" },
-      { city: "Коломбо", country: "Шри-Ланка", code: "CMB", hotelCount: 3, timezone: "UTC+5.30", weather: "🌧️ +29°C" },
-      // === 25 НОВЫХ ГОРОДОВ И МЕГАПОЛИСОВ ===
-      { city: "Алматы", country: "Казахстан", code: "ALA", hotelCount: 4, timezone: "UTC+5", weather: "☀️ +26°C" },
-      { city: "Калининград", country: "Россия", code: "KGD", hotelCount: 3, timezone: "UTC+2", weather: "⛅ +18°C" },
-      { city: "Иркутск", country: "Россия", code: "IKT", hotelCount: 3, timezone: "UTC+8", weather: "☀️ +21°C" },
-      { city: "Нижний Новгород", country: "Россия", code: "GOJ", hotelCount: 3, timezone: "UTC+3", weather: "⛅ +20°C" },
-      { city: "Абу-Даби", country: "ОАЭ", code: "AUH", hotelCount: 5, timezone: "UTC+4", weather: "☀️ +38°C" },
-      { city: "Эр-Рияд", country: "Саудовская Аравия", code: "RUH", hotelCount: 4, timezone: "UTC+3", weather: "☀️ +41°C" },
-      { city: "Ницца", country: "Франция", code: "NCE", hotelCount: 4, timezone: "UTC+2", weather: "☀️ +26°C" },
-      { city: "Венеция", country: "Италия", code: "VCE", hotelCount: 4, timezone: "UTC+2", weather: "⛅ +24°C" },
-      { city: "Валенсия", country: "Испания", code: "VLC", hotelCount: 3, timezone: "UTC+2", weather: "☀️ +28°C" },
-      { city: "Афины", country: "Греция", code: "ATH", hotelCount: 5, timezone: "UTC+3", weather: "☀️ +32°C" },
-      { city: "Шарм-эль-Шейх", country: "Египет", code: "SSH", hotelCount: 4, timezone: "UTC+3", weather: "☀️ +36°C" },
-      { city: "Осака", country: "Япония", code: "KIX", hotelCount: 5, timezone: "UTC+9", weather: "🌧️ +26°C" },
-      { city: "Пусан", country: "Южная Корея", code: "PUS", hotelCount: 4, timezone: "UTC+9", weather: "⛅ +24°C" },
-      { city: "Сан-Франциско", country: "США", code: "SFO", hotelCount: 5, timezone: "UTC-7", weather: "🌫️ +16°C" },
-      { city: "Чикаго", country: "США", code: "ORD", hotelCount: 4, timezone: "UTC-5", weather: "⛅ +23°C" },
-      { city: "Франкфурт", country: "Германия", code: "FRA", hotelCount: 5, timezone: "UTC+2", weather: "☁️ +19°C" },
-      { city: "Мельбурн", country: "Австралия", code: "MEL", hotelCount: 5, timezone: "UTC+10", weather: "🌧️ +14°C" },
-      { city: "Ханчжоу", country: "Китай", code: "HGH", hotelCount: 4, timezone: "UTC+8", weather: "🌧️ +25°C" },
-      { city: "Чунцин", country: "Китай", code: "CKG", hotelCount: 5, timezone: "UTC+8", weather: "🌫️ +28°C" },
-      { city: "Чиангмай", country: "Таиланд", code: "CNX", hotelCount: 3, timezone: "UTC+7", weather: "🌧️ +29°C" },
-      { city: "Лангкави", country: "Малайзия", code: "LGK", hotelCount: 3, timezone: "UTC+7", weather: "⛅ +30°C" },
-      { city: "Пенанг", country: "Малайзия", code: "PEN", hotelCount: 4, timezone: "UTC+8", weather: "🌧️ +31°C" },
-      { city: "Маврикий", country: "Маврикий", code: "MRU", hotelCount: 3, timezone: "UTC+4", weather: "☀️ +26°C" },
-      { city: "Сейшелы", country: "Сейшельские о-ва", code: "SEZ", hotelCount: 2, timezone: "UTC+4", weather: "☀️ +28°C" },
-      { city: "Манчестер", country: "Великобритания", code: "MAN", hotelCount: 3, timezone: "UTC+1", weather: "🌧️ +15°C" }
-    ];
-
-    const HOTEL_NAMES_POOL = [
-      { name: "Grand Royal Luxury Hotel", stars: "⭐⭐⭐⭐⭐", price: 14500, img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80" },
-      { name: "Radisson Blu Premium Resort", stars: "⭐⭐⭐⭐⭐", price: 11200, img: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80" },
-      { name: "Plaza Central Suites", stars: "⭐⭐⭐⭐", price: 7800, img: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80" },
-      { name: "Sea Breeze Comfort Inn", stars: "⭐⭐⭐⭐", price: 6200, img: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80" },
-      { name: "Metropolitan Boutique Hotel", stars: "⭐⭐⭐⭐⭐", price: 13400, img: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80" },
-      { name: "Hilton Garden Premium", stars: "⭐⭐⭐⭐", price: 8900, img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=600&q=80" },
-      { name: "Skyline View Apartments", stars: "⭐⭐⭐⭐", price: 7100, img: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=600&q=80" },
-      { name: "Continental Plaza Stay", stars: "⭐⭐⭐⭐⭐", price: 15600, img: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80" },
-      { name: "Urban Eco Green Hub", stars: "⭐⭐⭐", price: 4500, img: "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=600&q=80" },
-      { name: "Astoria Historic Palace", stars: "⭐⭐⭐⭐⭐", price: 12800, img: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80" },
-      { name: "Parkside Comfort Hotel", stars: "⭐⭐⭐⭐", price: 6900, img: "https://images.unsplash.com/photo-1606046604972-77cc76aee944?auto=format&fit=crop&w=600&q=80" },
-      { name: "Vibe Select Design Suites", stars: "⭐⭐⭐⭐", price: 8300, img: "https://images.unsplash.com/photo-1517840901100-8179e982ca41?auto=format&fit=crop&w=600&q=80" },
-      { name: "Golden Gates Resort & SPA", stars: "⭐⭐⭐⭐⭐", price: 16200, img: "https://images.unsplash.com/photo-1498503182468-3b51cbb6cb24?auto=format&fit=crop&w=600&q=80" },
-      { name: "Holiday Life Cozy Inn", stars: "⭐⭐⭐", price: 4200, img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80" },
-      { name: "Sunset Beach View Villa", stars: "⭐⭐⭐⭐⭐", price: 17500, img: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=600&q=80" }
-    ];
-
-    const HOTEL_DISTRICTS_POOL = [
-      "Исторический центр города", "Прибрежная курортная зона", "Деловой квартал (Сити)", 
-      "Живописная набережная", "Тихий спальный район", "Культурно-туристический центр", 
-      "Район у главного парка", "Премиальный загородный комплекс"
-    ];
-
-    const FOOD_MENU_OPTIONS = {
-      mains: [
-        { id: "m1", name: "Куриное филе-гриль под соусом", type: "Мясо/Птица", img: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=300&q=80" },
-        { id: "m2", name: "Стейк из запечённого лосося", type: "Рыба", img: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=300&q=80" },
-        { id: "m3", name: "Нежные митболы из говядины", type: "Мясо", img: "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=300&q=80" },
-        { id: "m4", name: "Средиземноморские овощи-гриль", type: "Вегетарианское", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80" }
-      ],
-      sides: [
-        { id: "s1", name: "Пряный рассыпчатый рис", img: "https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=300&q=80" },
-        { id: "s2", name: "Золотистые картофельные дольки", img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=300&q=80" }
-      ],
-      drinks: [
-        { id: "d1", name: "Свежесваренный Капучино", img: "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=300&q=80" },
-        { id: "d2", name: "Освежающий апельсиновый сок", img: "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=300&q=80" }
-      ],
-      desserts: [
-        { id: "de1", name: "Французский круассан", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=300&q=80" },
-        { id: "de2", name: "Шоколадный мини-чизкейк", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=300&q=80" }
-      ]
-    };
-
-    const AIRLINES = ["SkyGen Airlines", "Oceanic Air", "Global Jet", "AeroNomad"];
-
-    // === ИКОНКИ ===
-    const IconPlane = () => <svg className="w-6 h-6 inline" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16V14L13 9V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21L15 22V20.5L13 19V13.5L21 16Z"/></svg>;
-    const IconArrow = () => <svg className="w-5 h-5 inline text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>;
-    const IconTicket = () => <svg className="w-6 h-6 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>;
-    const IconBriefcase = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>;
-    const IconTrash = () => <svg className="w-5 h-5 inline text-red-400 hover:text-red-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>;
-    const IconHotel = () => <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>;
-    const IconCloud = () => <svg className="w-4 h-4 inline text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>;
-    const IconClock = () => <svg className="w-4 h-4 inline text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
-
-    // === ГЕНЕРАТОР РЕЙСОВ ===
-    const generateFlights = (fromCode, toCode, dateFrom, dateTo, count = 6) => {
-      return Array.from({ length: count }).map(() => {
-        const durationHours = Math.floor(Math.random() * 8) + 2;
-        const durationMins = Math.floor(Math.random() * 60);
-        const depHour = Math.floor(Math.random() * 16) + 4;
-        const arrHour = (depHour + durationHours) % 24;
-        
-        return {
-          id: Math.random().toString(36).substr(2, 8).toUpperCase(),
-          airline: AIRLINES[Math.floor(Math.random() * AIRLINES.length)],
-          flightNumber: `SG-${Math.floor(Math.random() * 9000) + 1000}`,
-          departure: `${depHour.toString().padStart(2, '0')}:${durationMins.toString().padStart(2, '0')}`,
-          arrival: `${arrHour.toString().padStart(2, '0')}:45`,
-          duration: `${durationHours}ч ${durationMins}м`,
-          price: Math.floor(Math.random() * 45000) + 12000,
-          from: fromCode,
-          to: toCode,
-          dateFrom: dateFrom,
-          dateTo: dateTo,
-          gate: `G${Math.floor(Math.random() * 50) + 1}`,
-          hasFood: Math.random() > 0.35
-        };
-      });
-    };
-
-    // === КОМПОНЕНТ QR-КОДА ===
-    const QRCodeBlock = ({ text }) => {
-      const qrRef = React.useRef(null);
-      React.useEffect(() => {
-        qrRef.current.innerHTML = ""; 
-        new QRCode(qrRef.current, {
-          text: text,
-          width: 80,
-          height: 80,
-          colorDark: "#1e293b", 
-          colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.L
-        });
-      }, [text]);
-      return <div ref={qrRef} className="p-1.5 bg-white border rounded-lg shadow-sm"></div>;
-    };
-
-    // === ГЛАВНЫЙ КОМПОНЕНТ ПРИЛОЖЕНИЯ ===
-    function App() {
-      const [step, setStep] = React.useState('search'); 
-      const [isSearchOpen, setIsSearchOpen] = React.useState(true);
-      const [sortBy, setSortBy] = React.useState('cheap'); 
-      const [citySortType, setCitySortType] = React.useState('city'); 
-      const [cityCards, setCityCards] = React.useState([]);
-
-      const [params, setParams] = React.useState(() => ({
-  from: localStorage.getItem('skygen_home_city') || 'SVO',
-  to: 'KUL',
-  dateFrom: new Date().toISOString().split('T')[0],
-  dateTo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-  passengers: 1, flightClass: 'Эконом', baggage: true, pet: false
-})); // <-- Теперь всё закрыто корректно
-
-
-// ПРЯМО СЮДА вставляем твою функцию:
-const handleFromCityChange = (e) => {
-  const selectedCode = e.target.value;
-  localStorage.setItem('skygen_home_city', selectedCode); 
-  setParams(prev => ({ ...prev, from: selectedCode }));
-};
-
-      
-      const [flights, setFlights] = React.useState([]);
-      const [selectedFlight, setSelectedFlight] = React.useState(null);
-      
-      const [currentHotelsList, setCurrentHotelsList] = React.useState([]);
-      const [selectedHotel, setSelectedHotel] = React.useState(null);
-
-      const [selectedFoodMenu, setSelectedFoodMenu] = React.useState({
-        main: FOOD_MENU_OPTIONS.mains[0],
-        side: FOOD_MENU_OPTIONS.sides[0],
-        drink: FOOD_MENU_OPTIONS.drinks[0],
-        dessert: FOOD_MENU_OPTIONS.desserts[0]
-      });
-      const [isFoodSkipped, setIsFoodSkipped] = React.useState(false);
-      
-      const [occupiedSeats, setOccupiedSeats] = React.useState([]);
-      const [chosenSeats, setChosenSeats] = React.useState([]); 
-      
-      const [passengerNames, setPassengerNames] = React.useState(['NYASHIK']);
-
-      const [trips, setTrips] = React.useState(() => {
-        const saved = localStorage.getItem('skygen_trips');
-        return saved ? JSON.parse(saved) : [];
-      });
-
-      const ticketRef = React.useRef(null);
-
-      // Генерация интерактивных карточек популярных городов
-      React.useEffect(() => {
-        const selectedForCards = [...CITIES].sort(() => 0.5 - Math.random()).slice(0, 8);
-        const generatedCards = selectedForCards.map(cityObj => {
-          const mockFlight = generateFlights("SVO", cityObj.code, params.dateFrom, params.dateTo, 1)[0];
-          return {
-            ...cityObj,
-            price: mockFlight.price,
-            flight: mockFlight
-          };
-        });
-        setCityCards(generatedCards);
-      }, []);
-
-      React.useEffect(() => {
-        const count = Number(params.passengers);
-        if (count < 1) return;
-        setPassengerNames(prev => {
-          const next = [...prev];
-          if (next.length < count) {
-            for (let i = next.length; i < count; i++) next.push(`PASSENGER ${i + 1}`);
-          } else if (next.length > count) {
-            return next.slice(0, count);
-          }
-          return next;
-        });
-      }, [params.passengers]);
-
-      const handleDateFromChange = (e) => {
-        const newDateFrom = e.target.value;
-        let newDateTo = params.dateTo;
-        if (new Date(newDateFrom) > new Date(newDateTo)) newDateTo = newDateFrom;
-        setParams({ ...params, dateFrom: newDateFrom, dateTo: newDateTo });
-      };
-
-      const handlePassengersChange = (e) => {
-        const valStr = e.target.value;
-        if (valStr === '') {
-          setParams({ ...params, passengers: 0 });
-          return;
-        }
-        let val = Math.floor(Number(valStr));
-        if (val > 5) val = 5; 
-        setParams({ ...params, passengers: val });
-      };
-
-      const handleSearch = (e) => {
-        if(e) e.preventDefault();
-        if (params.passengers < 1) {
-          alert("Укажите хотя бы 1 пассажира!");
-          return;
-        }
-        if (params.from === params.to) {
-          alert("Выберите разные города!");
-          return;
-        }
-        if (new Date(params.dateTo) < new Date(params.dateFrom)) {
-          alert("Дата обратно не может быть раньше даты вылета!");
-          return;
-        }
-        setFlights(generateFlights(params.from, params.to, params.dateFrom, params.dateTo, 6));
-        setStep('results');
-      };
-
-      const selectCityCard = (targetCode) => {
-        if(params.from === targetCode) {
-          alert("Этот город уже выбран как пункт отправления. Выберите другой город!");
-          return;
-        }
-        const updatedParams = { ...params, to: targetCode };
-        setParams(updatedParams);
-        
-        // Автоматический запуск поиска по клику на карточку города
-        setTimeout(() => {
-          setFlights(generateFlights(params.from, targetCode, params.dateFrom, params.dateTo, 6));
-          setStep('results');
-        }, 100);
-      };
-
-      const goToSeatSelection = (flight) => {
-        setSelectedFlight(flight);
-        setSelectedHotel(null); 
-        setChosenSeats([]); 
-        setIsFoodSkipped(false);
-        
-        const occupied = [];
-        const rows = 12;
-        const cols = ['A','B','C','D','E','F'];
-        for (let r = 1; r <= rows; r++) {
-          cols.forEach(c => {
-            if (Math.random() < 0.4) occupied.push(`${r}${c}`);
-          });
-        }
-        setOccupiedSeats(occupied);
-        setStep('seats');
-      };
-
-      const handleOpenHotelsStep = () => {
-        if (chosenSeats.length !== Number(params.passengers)) {
-          alert(`Выберите ровно столько мест, сколько пассажиров (${params.passengers} шт.)`);
-          return;
-        }
-
-        const targetCityObj = CITIES.find(c => c.code === params.to) || { hotelCount: 3 };
-        const requiredCount = targetCityObj.hotelCount;
-
-        const shuffledNames = [...HOTEL_NAMES_POOL].sort(() => 0.5 - Math.random());
-        const shuffledDistricts = [...HOTEL_DISTRICTS_POOL].sort(() => 0.5 - Math.random());
-
-        const generatedHotels = Array.from({ length: requiredCount }).map((_, i) => {
-          const hotelTemplate = shuffledNames[i % shuffledNames.length];
-          const randomPriceOffset = Math.floor((Math.random() - 0.5) * 2000); 
-
-          return {
-            name: hotelTemplate.name,
-            stars: hotelTemplate.stars,
-            price: Math.max(3000, hotelTemplate.price + randomPriceOffset),
-            img: hotelTemplate.img, 
-            district: shuffledDistricts[i % shuffledDistricts.length]
-          };
-        });
-
-        setCurrentHotelsList(generatedHotels);
-        setStep('hotels');
-      };
-
-      const handleNextAfterHotels = (hotelObj = null) => {
-        if (hotelObj) {
-          setSelectedHotel({ ...hotelObj, totalTripPrice: hotelObj.price * params.passengers });
-        } else {
-          setSelectedHotel(null);
-        }
-
-        if (selectedFlight.hasFood) {
-          setStep('food');
-        } else {
-          setStep('ticket');
-        }
-      };
-
-      const handleSeatClick = (seatId, isBusinessRow) => {
-        if (isBusinessRow && params.flightClass !== 'Бизнес') {
-          alert("Эти места доступны только для Бизнес-класса!");
-          return;
-        }
-
-        if (chosenSeats.includes(seatId)) {
-          setChosenSeats(chosenSeats.filter(s => s !== seatId));
-        } else {
-          if (chosenSeats.length >= Number(params.passengers)) {
-            alert(`Вы выбрали максимальное количество мест для ${params.passengers} пасс.`);
-            return;
-          }
-          setChosenSeats([...chosenSeats, seatId]);
-        }
-      };
-
-      const handleNameChange = (index, value) => {
-        const updatedNames = [...passengerNames];
-        updatedNames[index] = value.toUpperCase();
-        setPassengerNames(updatedNames);
-      };
-
-      const handleDownloadTicket = async () => {
-        if (!ticketRef.current) return;
-        const canvas = await html2canvas(ticketRef.current, { scale: 2 });
-        const link = document.createElement('a');
-        link.download = `SkyGen_Trip_${selectedFlight.flightNumber}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      };
-
-      const saveToMyTrips = () => {
-        const tripId = selectedFlight.id + chosenSeats.join('-');
-        if (trips.some(t => t.tripId === tripId)) {
-          alert("Этот билет уже сохранён в Мои поездки!");
-          return;
-        }
-        const newTrip = {
-          tripId,
-          flight: selectedFlight,
-          hotel: selectedHotel, 
-          foodMenu: isFoodSkipped ? null : selectedFoodMenu,
-          seats: chosenSeats,
-          passengers: passengerNames,
-          class: params.flightClass,
-          options: { baggage: params.baggage, pet: params.pet }
-        };
-        const updatedTrips = [newTrip, ...trips];
-        setTrips(updatedTrips);
-        localStorage.setItem('skygen_trips', JSON.stringify(updatedTrips));
-        alert("Успешно добавлено в 'Мои поездки'!");
-      };
-
-      const deleteTrip = (e, tripId) => {
-        e.stopPropagation();
-        const updated = trips.filter(t => t.tripId !== tripId);
-        setTrips(updated);
-        localStorage.setItem('skygen_trips', JSON.stringify(updated));
-      };
-
-      const sortedFlights = [...flights].sort((a, b) => sortBy === 'cheap' ? a.price - b.price : b.price - a.price);
-      const isAllSeatsSelected = chosenSeats.length === Number(params.passengers) && params.passengers > 0;
-
-      const getCityInfo = (code) => {
-        return CITIES.find(c => c.code === code) || { city: code, country: "", timezone: "", weather: "" };
-      };
-
-      const getSortedCitiesList = () => {
-        return [...CITIES].sort((a, b) => {
-          if (citySortType === 'city') {
-            return a.city.localeCompare(b.city, 'ru');
-          } else {
-            return a.country.localeCompare(b.country, 'ru') || a.city.localeCompare(b.city, 'ru');
-          }
-        });
-      };
-
-      const StepIndicator = () => {
-        if (step === 'search' || step === 'trips') return null;
-        
-        const stepsList = [
-          { key: 'results', label: 'Выбор рейса' },
-          { key: 'seats', label: 'Места' },
-          { key: 'hotels', label: 'Отель' },
-          ...(selectedFlight?.hasFood ? [{ key: 'food', label: 'Питание' }] : []),
-          { key: 'ticket', label: 'Билет' }
-        ];
-
-        return (
-          <div className="bg-white p-4 rounded-xl border mb-6 shadow-sm flex items-center justify-between">
-            {stepsList.map((s, index) => {
-              const isCurrent = step === s.key;
-              const isPassed = stepsList.findIndex(x => x.key === step) > index;
-              
-              return (
-                <div key={s.key} className="flex items-center flex-1 last:flex-none">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                      isCurrent ? 'bg-[#0057b8] text-white ring-4 ring-blue-100' : 
-                      isPassed ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'
-                    }`}>
-                      {isPassed ? '✓' : index + 1}
-                    </div>
-                    <span className={`text-xs font-bold hidden sm:inline ${isCurrent ? 'text-slate-800' : 'text-gray-400'}`}>
-                      {s.label}
-                    </span>
-                  </div>
-                  {index < stepsList.length - 1 && (
-                    <div className={`h-0.5 flex-1 mx-4 rounded ${isPassed ? 'bg-green-300' : 'bg-gray-100'}`}></div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        );
-      };
-
-      return (
-        <div className="min-h-screen flex flex-col pb-10">
-          {/* ШАПКА */}
-          <header className="bg-[#0057b8] text-white py-4 px-6 shadow-md flex items-center justify-between z-10 sticky top-0">
-            <div className="flex items-center gap-2 text-xl font-bold tracking-wider cursor-pointer" onClick={() => {setStep('search'); setIsSearchOpen(true);}}>
-              <IconPlane />
-              <span>SKYGEN</span>
-            </div>
-            <button 
-              onClick={() => setStep('trips')} 
-              className="flex items-center gap-1.5 bg-blue-800 hover:bg-blue-900 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors"
-            >
-              <IconBriefcase />
-              <span>Мои поездки</span>
-            </button>
-          </header>
-
-          <main className="max-w-4xl mx-auto w-full py-6 px-4 flex-1">
-            
-            <StepIndicator />
-
-            {/* ЭКРАН 1: ПОИСК И КАРТОЧКИ ГОРОДОВ */}
-            {step === 'search' && (
-              <div className="space-y-8">
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300">
-                  <div 
-                    className="p-5 flex justify-between items-center bg-[#0057b8] text-white cursor-pointer active:bg-blue-800 transition-colors"
-                    onClick={() => setIsSearchOpen(!isSearchOpen)}
-                  >
-                    <h1 className="text-xl font-bold flex items-center gap-3"><IconTicket /> Панель бронирования авиабилетов & отелей</h1>
-                    <span className="text-2xl leading-none font-light">{isSearchOpen ? '−' : '+'}</span>
-                  </div>
-
-                  {isSearchOpen && (
-                    <div className="p-6">
-                      <form onSubmit={handleSearch} noValidate className="space-y-4">
-                        
-                        <div className="flex justify-end gap-4 text-xs font-bold text-gray-400 border-b pb-2">
-                          <span>Сортировка списков:</span>
-                          <button type="button" onClick={() => setCitySortType('city')} className={`hover:text-[#0057b8] ${citySortType === 'city' ? 'text-[#0057b8] underline' : ''}`}>По алфавиту города</button>
-                          <button type="button" onClick={() => setCitySortType('country')} className={`hover:text-[#0057b8] ${citySortType === 'country' ? 'text-[#0057b8] underline' : ''}`}>По алфавиту страны</button>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 block mb-1">Пункт вылета (Откуда)</label>
-                          <select value={params.from} onChange={handleFromCityChange} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8] text-sm font-medium">
-                              {getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country} [{c.timezone}]</option>)}
-                            </select>
-                            <div className="text-[11px] text-gray-400 mt-1 flex gap-3 px-1">
-                              <span><IconCloud /> Погода: {getCityInfo(params.from).weather}</span>
-                              <span><IconClock /> Пояс: {getCityInfo(params.from).timezone}</span>
-                            </div>
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 block mb-1">Пункт назначения (Куда)</label>
-                            <select value={params.to} onChange={e => setParams({...params, to: e.target.value})} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8] text-sm font-medium">
-                              {getSortedCitiesList().map(c => <option key={c.code} value={c.code}>{c.city} ({c.code}) — {c.country} [{c.timezone}]</option>)}
-                            </select>
-                            <div className="text-[11px] text-blue-600 mt-1 flex gap-3 px-1 font-semibold">
-                              <span><IconCloud /> Погода: {getCityInfo(params.to).weather}</span>
-                              <span><IconClock /> Пояс: {getCityInfo(params.to).timezone}</span>
-                            </div>
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 block mb-1">Дата туда</label>
-                            <input type="date" value={params.dateFrom} onChange={handleDateFromChange} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8] font-medium" />
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 block mb-1">Дата обратно</label>
-                            <input type="date" value={params.dateTo} onChange={e => setParams({...params, dateTo: e.target.value})} className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8] font-medium" />
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 block mb-1">Класс обслуживания</label>
-                            <select value={params.flightClass} onChange={e => setParams({...params, flightClass: e.target.value})} className="w-full p-3 border rounded-xl bg-white outline-none focus:border-[#0057b8] font-medium">
-                              <option>Эконом</option>
-                              <option>Бизнес</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold text-gray-400 block mb-1">Количество пассажиров (1–5)</label>
-                            <input 
-                              type="number" 
-                              min="1" 
-                              max="5" 
-                              value={params.passengers === 0 ? '' : params.passengers} 
-                              onChange={handlePassengersChange} 
-                              className="w-full p-3 border rounded-xl outline-none focus:border-[#0057b8] font-bold" 
-                            />
-                          </div>
-                        </div>
-                        <div className="flex gap-6 pt-2 text-sm font-medium text-slate-600">
-                          <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={params.baggage} onChange={e => setParams({...params, baggage: e.target.checked})} className="w-4 h-4 accent-[#0057b8]" /><span>Багаж включен</span></label>
-                          <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={params.pet} onChange={e => setParams({...params, pet: e.target.checked})} className="w-4 h-4 accent-[#0057b8]" /><span>Путешествие с питомцем</span></label>
-                        </div>
-                        <button type="submit" className="w-full bg-[#0057b8] text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition-all text-sm tracking-wide">НАЙТИ ДОСТУПНЫЕ РЕЙСЫ</button>
-                      </form>
-                    </div>
-                  )}
-                </div>
-
-                {/* ОБНОВЛЕННЫЕ ИНТЕРАКТИВНЫЕ КАРТОЧКИ ГОРОДОВ */}
-                <div>
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 mb-4 flex justify-between items-center">
-                    <div>
-                      <h2 className="text-lg font-bold text-slate-800">🌍 Обновленные карточки мегаполисов</h2>
-                      <p className="text-xs text-gray-500">Нажмите на карточку любого города, чтобы мгновенно выбрать его целью своего путешествия</p>
-                    </div>
-                    <span className="text-xs font-bold bg-white text-[#0057b8] px-2 py-1 rounded-lg border shadow-sm">Всего локаций: {CITIES.length}</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    {cityCards.map(city => (
-                      <div 
-                        key={city.code} 
-                        onClick={() => selectCityCard(city.code)}
-                        className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col justify-between gap-3 cursor-pointer hover:border-[#0057b8] hover:shadow-md transition-all group relative overflow-hidden"
-                      >
-                        <div className="absolute top-0 right-0 bg-orange-500 text-white text-[9px] font-black px-2 py-0.5 rounded-bl">RECOMMENDED</div>
-                        
-                        <div>
-                          <div className="flex justify-between items-start">
-                            <span className="text-xs font-bold text-gray-400 block truncate max-w-[70%]">{city.country}</span>
-                            <span className="text-xs font-mono bg-slate-100 font-bold px-1.5 py-0.5 rounded text-slate-600">{city.code}</span>
-                          </div>
-                          <h3 className="text-lg font-black text-slate-800 mt-1 group-hover:text-[#0057b8] transition-colors">{city.city}</h3>
-                        </div>
-
-                        {/* Виджеты погоды и часового пояса внутри карточки */}
-                        <div className="bg-slate-50 rounded-lg p-2 space-y-1 text-xs font-medium">
-                          <div className="flex justify-between text-slate-700">
-                            <span>Погода сейчас:</span>
-                            <span className="font-bold">{city.weather}</span>
-                          </div>
-                          <div className="flex justify-between text-slate-500 text-[11px]">
-                            <span>Время (пояс):</span>
-                            <span className="font-bold font-mono text-amber-600">{city.timezone}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex justify-between items-center pt-2 border-t border-gray-100 text-xs">
-                          <span className="text-gray-400 font-bold">Отелей: <span className="text-slate-700">{city.hotelCount}</span></span>
-                          <span className="font-extrabold text-[#0057b8] bg-blue-50 px-2 py-1 rounded-md">от {city.price.toLocaleString('ru-RU')} ₽</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ЭКРАН 2: РЕЗУЛЬТАТЫ ПОИСКА */}
-            {step === 'results' && (
-              <div className="space-y-4">
-                <div className="flex justify-between mb-2 items-center">
-                  <button onClick={() => {setStep('search'); setIsSearchOpen(true);}} className="text-[#0057b8] text-sm font-semibold hover:underline">← Изменить критерии поиска</button>
-                  <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="p-1.5 border rounded-lg bg-white text-xs text-[#0057b8] font-bold outline-none border-blue-200">
-                    <option value="cheap">Сортировка: Сначала дешёвые</option>
-                    <option value="expensive">Сортировка: Сначала дорогие</option>
-                  </select>
-                </div>
-
-                <div className="bg-white p-4 rounded-xl border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-sm">
-                  <div>
-                    <h2 className="text-xl font-bold">Рейсы: {getCityInfo(params.from).city} → {getCityInfo(params.to).city}</h2>
-                    <p className="text-xs text-gray-400 mt-0.5">Дата отправления: {params.dateFrom} | Возврат: {params.dateTo}</p>
-                  </div>
-                  
-                  {/* Метеопанель в результатах */}
-                  <div className="bg-blue-50 rounded-lg p-2.5 text-xs font-semibold text-slate-700 border flex gap-4">
-                    <div>📍 Целевой мегаполис: <span className="text-blue-700 font-bold">{getCityInfo(params.to).city}</span></div>
-                    <div>Погода: <span className="text-orange-600 font-bold">{getCityInfo(params.to).weather}</span></div>
-                    <div>Пояс: <span className="text-amber-600 font-bold font-mono">{getCityInfo(params.to).timezone}</span></div>
-                  </div>
-                </div>
-
-                {sortedFlights.map(flight => (
-                  <div key={flight.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-4 hover:shadow-md transition-shadow">
-                    <div className="flex justify-between text-xs font-bold text-gray-400">
-                      <span>{flight.airline}</span>
-                      <div className="flex gap-2 items-center">
-                        <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${flight.hasFood ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-400'}`}>
-                          {flight.hasFood ? "🍱 Питание включено" : "🚫 Без питания"}
-                        </span>
-                        <span className="font-mono text-slate-600">{flight.flightNumber}</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="text-2xl font-bold text-slate-800">{flight.departure}</div>
-                        <div className="text-xs text-gray-500 font-mono">{flight.from} ({getCityInfo(flight.from).timezone})</div>
-                      </div>
-                      <div className="text-center flex-1 px-4 text-xs text-gray-400">
-                        <div className="font-semibold text-slate-600">{flight.duration}</div>
-                        <div className="h-px bg-gray-200 my-1 relative"></div>
-                        <div className="text-[10px] font-mono">{flight.dateFrom}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-slate-800">{flight.arrival}</div>
-                        <div className="text-xs text-gray-500 font-mono">{flight.to} ({getCityInfo(flight.to).timezone})</div>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-                      <span className="text-xl font-black text-[#0057b8]">{flight.price.toLocaleString('ru-RU')} ₽</span>
-                      <button onClick={() => goToSeatSelection(flight)} className="bg-[#0057b8] text-white px-5 py-2.5 rounded-lg font-bold text-sm active:scale-95 transition-all shadow-sm">Выбрать этот рейс</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* ЭКРАН 3: ВЫБОР МЕСТА */}
-            {step === 'seats' && selectedFlight && (
-              <div className="flex flex-col items-center">
-                <button onClick={() => setStep('results')} className="text-[#0057b8] text-sm font-semibold mb-4 self-start hover:underline">← Вернуться к результатам</button>
-                <div className="w-full max-w-md bg-white p-6 rounded-3xl shadow-lg border border-gray-200">
-                  <div className="text-center mb-4">
-                    <h2 className="text-2xl font-black text-slate-800">Конфигурация мест</h2>
-                    <p className="text-xs text-gray-400 mt-0.5">Пассажиров: <span className="font-bold text-slate-700">{params.passengers}</span> • Класс: <span className="font-bold text-blue-600">{params.flightClass}</span></p>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-full py-1.5 mb-6 mx-auto w-3/4 text-center text-[10px] font-bold text-gray-400 tracking-widest border border-gray-200">
-                    НОСОВАЯ ЧАСТЬ САМОЛЁТА
-                  </div>
-
-                  <div className="flex flex-col gap-3 items-center">
-                    {Array.from({ length: 12 }).map((_, rIndex) => {
-                      const row = rIndex + 1;
-                      const isBusinessRow = row <= 2; 
-                      
-                      return (
-                        <div key={row} className="flex items-center gap-3">
-                          <div className="flex gap-2">
-                            {['A','B','C'].map(c => {
-                              const seatId = `${row}${c}`;
-                              const isOccup = occupiedSeats.includes(seatId);
-                              const isSelected = chosenSeats.includes(seatId);
-                              
-                              let btnClass = "w-10 h-10 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
-                              if (isOccup) btnClass += "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed opacity-60";
-                              else if (isSelected) btnClass += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md";
-                              else if (isBusinessRow) btnClass += "bg-yellow-100 text-yellow-700 border-yellow-400 hover:bg-yellow-200";
-                              else btnClass += "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100";
-                              
-                              return <div key={seatId} onClick={() => !isOccup && handleSeatClick(seatId, isBusinessRow)} className={btnClass}>{c}</div>
-                            })}
-                          </div>
-                          <div className="w-6 text-center text-xs font-bold text-gray-300">{row}</div>
-                          <div className="flex gap-2">
-                            {['D','E','F'].map(c => {
-                              const seatId = `${row}${c}`;
-                              const isOccup = occupiedSeats.includes(seatId);
-                              const isSelected = chosenSeats.includes(seatId);
-                              
-                              let btnClass = "w-10 h-10 rounded-t-xl rounded-b-md text-xs font-bold flex items-center justify-center cursor-pointer transition-all border-b-4 ";
-                              if (isOccup) btnClass += "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed opacity-60";
-                              else if (isSelected) btnClass += "bg-gradient-to-b from-[#0057b8] to-blue-700 text-white border-blue-900 scale-110 shadow-md";
-                              else if (isBusinessRow) btnClass += "bg-yellow-100 text-yellow-700 border-yellow-400 hover:bg-yellow-200";
-                              else btnClass += "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100";
-                              
-                              return <div key={seatId} onClick={() => !isOccup && handleSeatClick(seatId, isBusinessRow)} className={btnClass}>{c}</div>
-                            })}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-
-                  <div className="flex justify-center gap-4 mt-8 text-xs font-bold text-gray-500 flex-wrap">
-                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-gray-200 rounded border-b-2 border-gray-300"></div>Занято</div>
-                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-blue-50 rounded border-b-2 border-blue-200"></div>Эконом</div>
-                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-yellow-100 rounded border-b-2 border-yellow-400"></div>Бизнес</div>
-                    <div className="flex items-center gap-1.5"><div className="w-4 h-4 bg-[#0057b8] rounded border-b-2 border-blue-900"></div>Выбрано</div>
-                  </div>
-
-                  <button 
-                    onClick={handleOpenHotelsStep} 
-                    className={`w-full mt-6 py-4 rounded-xl font-bold shadow-md transition-all ${isAllSeatsSelected ? 'bg-[#0057b8] text-white active:scale-95' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
-                  >
-                    {isAllSeatsSelected ? `Подтвердить места и перейти к отелям` : `Выбрано мест: ${chosenSeats.length} из ${params.passengers}`}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* ЭКРАН 4: ВЫБОР ОТЕЛЯ */}
-            {step === 'hotels' && selectedFlight && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <button onClick={() => setStep('seats')} className="text-[#0057b8] text-sm font-semibold hover:underline">← Назад к выбору мест</button>
-                  <button 
-                    onClick={() => handleNextAfterHotels(null)} 
-                    className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors"
-                  >
-                    Пропустить отель ➔
-                  </button>
-                </div>
-
-                <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100 flex justify-between items-center flex-wrap gap-3">
-                  <div>
-                    <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                      <IconHotel /> Доступные отели: г. {getCityInfo(params.to).city}
-                    </h2>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Размер мегаполиса открыл для бронирования вариантов: <span className="font-extrabold text-[#0057b8]">{currentHotelsList.length}</span>. Все комнаты рассчитаны на <span className="font-bold text-slate-700">{params.passengers} чел.</span>
-                    </p>
-                  </div>
-                  {/* Информация о климате в целевом месте */}
-                  <div className="text-xs bg-white border px-3 py-1.5 rounded-lg text-slate-600 font-semibold space-y-0.5">
-                    <div>Погода там: <span className="text-orange-600 font-bold">{getCityInfo(params.to).weather}</span></div>
-                    <div>Время: <span className="text-amber-600 font-mono font-bold">{getCityInfo(params.to).timezone}</span></div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {currentHotelsList.map((hotel, idx) => (
-                    <div key={idx} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-shadow">
-                      <div className="h-48 w-full overflow-hidden relative bg-gray-100">
-                        <img src={hotel.img} alt={hotel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; }} />
-                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-slate-800 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm">
-                          {hotel.stars}
-                        </div>
-                      </div>
-                      <div className="p-5 flex flex-col flex-1 justify-between gap-4">
-                        <div>
-                          <h3 className="font-black text-lg text-slate-800 leading-tight">{hotel.name}</h3>
-                          <p className="text-xs text-blue-600 font-semibold mt-1">📍 {hotel.district}</p>
-                        </div>
-                        <div className="flex justify-between items-center pt-3 border-t">
-                          <div>
-                            <span className="text-xl font-black text-slate-800">{(hotel.price * params.passengers).toLocaleString('ru-RU')} ₽</span>
-                            <span className="text-[10px] text-gray-400 block font-bold">за ночь ({params.passengers} пасс.)</span>
-                          </div>
-                          <button 
-                            onClick={() => handleNextAfterHotels(hotel)} 
-                            className="bg-[#0057b8] text-white font-bold text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm"
-                          >
-                            Забронировать номер
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ЭКРАН 5: КОНСТРУКТОР БОРТОВОГО ПИТАНИЯ */}
-            {step === 'food' && selectedFlight && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <button onClick={() => setStep('hotels')} className="text-[#0057b8] text-sm font-semibold hover:underline">← Назад к отелям</button>
-                  <button 
-                    onClick={() => { setIsFoodSkipped(true); setStep('ticket'); }} 
-                    className="text-gray-500 hover:text-slate-800 text-sm font-bold bg-gray-200 px-4 py-2 rounded-xl transition-colors"
-                  >
-                    Отказаться от питания ➔
-                  </button>
-                </div>
-
-                <div className="bg-orange-50 p-5 rounded-2xl border border-orange-100">
-                  <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    🍱 Шеф-меню на борту рейса {selectedFlight.flightNumber}
-                  </h2>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Соберите идеальный бесплатный ланч-сет премиум-класса для комфортного полёта.
-                  </p>
-                </div>
-
-                <div className="space-y-6">
-                  {/* Горячее */}
-                  <div>
-                    <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 1: Основное горячее блюдо</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {FOOD_MENU_OPTIONS.mains.map(item => (
-                        <div 
-                          key={item.id} 
-                          onClick={() => setSelectedFoodMenu({...selectedFoodMenu, main: item})}
-                          className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm transition-all text-center ${selectedFoodMenu.main.id === item.id ? 'border-orange-500 bg-orange-50/30 scale-[1.02]' : 'border-gray-200'}`}
-                        >
-                          <img src={item.img} alt="" className="w-full h-24 object-cover" />
-                          <div className="p-2">
-                            <div className="text-[10px] font-bold text-orange-600">{item.type}</div>
-                            <div className="text-xs font-bold text-slate-800 leading-tight mt-0.5">{item.name}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Гарниры */}
-                  <div>
-                    <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 2: Дополнительный гарнир</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      {FOOD_MENU_OPTIONS.sides.map(item => (
-                        <div 
-                          key={item.id} 
-                          onClick={() => setSelectedFoodMenu({...selectedFoodMenu, side: item})}
-                          className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm flex items-center p-2 gap-3 transition-all ${selectedFoodMenu.side.id === item.id ? 'border-orange-500 bg-orange-50/30' : 'border-gray-200'}`}
-                        >
-                          <img src={item.img} alt="" className="w-14 h-14 rounded-lg object-cover" />
-                          <div className="text-xs font-bold text-slate-800">{item.name}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Напитки */}
-                  <div>
-                    <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 3: Напиток на борту</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      {FOOD_MENU_OPTIONS.drinks.map(item => (
-                        <div 
-                          key={item.id} 
-                          onClick={() => setSelectedFoodMenu({...selectedFoodMenu, drink: item})}
-                          className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm flex items-center p-2 gap-3 transition-all ${selectedFoodMenu.drink.id === item.id ? 'border-orange-500 bg-orange-50/30' : 'border-gray-200'}`}
-                        >
-                          <img src={item.img} alt="" className="w-14 h-14 rounded-lg object-cover" />
-                          <div className="text-xs font-bold text-slate-800">{item.name}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Десерты */}
-                  <div>
-                    <h3 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-3">Шаг 4: Авиа-десерт</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      {FOOD_MENU_OPTIONS.desserts.map(item => (
-                        <div 
-                          key={item.id} 
-                          onClick={() => setSelectedFoodMenu({...selectedFoodMenu, dessert: item})}
-                          className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white shadow-sm flex items-center p-2 gap-3 transition-all ${selectedFoodMenu.dessert.id === item.id ? 'border-orange-500 bg-orange-50/30' : 'border-gray-200'}`}
-                        >
-                          <img src={item.img} alt="" className="w-14 h-14 rounded-lg object-cover" />
-                          <div className="text-xs font-bold text-slate-800">{item.name}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <button 
-                  onClick={() => { setIsFoodSkipped(false); setStep('ticket'); }} 
-                  className="w-full bg-orange-500 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition-all text-sm mt-4"
-                >
-                  ✓ Подтвердить выбранный рацион и перейти к билетам
-                </button>
-              </div>
-            )}
-
-            {/* ЭКРАН 6: ГОТОВЫЙ БИЛЕТ С ВАУЧЕРАМИ И МЕТЕОДАННЫМИ */}
-            {step === 'ticket' && selectedFlight && (
-              <div className="flex flex-col items-center">
-                <button 
-                  onClick={() => selectedFlight.hasFood ? setStep('food') : setStep('hotels')} 
-                  className="text-[#0057b8] text-sm font-semibold mb-4 self-start hover:underline"
-                >
-                  ← Вернуться на шаг назад
-                </button>
-
-                {/* БЛОК ИМЁН ПАССАЖИРОВ */}
-                <div className="w-full bg-white p-5 rounded-xl border mb-6 shadow-sm space-y-3">
-                  <h3 className="text-sm font-bold text-slate-700 border-b pb-1.5">Данные пассажиров (Латиница):</h3>
-                  {passengerNames.map((name, idx) => (
-                    <div key={idx}>
-                      <label className="text-[10px] font-bold text-gray-400 block mb-0.5">Пассажир {idx + 1} (Посадочное место: {chosenSeats[idx] || '?'})</label>
-                      <input 
-                        type="text" 
-                        value={name} 
-                        onChange={(e) => handleNameChange(idx, e.target.value)} 
-                        className="w-full p-2.5 border rounded-xl font-mono uppercase text-sm outline-none focus:border-[#0057b8]" 
-                        placeholder="IVAN IVANOV" 
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* КАРТОЧКА ДЛЯ СКАЧИВАНИЯ */}
-                <div ref={ticketRef} className="bg-gray-100 p-3 rounded-3xl w-full max-w-md border border-gray-300 space-y-4">
-                  
-                  {/* ПОСАДОЧНЫЙ ТАЛОН */}
-                  <div className="bg-white rounded-2xl shadow-md overflow-hidden relative border border-gray-200">
-                    <div className="bg-[#0057b8] text-white p-4 flex justify-between items-center">
-                      <span className="font-bold tracking-wider">{selectedFlight.airline}</span>
-                      <span className="text-xs border px-2 py-0.5 rounded font-mono bg-white/20">BOARDING PASS</span>
-                    </div>
-                    
-                    <div className="p-5 space-y-4">
-                      <div className="flex justify-between border-b pb-3">
-                        <div className="flex-1 mr-2">
-                          <div className="text-[10px] uppercase text-gray-400 font-bold">Passengers</div>
-                          <div className="font-mono font-bold text-xs max-h-24 overflow-y-auto leading-relaxed whitespace-pre-line">
-                            {passengerNames.map((n, i) => `${i+1}. ${n || 'GUEST'} [${chosenSeats[i] || ''}]`).join('\n')}
-                          </div>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <div className="text-[10px] uppercase text-gray-400 font-bold">Flight</div>
-                          <div className="font-mono font-bold text-lg text-blue-600">{selectedFlight.flightNumber}</div>
-                        </div>
-                      </div>
-
-                      <div className="flex justify-between items-center py-2">
-                        <div>
-                          <div className="text-4xl font-black text-slate-800">{selectedFlight.from}</div>
-                          <div className="text-[10px] text-gray-400 font-bold">Вылет {selectedFlight.departure} ({getCityInfo(selectedFlight.from).timezone})</div>
-                        </div>
-                        <div className="text-gray-300 text-xl">➔</div>
-                        <div className="text-right">
-                          <div className="text-4xl font-black text-slate-800">{selectedFlight.to}</div>
-                          <div className="text-[10px] text-gray-400 font-bold">Прилет {selectedFlight.arrival} ({getCityInfo(selectedFlight.to).timezone})</div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-2 bg-gray-50 p-3 rounded-xl text-center text-sm border">
-                        <div>
-                          <div className="text-[9px] text-gray-400 font-bold uppercase">Дата вылета</div>
-                          <div className="font-bold text-[11px] leading-tight mt-1 text-slate-700">{selectedFlight.dateFrom}</div>
-                        </div>
-                        <div>
-                          <div className="text-[9px] text-gray-400 font-bold uppercase">Выход</div>
-                          <div className="font-bold text-lg text-slate-800">{selectedFlight.gate}</div>
-                        </div>
-                        <div>
-                          <div className="text-[9px] text-gray-400 font-bold uppercase">Все Места</div>
-                          <div className="font-bold font-mono text-xs text-[#0057b8] break-words max-w-full leading-tight pt-1">{chosenSeats.join(', ')}</div>
-                        </div>
-                      </div>
-
-                      {/* Дополнительный погодный информер на посадочном талоне */}
-                      <div className="bg-blue-50/70 text-slate-700 rounded-lg p-2 text-[11px] font-semibold flex justify-between border border-blue-100">
-                        <span>🌤️ Погода в месте прибытия: {getCityInfo(selectedFlight.to).weather}</span>
-                        <span className="font-mono text-amber-700">{getCityInfo(selectedFlight.to).timezone}</span>
-                      </div>
-
-                      <div className="flex justify-between items-center pt-1 text-[10px] font-bold text-gray-400">
-                        <div>КЛАСС: {params.flightClass.toUpperCase()}</div>
-                        <div>{params.baggage ? '✓ БАГАЖ' : ''} {params.pet ? '• ПИТОМЕЦ' : ''}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* ОТЕЛЬНЫЙ ВАУЧЕР */}
-                  {selectedHotel && (
-                    <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-green-200 relative">
-                      <div className="bg-green-600 text-white p-3 flex justify-between items-center">
-                        <span className="font-bold text-xs tracking-wider flex items-center gap-1">
-                          <IconHotel /> ВАУЧЕР НА ПРОЖИВАНИЕ
-                        </span>
-                        <span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">HOTEL BOOKING</span>
-                      </div>
-                      <div className="p-4 flex gap-4">
-                        <img src={selectedHotel.img} alt="" className="w-16 h-16 rounded-xl object-cover border" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; }} />
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-black text-sm text-slate-800 truncate">{selectedHotel.name}</h4>
-                          <p className="text-[10px] text-blue-600 font-bold mt-0.5">📍 {selectedHotel.district}</p>
-                          <div className="mt-2 text-[11px] bg-green-50 text-green-700 px-2 py-1 rounded font-mono inline-block font-bold">
-                            Гостей: {params.passengers} | Номер подтвержден
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* БОРТОВОЙ ЛАНЧ-ВАУЧЕР */}
-                  {selectedFlight.hasFood && !isFoodSkipped && (
-                    <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-orange-200 relative">
-                      <div className="bg-orange-500 text-white p-3 flex justify-between items-center">
-                        <span className="font-bold text-xs tracking-wider flex items-center gap-1">
-                          🍱 БОРТОВОЕ ПИТАНИЕ С ЛОГОТИПОМ
-                        </span>
-                        <span className="text-[9px] border px-2 py-0.5 rounded font-mono bg-white/20">IN-FLIGHT MEAL</span>
-                      </div>
-                      <div className="p-4 space-y-3">
-                        <div className="flex items-center gap-3 border-b pb-2">
-                          <img src={selectedFoodMenu.main.img} alt="" className="w-10 h-10 rounded-lg object-cover border" />
-                          <div>
-                            <div className="text-[9px] font-bold text-gray-400 uppercase">Горячее блюдо</div>
-                            <div className="text-xs font-black text-slate-800">{selectedFoodMenu.main.name}</div>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 pt-1 text-center">
-                          <div className="bg-orange-50/50 p-1.5 rounded-lg border border-orange-100">
-                            <div className="text-[8px] text-gray-400 font-bold uppercase">Гарнир</div>
-                            <div className="text-[10px] font-bold text-slate-700 mt-0.5 truncate">{selectedFoodMenu.side.name}</div>
-                          </div>
-                          <div className="bg-orange-50/50 p-1.5 rounded-lg border border-orange-100">
-                            <div className="text-[8px] text-gray-400 font-bold uppercase">Напиток</div>
-                            <div className="text-[10px] font-bold text-slate-700 mt-0.5 truncate">{selectedFoodMenu.drink.name}</div>
-                          </div>
-                          <div className="bg-orange-50/50 p-1.5 rounded-lg border border-orange-100">
-                            <div className="text-[8px] text-gray-400 font-bold uppercase">Десерт</div>
-                            <div className="text-[10px] font-bold text-slate-700 mt-0.5 truncate">{selectedFoodMenu.dessert.name}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ОБЩИЙ QR КОД */}
-                  <div className="bg-white p-4 rounded-2xl border border-gray-200 flex justify-between items-center">
-                    <div className="flex flex-col max-w-[70%]">
-                       <span className="text-[9px] text-gray-400 font-bold uppercase mb-1">РЕГИСТРАЦИОННЫЙ QR-КОД</span>
-                       <span className="text-[11px] font-mono font-bold truncate">ID: {selectedFlight.id}</span>
-                       <span className="text-[10px] text-blue-600 font-bold mt-1">
-                         {selectedHotel ? "✓ Авиа + Отель" : "✓ Только авиабилет"}
-                         {selectedFlight.hasFood && !isFoodSkipped ? " + 🍱 Питание" : ""}
-                       </span>
-                    </div>
-                    <QRCodeBlock text={`ID:${selectedFlight.id}|PASSENGERS:${passengerNames.join(',')}|FLIGHT:${selectedFlight.flightNumber}|SEATS:${chosenSeats.join(',')}|HOTEL:${selectedHotel ? selectedHotel.name : 'NONE'}|FOOD:${isFoodSkipped ? 'NONE' : selectedFoodMenu.main.name}`} />
-                  </div>
-                </div>
-
-                {/* КНОПКИ ДЕЙСТВИЯ */}
-                <div className="grid grid-cols-2 gap-4 w-full max-w-md mt-6">
-                  <button onClick={handleDownloadTicket} className="bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm">
-                    💾 Скачать в галерею
-                  </button>
-                  <button onClick={saveToMyTrips} className="bg-[#0057b8] text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm">
-                    ⭐ В Мои поездки
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* ЭКРАН 7: МОИ ПОЕЗДКИ */}
-            {step === 'trips' && (
-              <div className="space-y-4">
-                <button onClick={() => setStep('search')} className="text-[#0057b8] text-sm font-semibold mb-2 hover:underline">← На главную форму</button>
-                <h2 className="text-2xl font-bold flex items-center gap-2"><IconBriefcase /> Ваши сохраненные маршруты</h2>
-                
-                {trips.length === 0 ? (
-                  <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
-                    <p className="text-gray-400 font-semibold mb-2">Вы еще не сохранили ни одного билета.</p>
-                    <button onClick={() => setStep('search')} className="text-xs bg-[#0057b8] text-white px-4 py-2 rounded-lg font-bold mt-2 shadow-sm">Найти первое путешествие</button>
-                  </div>
-                ) : (
-                  <div className="grid gap-4">
-                    {trips.map(trip => (
-                      <div 
-                        key={trip.tripId} 
-                        onClick={() => {
-                          setSelectedFlight(trip.flight);
-                          setSelectedHotel(trip.hotel);
-                          if (trip.foodMenu) {
-                            setSelectedFoodMenu(trip.foodMenu);
-                            setIsFoodSkipped(false);
-                          } else {
-                            setIsFoodSkipped(true);
-                          }
-                          setChosenSeats(trip.seats);
-                          setPassengerNames(trip.passengers);
-                          setParams({...params, passengers: trip.passengers.length, flightClass: trip.class, baggage: trip.options.baggage, pet: trip.options.pet});
-                          setStep('ticket');
-                        }}
-                        className="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 flex justify-between items-center cursor-pointer hover:shadow-md transition-all group relative overflow-hidden"
-                      >
-                        {trip.hotel && <div className="absolute top-0 left-0 bg-green-500 w-1.5 h-full"></div>}
-                        
-                        <div className="flex flex-col max-w-[85%] space-y-1">
-                          <span className="text-xs text-gray-400 font-bold">{trip.flight.dateFrom} • Рейс {trip.flight.flightNumber}</span>
-                          <span className="text-lg font-black text-slate-800">{getCityInfo(trip.flight.from).city} ➔ {getCityInfo(trip.flight.to).city}</span>
-                          
-                          <div className="flex flex-wrap gap-2 pt-1">
-                            <span className="text-[11px] bg-blue-50 text-[#0057b8] px-2 py-0.5 rounded-md font-mono font-bold">
-                              Места: {trip.seats.join(', ')}
-                            </span>
-                            <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">
-                              {getCityInfo(trip.flight.to).weather} | {getCityInfo(trip.flight.to).timezone}
-                            </span>
-                            {trip.hotel && (
-                              <span className="text-[11px] bg-green-50 text-green-700 px-2 py-0.5 rounded-md font-bold flex items-center gap-0.5">
-                                🏨 {trip.hotel.name}
-                              </span>
-                            )}
-                            {trip.foodMenu && (
-                              <span className="text-[11px] bg-orange-50 text-orange-700 px-2 py-0.5 rounded-md font-bold">
-                                🍱 {trip.foodMenu.main.name}
-                              </span>
-                            )}
-                          </div>
-                          
-                          <p className="text-[10px] text-gray-400 truncate pt-1 font-semibold font-mono">
-                            Пассажиры: {trip.passengers.join(', ')}
-                          </p>
-                        </div>
-
-                        <button onClick={(e) => deleteTrip(e, trip.tripId)} className="p-2 opacity-40 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-all">
-                          <IconTrash />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-          </main>
-        </div>
-      );
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --card-bg: #1e293b;
+      --success: #10b981;
+      --glow: rgba(56, 189, 248, 0.15);
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-bottom: 1px solid var(--border-color);
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      font-size: 28px;
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--glow);
+    }
+
+    .logo-text h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .logo-text span {
+      color: var(--accent);
+    }
+
+    .container {
+      max-width: 1400px;
+      width: 100%;
+      margin: 30px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 30px;
+      flex-grow: 1;
+    }
+
+    /* Левая панель управления */
+    .control-panel {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      height: fit-content;
+      position: sticky;
+      top: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .panel-section {
+      margin-bottom: 24px;
+    }
+
+    .panel-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .panel-section h3 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .search-box input {
+      width: 100%;
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 12px 12px 40px;
+      color: var(--text-main);
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--glow);
+    }
+
+    .city-list-wrapper {
+      max-height: 280px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background-color: var(--bg-primary);
+    }
+
+    .city-item {
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid rgba(255,255,255,0.02);
+    }
+
+    .city-item:last-child {
+      border-bottom: none;
+    }
+
+    .city-item:hover {
+      background-color: var(--border-color);
+    }
+
+    .city-item.active {
+      background: linear-gradient(90deg, rgba(56,189,248,0.2) 0%, rgba(56,189,248,0.05) 100%);
+      border-left: 4px solid var(--accent);
+    }
+
+    .city-info-main {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .city-country {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .city-code-badge {
+      background-color: var(--border-color);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* Стилизация скроллбара */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    .filter-btn-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .filter-btn {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--text-muted);
+    }
+
+    .filter-btn.active {
+      border-color: var(--accent);
+      background-color: rgba(56, 189, 248, 0.1);
+      color: var(--accent);
+    }
+
+    .action-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: #000;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+    }
+
+    /* Правая рабочая область */
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .no-selection {
+      background-color: var(--bg-secondary);
+      border: 2px dashed var(--border-color);
+      border-radius: 16px;
+      padding: 80px 40px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .no-selection i {
+      font-size: 48px;
+      margin-bottom: 16px;
+      color: var(--border-color);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title i {
+      color: var(--accent);
+    }
+
+    /* Карточки отелей */
+    .hotels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 20px;
+    }
+
+    .hotel-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .hotel-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .hotel-card.selected {
+      border-color: var(--success);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+    }
+
+    .hotel-card.selected::before {
+      content: '\f058';
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      color: var(--success);
+      font-size: 24px;
+      z-index: 10;
+      background-color: rgba(0,0,0,0.6);
+      border-radius: 50%;
+    }
+
+    .hotel-img-wrapper {
+      height: 180px;
+      position: relative;
+    }
+
+    .hotel-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hotel-price-badge {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background-color: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .hotel-content {
+      padding: 16px;
+    }
+
+    .hotel-stars {
+      color: #fbbf24;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .hotel-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hotel-district {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Конструктор бортового питания */
+    .food-constructor-box {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .food-tabs {
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+
+    .food-tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .food-tab-btn:hover {
+      color: var(--text-main);
+      background-color: rgba(255,255,255,0.05);
+    }
+
+    .food-tab-btn.active {
+      color: var(--accent);
+      background-color: rgba(56, 189, 248, 0.1);
+    }
+
+    .food-items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .food-card {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .food-card:hover {
+      border-color: var(--accent);
+    }
+
+    .food-card.selected {
+      border-color: var(--success);
+      background-color: rgba(16, 185, 129, 0.03);
+    }
+
+    .food-card-img {
+      height: 130px;
+      width: 100%;
+      object-fit: cover;
+    }
+
+    .food-card-body {
+      padding: 12px;
+    }
+
+    .food-card-type {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .food-card-name {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* Секция достопримечательностей */
+    .sights-box {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .sights-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .sight-item-card {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .sight-icon-wrapper {
+      background-color: rgba(56, 189, 248, 0.1);
+      color: var(--accent);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .sight-text-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .sight-text-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Итоговые документы (Ваучеры и Талоны) */
+    .documents-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 10px;
+    }
+
+    /* Посадочный талон авиа */
+    .boarding-pass {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      position: relative;
+    }
+
+    .pass-header {
+      background: linear-gradient(90deg, #0284c7 0%, #0369a1 100%);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pass-airline {
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    .pass-class {
+      font-size: 11px;
+      background-color: rgba(255,255,255,0.2);
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .pass-body {
+      padding: 20px;
+      position: relative;
+    }
+
+    .pass-flight-path {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .path-point h2 {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .path-point p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .path-connector {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      margin: 0 15px;
+    }
+
+    .path-line {
+      width: 100%;
+      height: 2px;
+      background-color: var(--border-color);
+      position: relative;
+    }
+
+    .path-line::after {
+      content: '\f072';
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(90deg);
+      background-color: #162238;
+      padding: 0 6px;
+      color: var(--accent);
+      font-size: 14px;
+    }
+
+    .pass-details-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .detail-item span {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .detail-item p {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .pass-food-banner {
+      background-color: rgba(56, 189, 248, 0.05);
+      border: 1px dashed rgba(56, 189, 248, 0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .pass-food-banner i {
+      color: var(--accent);
+    }
+
+    /* Отельный ваучер */
+    .hotel-voucher {
+      background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    }
+
+    .voucher-header {
+      background: linear-gradient(90deg, #059669 0%, #047857 100%);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .voucher-title {
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    .voucher-status {
+      font-size: 11px;
+      background-color: rgba(255,255,255,0.2);
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .voucher-body {
+      padding: 20px;
+    }
+
+    .voucher-hotel-main {
+      margin-bottom: 16px;
+    }
+
+    .voucher-hotel-stars {
+      color: #fbbf24;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    .voucher-hotel-name {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .voucher-hotel-district {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .voucher-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon"><i class="fa-solid fa-jet-fighter"></i></div>
+      <div class="logo-text">
+        <h1>Sky<span>Gen</span></h1>
+      </div>
+    </div>
+    <div style="font-size: 14px; color: var(--text-muted)">Конструктор комплексных туров • v2.0</div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Панель управления (слева) -->
+    <div class="control-panel">
+      
+      <!-- Поиск и Выбор города -->
+      <div class="panel-section">
+        <h3><i class="fa-solid fa-map-location-dot"></i> Направление</h3>
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="citySearchInput" placeholder="Поиск города или страны..." oninput="renderCityList()">
+        </div>
+        <div class="city-list-wrapper" id="cityListContainer">
+          <!-- Генерируется из JS -->
+        </div>
+      </div>
+
+      <!-- Фильтры отелей -->
+      <div class="panel-section">
+        <h3><i class="fa-solid fa-sliders"></i> Звёздность отелей</h3>
+        <div class="filter-btn-group">
+          <button class="filter-btn active" data-stars="all" onclick="setStarsFilter('all', this)">
+            <i class="fa-solid fa-border-all"></i>Все
+          </button>
+          <button class="filter-btn" data-stars="⭐⭐⭐⭐⭐" onclick="setStarsFilter('⭐⭐⭐⭐⭐', this)">
+            <i class="fa-solid fa-star"></i>5 Звёзд
+          </button>
+          <button class="filter-btn" data-stars="⭐⭐⭐⭐" onclick="setStarsFilter('⭐⭐⭐⭐', this)">
+            <i class="fa-solid fa-star-half-stroke"></i>4 Звезды
+          </button>
+        </div>
+      </div>
+
+      <!-- Кнопка генерации документов -->
+      <div class="panel-section" style="margin-top: 40px;">
+        <button class="action-btn" id="generateDocBtn" onclick="generatePackage()" disabled>
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Сформировать ваучеры
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Рабочая область (справа) -->
+    <div class="workspace" id="mainWorkspace">
+      <div class="no-selection">
+        <i class="fa-solid fa-plane-departure"></i>
+        <h2>Добро пожаловать в SkyGen</h2>
+        <p style="margin-top: 10px; font-size: 14px;">Выберите нужный город в левой панели, чтобы начать проектирование вашего путешествия.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Подключаем файл с базой данных -->
+  <script src="data.js"></script>
+
+  <!-- Основная логика приложения -->
+  <script>
+    let currentSelectedCity = null;
+    let selectedHotelId = null;
+    let currentFoodTab = 'mains';
+    let starsFilter = 'all';
+
+    // Выбранные элементы питания
+    let selectedFood = {
+      mains: null,
+      sides: null,
+      drinks: null,
+      desserts: null
+    };
+
+    // Массивы для хранения динамически сгенерированных отелей для выбранного города
+    let currentHotelsList = [];
+
+    // Инициализация при загрузке страницы
+    window.onload = function() {
+      renderCityList();
+    };
+
+    // Отрисовка списка городов с учетом фильтра поиска
+    function renderCityList() {
+      const searchValue = document.getElementById('citySearchInput').value.toLowerCase().trim();
+      const container = document.getElementById('cityListContainer');
+      container.innerHTML = '';
+
+      // Фильтруем города по названию или по стране
+      const filteredCities = CITIES.filter(item => 
+        item.city.toLowerCase().includes(searchValue) || 
+        (item.country && item.country.toLowerCase().includes(searchValue))
+      );
+
+      if (filteredCities.length === 0) {
+        container.innerHTML = '<div style="padding:16px; font-size:13px; color:var(--text-muted); text-align:center;">Города не найдены</div>';
+        return;
+      }
+
+      filteredCities.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `city-item ${currentSelectedCity && currentSelectedCity.city === item.city ? 'active' : ''}`;
+        div.onclick = () => selectCity(item);
+
+        div.innerHTML = `
+          <div>
+            <div class="city-info-main">${item.city}</div>
+            <div class="city-country">${item.country || 'Локация'}</div>
+          </div>
+          <div class="city-code-badge">${item.code}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Обработчик выбора города
+    function selectCity(cityObj) {
+      currentSelectedCity = cityObj;
+      selectedHotelId = null;
+      
+      // Сброс выбранного питания
+      selectedFood = { mains: null, sides: null, drinks: null, desserts: null };
+      
+      // Активируем кнопку генерации
+      document.getElementById('generateDocBtn').disabled = false;
+
+      // Обновляем активный класс в списке городов
+      renderCityList();
+      
+      // Генерируем уникальный список отелей именно под этот город
+      generateHotelsForCity(cityObj.hotelCount);
+
+      // Строим основной интерфейс шагов справа
+      buildWorkspaceUI();
+    }
+
+    // Фильтрация отелей по звёздности
+    function setStarsFilter(stars, btnElement) {
+      starsFilter = stars;
+      
+      // Смена активного класса на кнопках фильтров
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btnElement.classList.add('active');
+
+      // Перерисовываем сетку отелей, если город уже выбран
+      if (currentSelectedCity) {
+        renderHotelsGrid();
+      }
+    }
+
+    // Наполнение отелей из пула под выбранный город
+    function generateHotelsForCity(count) {
+      currentHotelsList = [];
+      
+      // Перемешиваем пул названий отелей для случайности
+      let shuffledPool = [...HOTEL_NAMES_POOL].sort(() => 0.5 - Math.random());
+      
+      for(let i = 0; i < Math.min(count, shuffledPool.length); i++) {
+        // Выбираем случайный район обитания
+        let randomDistrict = HOTEL_DISTRICTS_POOL[Math.floor(Math.random() * HOTEL_DISTRICTS_POOL.length)];
+        
+        currentHotelsList.push({
+          id: 'hotel_' + i,
+          name: shuffledPool[i].name,
+          stars: shuffledPool[i].stars,
+          price: shuffledPool[i].price,
+          img: shuffledPool[i].img,
+          district: randomDistrict
+        });
+      }
+    }
+
+    // Сборка интерфейса конструирования тура справа
+    function buildWorkspaceUI() {
+      const workspace = document.getElementById('mainWorkspace');
+      workspace.innerHTML = '';
+
+      // 1. Шапка выбранного города
+      const cityHeader = document.createElement('div');
+      cityHeader.style.backgroundColor = 'var(--bg-secondary)';
+      cityHeader.style.padding = '24px';
+      cityHeader.style.borderRadius = '16px';
+      cityHeader.style.border = '1px solid var(--border-color)';
+      cityHeader.style.display = 'flex';
+      cityHeader.style.justifyContent = 'space-between';
+      cityHeader.style.alignItems = 'center';
+      
+      cityHeader.innerHTML = `
+        <div>
+          <h2 style="font-size:26px; font-weight:700;">${currentSelectedCity.city}</h2>
+          <p style="color:var(--text-muted); font-size:14px; margin-top:4px;">
+            <i class="fa-solid fa-earth-americas"></i> ${currentSelectedCity.country} &nbsp;|&nbsp; 
+            <i class="fa-solid fa-clock"></i> Часовой пояс: ${currentSelectedCity.timezone}
+          </p>
+        </div>
+        <div style="font-size: 20px; font-weight: 600; background: var(--bg-primary); padding: 10px 18px; border-radius: 10px; border: 1px solid var(--border-color);">
+          ${currentSelectedCity.weather}
+        </div>
+      `;
+      workspace.appendChild(cityHeader);
+
+      // 2. Секция Достопримечательностей (если они прописаны в базе)
+      if (currentSelectedCity.sights && currentSelectedCity.sights.length > 0) {
+        const sightsContainer = document.createElement('div');
+        sightsContainer.className = 'sights-box';
+        sightsContainer.innerHTML = `
+          <div class="section-title"><i class="fa-solid fa-camera-retro"></i> Популярные места</div>
+          <div class="sights-list">
+            ${currentSelectedCity.sights.map(sight => `
+              <div class="sight-item-card">
+                <div class="sight-icon-wrapper"><i class="fa-solid fa-monument"></i></div>
+                <div>
+                  <div class="sight-text-title">${sight}</div>
+                  <div class="sight-text-desc">Рекомендуется посетить</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        workspace.appendChild(sightsContainer);
+      }
+
+      // 3. Контейнер выбора отелей
+      const hotelsSection = document.createElement('div');
+      hotelsSection.innerHTML = `
+        <div class="section-title"><i class="fa-solid fa-hotel"></i> Шаг 1: Выберите отель для проживания</div>
+        <div class="hotels-grid" id="hotelsGridContainer"></div>
+      `;
+      workspace.appendChild(hotelsSection);
+      renderHotelsGrid();
+
+      // 4. Конструктор еды на борту самолета
+      const foodSection = document.createElement('div');
+      foodSection.className = 'food-constructor-box';
+      foodSection.innerHTML = `
+        <div class="section-title"><i class="fa-solid fa-utensils"></i> Шаг 2: Настройте персональное меню на рейсе</div>
+        <div class="food-tabs">
+          <button class="food-tab-btn active" id="tab_mains" onclick="switchFoodTab('mains')">Горячее</button>
+          <button class="food-tab-btn" id="tab_sides" onclick="switchFoodTab('sides')">Гарниры</button>
+          <button class="food-tab-btn" id="tab_drinks" onclick="switchFoodTab('drinks')">Напитки</button>
+          <button class="food-tab-btn" id="tab_desserts" onclick="switchFoodTab('desserts')">Десерты</button>
+        </div>
+        <div class="food-items-grid" id="foodGridContainer"></div>
+      `;
+      workspace.appendChild(foodSection);
+      renderFoodGrid();
+    }
+
+    // Отрисовка сетки отелей с учетом фильтрации звёзд
+    function renderHotelsGrid() {
+      const container = document.getElementById('hotelsGridContainer');
+      if(!container) return;
+      container.innerHTML = '';
+
+      const filtered = starsFilter === 'all' 
+        ? currentHotelsList 
+        : currentHotelsList.filter(h => h.stars === starsFilter);
+
+      if(filtered.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1/-1; padding: 30px; text-align:center; color:var(--text-muted);">Нет отелей, соответствующих выбранной звездности</div>';
+        return;
+      }
+
+      filtered.forEach(hotel => {
+        const card = document.createElement('div');
+        card.className = `hotel-card ${selectedHotelId === hotel.id ? 'selected' : ''}`;
+        card.onclick = () => {
+          selectedHotelId = hotel.id;
+          renderHotelsGrid();
+        };
+
+        card.innerHTML = `
+          <div class="hotel-img-wrapper">
+            <img src="${hotel.img}" alt="${hotel.name}">
+            <div class="hotel-price-badge">${hotel.price.toLocaleString()} ₽ / ночь</div>
+          </div>
+          <div class="hotel-content">
+            <div class="hotel-stars">${hotel.stars}</div>
+            <div class="hotel-name" title="${hotel.name}header">${hotel.name}</div>
+            <div class="hotel-district"><i class="fa-solid fa-location-dot"></i> ${hotel.district}</div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Переключение вкладок меню еды
+    function switchFoodTab(tabName) {
+      currentFoodTab = tabName;
+      document.querySelectorAll('.food-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`tab_${tabName}`).classList.add('active');
+      renderFoodGrid();
+    }
+
+    // Отрисовка блюд текущей вкладки питания
+    function renderFoodGrid() {
+      const container = document.getElementById('foodGridContainer');
+      if(!container) return;
+      container.innerHTML = '';
+
+      const items = FOOD_MENU_OPTIONS[currentFoodTab];
+      
+      items.forEach(foodItem => {
+        const isSelected = selectedFood[currentFoodTab] && selectedFood[currentFoodTab].id === foodItem.id;
+        const card = document.createElement('div');
+        card.className = `food-card ${isSelected ? 'selected' : ''}`;
+        card.onclick = () => {
+          // Если кликаем по уже выбранному — снимаем выбор, иначе перезаписываем раздел
+          selectedFood[currentFoodTab] = isSelected ? null : foodItem;
+          renderFoodGrid();
+        };
+
+        card.innerHTML = `
+          <img src="${foodItem.img}" class="food-card-img" alt="${foodItem.name}">
+          <div class="food-card-body">
+            ${foodItem.type ? `<div class="food-card-type">${foodItem.type}</div>` : ''}
+            <div class="food-card-name">${foodItem.name}</div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Финальная сборка тур-пакета и рендеринг официальных документов (Авиабилет + Ваучер)
+    function generatePackage() {
+      const workspace = document.getElementById('mainWorkspace');
+      
+      // Находим объект выбранного отеля в текущем списке
+      const hotelObj = currentHotelsList.find(h => h.id === selectedHotelId);
+      if(!hotelObj) {
+        alert('Пожалуйста, выберите отель перед генерацией документов!');
+        return;
+      }
+
+      // Формируем строчки выбранной еды
+      let foodSummary = [];
+      if(selectedFood.mains) foodSummary.push(selectedFood.mains.name);
+      if(selectedFood.sides) foodSummary.push(selectedFood.sides.name);
+      if(selectedFood.drinks) foodSummary.push(selectedFood.drinks.name);
+      if(selectedFood.desserts) foodSummary.push(selectedFood.desserts.name);
+      
+      const foodText = foodSummary.length > 0 ? foodSummary.join(', ') : 'Стандартное меню на борту не изменено';
+
+      // Генерируем случайную авиакомпанию и данные рейса
+      const randomAirline = AIRLINES[Math.floor(Math.random() * AIRLINES.length)];
+      const randomFlightNum = Math.floor(100 + Math.random() * 899);
+      const randomSeat = Math.floor(1 + Math.random() * 29) + String.fromCharCode(65 + Math.floor(Math.random() * 6)); // Например: 14C
+
+      // Очищаем и выводим итоговую страницу документов
+      workspace.innerHTML = `
+        <div class="section-title" style="font-size:24px; color:var(--success)">
+          <i class="fa-solid fa-circle-check"></i> Документы успешно сформированы!
+        </div>
+        
+        <div class="documents-layout">
+          
+          <!-- АВИАПОСАДОЧНЫЙ ТАЛОН -->
+          <div class="boarding-pass">
+            <div class="pass-header">
+              <div class="pass-airline"><i class="fa-solid fa-plane"></i> ${randomAirline}</div>
+              <div class="pass-class">Business Class</div>
+            </div>
+            <div class="pass-body">
+              <div class="pass-flight-path">
+                <div class="path-point">
+                  <h2>MOW</h2>
+                  <p>Москва, RU</p>
+                </div>
+                <div class="path-connector">
+                  <div style="font-size:11px; color:var(--accent); margin-bottom:4px;">Рейс №${randomFlightNum}</div>
+                  <div class="path-line"></div>
+                </div>
+                <div class="path-point" style="text-align: right;">
+                  <h2>${currentSelectedCity.code}</h2>
+                  <p>${currentSelectedCity.city}, ${currentSelectedCity.country || ''}</p>
+                </div>
+              </div>
+              
+              <div class="pass-details-grid">
+                <div class="detail-item">
+                  <span>Вылет</span>
+                  <p>Завтра, 08:45</p>
+                </div>
+                <div class="detail-item">
+                  <span>Место</span>
+                  <p>${randomSeat}</p>
+                </div>
+                <div class="detail-item">
+                  <span>Гейт</span>
+                  <p>A-${Math.floor(1 + Math.random() * 18)}</p>
+                </div>
+              </div>
+
+              <div class="pass-food-banner">
+                <i class="fa-solid fa-tray-substring fa-hamburger"></i>
+                <div>
+                  <strong style="display:block; font-size:11px; color:var(--accent);">Выбранное меню:</strong>
+                  <span style="font-size:12px; color:var(--text-main);">${foodText}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ОТЕЛЬНЫЙ ВАУЧЕР -->
+          <div class="hotel-voucher">
+            <div class="voucher-header">
+              <div class="voucher-title"><i class="fa-solid fa-hotel"></i> Отельный Ваучер</div>
+              <div class="voucher-status">Подтверждено</div>
+            </div>
+            <div class="voucher-body">
+              <div class="voucher-hotel-main">
+                <div class="voucher-hotel-stars">${hotelObj.stars}</div>
+                <div class="voucher-hotel-name">${hotelObj.name}</div>
+                <div class="voucher-hotel-district"><i class="fa-solid fa-location-dot"></i> ${hotelObj.district}</div>
+              </div>
+              
+              <div class="voucher-grid" style="border-top: 1px solid var(--border-color); padding-top:16px;">
+                <div class="detail-item">
+                  <span>Тип размещения</span>
+                  <p>Standard Luxury Room</p>
+                </div>
+                <div class="detail-item">
+                  <span>Питание</span>
+                  <p>Завтрак включён (BB)</p>
+                </div>
+                <div class="detail-item" style="margin-top:10px;">
+                  <span>Длительность</span>
+                  <p>7 Ночей / 8 Дней</p>
+                </div>
+                <div class="detail-item" style="margin-top:10px;">
+                  <span>Статус оплаты</span>
+                  <p style="color:var(--success)">Оплачено полностью</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="action-btn" style="background:var(--bg-secondary); color:var(--text-main); border:1px solid var(--border-color); margin-top:20px; width:fit-content; padding:12px 24px;" onclick="selectCity(currentSelectedCity)">
+          <i class="fa-solid fa-arrow-left"></i> Вернуться к редактированию
+        </button>
+      `;
+    }
   </script>
 </body>
 </html>
