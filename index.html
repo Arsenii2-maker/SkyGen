@@ -578,32 +578,32 @@ const CITIES = [
             )}
 
             {step === 'food' && selectedFlight && (
-              <div className="space-y-6">
-                <div className="flex justify-between"><button onClick={()=>setStep('attractions')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold hover:underline">← К достоприм.</button><button onClick={()=>{setIsFoodSkipped(true);setStep('ticket');}} className="text-gray-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-slate-200 text-sm font-bold bg-gray-200 dark:bg-slate-600 px-4 py-2 rounded-xl">Отказаться ➔</button></div>
-                <div className="bg-orange-50 dark:bg-orange-900/20 p-5 rounded-2xl border border-orange-100 dark:border-orange-800 text-center"><h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">🍱 Шеф-меню рейса {selectedFlight.flightNumber}</h2></div>
-                {['mains','sides','drinks','desserts'].map(cat => (
-                  <div key={cat}>
-                    <h3 className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase mb-3 text-center">{cat==='mains'?'Шаг 1: Горячее блюдо':cat==='sides'?'Шаг 2: Гарнир':cat==='drinks'?'Шаг 3: Напиток':'Шаг 4: Десерт'}</h3>
-                    <div className={`grid gap-3 ${cat==='mains'?'grid-cols-2 sm:grid-cols-4':'grid-cols-2'}`}>
-                      {FOOD_MENU_OPTIONS[cat].map(item => {
-                        const sk = cat==='mains'?'main':cat==='sides'?'side':cat==='drinks'?'drink':'dessert';
-                        const isel = selectedFoodMenu[sk].id === item.id;
-                        return (
-                          <div key={item.id} onClick={()=>setSelectedFoodMenu({...selectedFoodMenu,[sk]:item})} className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white dark:bg-slate-700 shadow-sm transition-all ${cat==='mains'?'text-center':'flex items-center p-2 gap-3'} ${isel?'border-orange-500 bg-orange-50/30 dark:bg-orange-900/20 scale-[1.02]':'border-gray-200 dark:border-slate-600'}`}>
-                            <img src={item.img} alt="" className={cat==='mains'?'w-full h-24 object-cover':'w-14 h-14 rounded-lg object-cover'}/>
-                            <div className={cat==='mains'?'p-2':''}>
-                              {cat==='mains' && <div className="text-[10px] font-bold text-orange-600 dark:text-orange-400">{item.type}</div>}
-                              <div className="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">{item.name}</div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-                <button onClick={()=>{setIsFoodSkipped(false);setStep('ticket');}} className="w-full bg-orange-500 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition-all">✓ Подтвердить и перейти к билетам</button>
+  <div className="space-y-6">
+    <div className="flex justify-between"><button onClick={()=>setStep('attractions')} className="text-[#0057b8] dark:text-blue-400 text-sm font-semibold hover:underline">← К достоприм.</button><button onClick={()=>{setIsFoodSkipped(true);setStep('ticket');}} className="text-gray-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-slate-200 text-sm font-bold bg-gray-200 dark:bg-slate-600 px-4 py-2 rounded-xl">Отказаться ➔</button></div>
+    <div className="bg-orange-50 dark:bg-orange-900/20 p-5 rounded-2xl border border-orange-100 dark:border-orange-800 text-center"><h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">🍱 Шеф-меню рейса {selectedFlight.flightNumber}</h2></div>
+    {['mains','sides','drinks','desserts'].map(cat => (
+      <div key={cat}>
+        <h3 className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase mb-3 text-center">{cat==='mains'?'Шаг 1: Горячее блюдо':cat==='sides'?'Шаг 2: Гарнир':cat==='drinks'?'Шаг 3: Напиток':'Шаг 4: Десерт'}</h3>
+        <div className={`grid gap-3 ${cat==='mains'?'grid-cols-2 sm:grid-cols-4':'grid-cols-2'}`}>
+          {FOOD_MENU_OPTIONS[cat].map(item => {
+            const sk = cat==='mains'?'main':cat==='sides'?'side':cat==='drinks'?'drink':'dessert';
+            const isel = selectedFoodMenu[sk].id === item.id;
+            return (
+              <div key={item.id} onClick={()=>setSelectedFoodMenu({...selectedFoodMenu,[sk]:item})} className={`cursor-pointer rounded-xl border-2 overflow-hidden bg-white dark:bg-slate-700 shadow-sm transition-all ${cat==='mains'?'text-center':'flex items-center p-2 gap-3'} ${isel?'border-orange-500 bg-orange-50/30 dark:bg-orange-900/20 scale-[1.02]':'border-gray-200 dark:border-slate-600'}`}>
+                <img src={item.img} alt="" className={cat==='mains'?'w-full h-24 object-cover':'w-14 h-14 rounded-lg object-cover'}/>
+                <div className={cat==='mains'?'p-2':''}>
+                  {cat==='mains' && <div className="text-[10px] font-bold text-orange-600 dark:text-orange-400">{item.type}</div>}
+                  <div className="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">{item.name}</div>
+                </div>
               </div>
-            )}
+            );
+          })}
+        </div>
+      </div>
+    ))}
+    <button onClick={()=>{setIsFoodSkipped(false);setStep('ticket');}} className="w-full bg-orange-500 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition-all">✓ Подтвердить и перейти к билетам</button>
+  </div>
+)}
 
             {step === 'ticket' && selectedFlight && (
               <div className="flex flex-col items-center">
