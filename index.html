@@ -189,7 +189,8 @@
      // Генерация карточек — сохраняем все 6 рейсов
 React.useEffect(() => { 
   const cards = [...CITIES].sort(()=>0.5-Math.random()).slice(0,8).map(c => {
-    const flights = generateFlights("SVO", c.code, params.dateFrom, params.dateTo, 6);
+    const fromCode = params.from; // Берём текущий город отправления
+    const flights = generateFlights(fromCode, c.code, params.dateFrom, params.dateTo, 6);
     const cheapest = flights.reduce((min, f) => f.price < min.price ? f : min, flights[0]);
     return { ...c, price: cheapest.price, _cachedFlights: flights };
   });
@@ -249,8 +250,9 @@ React.useEffect(() => {
   <div key={city.code} onClick={()=>{
   if(params.from===city.code){alert("Выберите другой город!");return;}
   setParams({...params,to:city.code});
-  // Если есть сохранённые рейсы — используем их, иначе генерируем новые
-  const flightsToShow = city._cachedFlights || generateFlights(params.from, city.code, params.dateFrom, params.dateTo, 6);
+  const flightsToShow = city._cachedFlights && city._cachedFlights[0]?.from === params.from
+    ? city._cachedFlights 
+    : generateFlights(params.from, city.code, params.dateFrom, params.dateTo, 6);
   setFlights(flightsToShow);
   setStep('results');
 }} className="bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 shadow-sm p-4 flex flex-col gap-3 cursor-pointer hover:border-[#0057b8] dark:hover:border-blue-500 hover:shadow-md transition-all group relative overflow-hidden">
